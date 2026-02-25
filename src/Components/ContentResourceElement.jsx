@@ -12,13 +12,13 @@ function ContentResourceElement(props){
             <input placeholder="URL" type="text" value={annotationURL} onChange={e => 
                 {
                     setAnnotationURL(e.target.value); 
-                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.index).changeID(e.target.value);
+                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.index).setID(e.target.value);
                     props.setcount(props.count + 1);
                 }}>
             </input>
             
             <button onClick={() => {
-                props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).createLabelTest();
+                props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).createLabel();
                 props.setcount(props.count + 1);
             }}>Create Label</button>
             <ol>

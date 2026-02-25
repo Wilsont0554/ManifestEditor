@@ -11,7 +11,7 @@ function LabelElement(props){
             <input placeholder="A brief description" type="text" value={labelValue} onChange={e => 
                 {
                     setlabelValue(e.target.value); 
-                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).changeLabel(props.labelIndex, e.target.value);
+                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).setLabel(props.labelIndex, e.target.value);
                     props.setcount(props.count + 1);
                 }}></input>
         </li>

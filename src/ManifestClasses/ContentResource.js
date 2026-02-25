@@ -8,20 +8,52 @@ class ContentResource{
         this.label=[];
     }
 
-    changeID(value){
+/*---------------------------------------------------
+                    SETTERS
+---------------------------------------------------*/
+    setID(value){
         this.id = value;
+    }
+
+    setDimensions(height, width){
+        this.height = height;
+        this.width = width;
+    }
+
+    setCoordinates(x,y,z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    setLabel(index, value){
+        this.label[index].changeLabelTest(value);
+    }
+
+    createLabel(){
+        this.label.push(new Label()); 
+    }
+
+    setDuration(duration){
+        this.duration = duration;
+    }
+
+/*---------------------------------------------------
+                    GETTERS
+---------------------------------------------------*/
+
+    //returns as 0:height, 1:width
+    getDimensions(){
+        return [this.height, this.width];
+    }
+
+    //returns as 0:x, 1:y, 2:z
+    getCoordinates(){
+        return [this.x,this.y, this.z];
     }
 
     getID(){
         return this.id;
-    }
-
-    createLabelTest(){
-        this.label.push(new Label()); 
-    }
-
-    changeLabel(index, value){
-        this.label[index].changeLabelTest(value);
     }
 
     getLabel(index){
@@ -33,6 +65,10 @@ class ContentResource{
 
     getAllLabels(){
         return this.label;
+    }
+
+    getDuration(){
+        return this.duration;
     }
 
 } export default ContentResource
