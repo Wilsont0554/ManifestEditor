@@ -16,12 +16,15 @@ class ContentResource{
         return this.id;
     }
 
-    createLabelTest(){
-        this.label.push(new Label()); 
+    createLabelTest(languageCode = 'en'){
+        this.label.push(new Label('', languageCode)); 
     }
 
-    changeLabel(index, value){
+    changeLabel(index, value, languageCode){
         this.label[index].changeLabelTest(value);
+        if(languageCode){
+            this.label[index].setLanguage(languageCode);
+        }
     }
 
     getLabel(index){
