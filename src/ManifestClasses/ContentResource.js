@@ -19,13 +19,13 @@ class ContentResource{
         this.height = height;
         this.width = width;
     }
-
+    
     setLabel(index, value){
         this.label[index].changeLabelTest(value);
     }
-
-    createLabel(){
-        this.label.push(new Label()); 
+    
+    createLabel(languageCode = 'en'){
+        this.label.push(new Label('', languageCode)); 
     }
 
     setDuration(duration){
@@ -46,18 +46,6 @@ class ContentResource{
         return [this.x,this.y, this.z];
     }
 
-    setDimensions(height, width){
-        this.height = height;
-        this.width = width;
-    }
-
-    setLabel(index, value){
-        this.label[index].changeLabelTest(value);
-    }
-
-    createLabel(languageCode = 'en'){
-        this.label.push(new Label('', languageCode)); 
-    }
 
     changeLabel(index, value, languageCode){
         this.label[index].changeLabelTest(value);
