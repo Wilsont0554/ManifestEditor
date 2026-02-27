@@ -26,7 +26,8 @@ function LabelElement(props){
         'sv': 'Swedish',
         'nl': 'Dutch',
         'ko': 'Korean',
-        'tr': 'Turkish'
+        'tr': 'Turkish',
+        'vi': 'Vietnamese'
     };
 
     return(
