@@ -6,6 +6,7 @@ class ContentResource{
         this.type = type;
         this.format = format;
         this.label;
+        this.createLabel("en");
     }
 
 /*---------------------------------------------------

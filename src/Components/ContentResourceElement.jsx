@@ -39,8 +39,11 @@ function ContentResourceElement(props){
                     props.setcount(props.count + 1);
                 }}>
             </input>
-            
-            <LabelElement {...props}></LabelElement>
+            <p>Annotation Label</p>
+            <LabelElement {...props} currentObject={props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation()}></LabelElement>
+
+            <p>Content Resource Label</p>
+            <LabelElement {...props} currentObject={props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex)}/>
 
         </li>
     </>
