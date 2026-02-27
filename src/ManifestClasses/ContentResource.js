@@ -15,11 +15,19 @@ class ContentResource{
         this.id = value;
     }
 
+    setType(type){
+        this.type = type;
+    }
+
+    setFormat(format){
+        this.format = format;
+    }
+
     setDimensions(height, width){
         this.height = height;
         this.width = width;
     }
-    
+
     setLabel(index, value){
         this.label[index].changeLabelTest(value);
     }
@@ -41,12 +49,6 @@ class ContentResource{
         return [this.height, this.width];
     }
 
-    //returns as 0:x, 1:y, 2:z
-    getCoordinates(){
-        return [this.x,this.y, this.z];
-    }
-
-
     changeLabel(index, value, languageCode){
         this.label[index].changeLabelTest(value);
         if(languageCode){
@@ -60,9 +62,17 @@ class ContentResource{
         }
         return this.label[index];
     }
-
+    
     getAllLabels(){
         return this.label;
+    }
+
+    getType(){
+        return this.type;
+    }
+
+    getFormat(){
+        return this.format;
     }
 
     getDuration(){
