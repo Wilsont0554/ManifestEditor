@@ -15,7 +15,8 @@ class Label{
             'sv': Swedish,
             'nl': Dutch,
             'ko': Korean,
-            'tr': Turkish
+            'tr': Turkish,
+            'vi': Vietnamese
         };
         
         // Make languageClasses non-enumerable so it won't appear in JSON.stringify
@@ -198,5 +199,14 @@ class Turkish{
     }
     changeValue(value){
         this.tr = value ? [value] : [];
+    }
+}
+
+class Vietnamese{
+    constructor(value){
+        this.vi = value ? [value] : [];
+    }
+    changeValue(value){
+        this.vi = value ? [value] : [];
     }
 }
