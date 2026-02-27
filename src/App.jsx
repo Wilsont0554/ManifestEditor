@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/ManifestObject.js";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
+import MetadataElement from "./Components/MetadataElement.jsx";
 import ContentResource from "./ManifestClasses/ContentResource.js";
 
 function getViewFromHash() {
@@ -42,6 +43,11 @@ function App() {
       .getAnnotationPage()
       .getAnnotation()
       .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    setcount((value) => value + 1);
+  }
+
+  function addMetadata() {
+    manifestObj.getMetadata().addEntry('', '', 'en');
     setcount((value) => value + 1);
   }
 
@@ -93,6 +99,10 @@ function App() {
               <button type="button" onClick={createAnnotation}>
                 Add Content Resource
               </button>
+
+              <button type="button" onClick={addMetadata}>
+                Add Metadata
+              </button>
             </div>
 
             <ol className="manifest-creator__list">
@@ -103,6 +113,19 @@ function App() {
                   setcount={setcount}
                   index={contentResourceIndex}
                   contentResourceIndex={contentResourceIndex}
+                  manifestObj={manifestObj}
+                />
+              ))}
+            </ol>
+
+            <h3>Metadata</h3>
+            <ol className="manifest-creator__list">
+              {manifestObj.getMetadata().getAllEntries().map((metadata, metadataIndex) => (
+                <MetadataElement
+                  key={metadataIndex}
+                  metadataIndex={metadataIndex}
+                  count={count}
+                  setcount={setcount}
                   manifestObj={manifestObj}
                 />
               ))}

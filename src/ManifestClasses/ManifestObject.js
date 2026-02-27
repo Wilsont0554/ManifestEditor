@@ -1,11 +1,13 @@
 import Container from './Container.js'
 import Annotation from './ContentResource.js';
+import Metadata from './Metadata.js';
 
 class ManifestObject{
     constructor(containerType){
         this.id = "https://example.org/to13swr5ws-mlwptp83";
         this.type = "Manifest";
         this.items = [];
+        this.metadata = new Metadata();
         this.addContainer(new Container(containerType))
     }
 
@@ -18,6 +20,10 @@ class ManifestObject{
             index = 0;
         }
         return this.items[index];
+    }
+
+    getMetadata(){
+        return this.metadata;
     }
 
 } export default ManifestObject
