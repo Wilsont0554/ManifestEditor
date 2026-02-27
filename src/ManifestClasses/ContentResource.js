@@ -20,12 +20,6 @@ class ContentResource{
         this.width = width;
     }
 
-    setCoordinates(x,y,z){
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
     setLabel(index, value){
         this.label[index].changeLabelTest(value);
     }

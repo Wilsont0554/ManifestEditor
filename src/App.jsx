@@ -14,9 +14,7 @@ import Label from './ManifestClasses/Label.js'
 import ContentResource from './ManifestClasses/ContentResource.js'
 
 function App() {
-  const [manifestTest, setManifest] = useState(new Manifest()); // State variable
   const [count, setcount] = useState(0);
-  const [annotationURL, setAnnotationURL] = useState('');
   const [containerType, setContainerType] = useState('Scene'); // Declare a state variable...
   const [manifestObj, setManifestObj] = useState(new ManifestObject(containerType))
 
