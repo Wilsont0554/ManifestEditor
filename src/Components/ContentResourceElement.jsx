@@ -40,11 +40,6 @@ function ContentResourceElement(props){
                 }}>
             </input>
             
-            <button onClick={() => {
-                props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().createLabel();
-                props.setcount(props.count + 1);
-            }}>Create Label</button>
-
             <LabelElement {...props}></LabelElement>
 
         </li>

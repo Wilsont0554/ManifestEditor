@@ -9,6 +9,7 @@ class Annotation{
         this.body=[];
         this.target = "https://example.org/iiif/scene1/page/p1/1";
         this.label;
+        this.createLabel("en");
     }
 
     addContentResource(contentResource){
