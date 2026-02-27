@@ -6,27 +6,42 @@ class Container{
 
     constructor(id, type){
         // Going to need better validation that the input here is a URL
-        this.id = id == undefined ? "https://example.org/manifest_Example.com" : id;
+        this.id = id == undefined ? 'https://example.org/manifest_Example.com' : id;
         
-        if(Container.VALID_TYPES.has(type)) {
-            this.type = type;
+        this.type = Container.VALID_TYPES.has(type) ? type : 'Default Type';
+        
+        if(this.type === 'Timeline') this.duration;
+        else if(this.type == 'Canvas') {
+            this.width;
+            this.height;
         }
-        else this.type = "Default Type"; // shouldnt reach here would require validation before hand
 
         this.items = []; // this would/will contain any of the optional json objects
 
     }
 
     getItems(){
-        return Container.items();
+        return this.items();
     }
 
     getType(){
-        return Container.type;
+        return this.type;
     }
 
     getID(){
-        return Container.id;
+        return this.id;
+    }
+
+    getDuration(){
+        return this.duration;
+    }
+
+    getWidth(){
+        return this.width;
+    }
+
+    getHeight(){
+        return this.height;
     }
 
     
