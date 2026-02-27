@@ -7,6 +7,8 @@ class Annotation{
         this.type = "Annotation";
         this.motivation = ["painting"];
         this.body=[];
+        this.target = "https://example.org/iiif/scene1/page/p1/1";
+        this.label;
     }
 
     addContentResource(contentResource){
@@ -18,6 +20,25 @@ class Annotation{
             index = 0;
         }
         return this.body[index];
+    }
+
+    setLabel(index, value){
+        this.label.changeLabelTest(value);
+    }
+    
+    createLabel(languageCode = 'en'){
+        this.label = (new Label('', languageCode)); 
+    }
+
+    changeLabel(index, value, languageCode){
+        this.label.changeLabelTest(value);
+        if(languageCode){
+            this.label.setLanguage(languageCode);
+        }
+    }
+
+    getLabel(){
+        return this.label;
     }
 
     getAllContentResource(){
@@ -33,18 +54,7 @@ class Annotation{
     }
 
     createLabelTest(){
-        this.label.push(new Label()); 
-    }
-
-    changeLabel(index, value){
-        this.label[index].changeLabelTest(value);
-    }
-
-    getLabel(index){
-        if (index == undefined){
-            index = 0;
-        }
-        return this.label[index];
+        this.label = new Label(); 
     }
 
     getAllLabels(){

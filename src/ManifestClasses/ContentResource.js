@@ -5,7 +5,7 @@ class ContentResource{
         this.id = id;
         this.type = type;
         this.format = format;
-        this.label=[];
+        this.label;
     }
 
 /*---------------------------------------------------
@@ -33,11 +33,15 @@ class ContentResource{
     }
     
     createLabel(languageCode = 'en'){
-        this.label.push(new Label('', languageCode)); 
+        this.label = new Label('', languageCode); 
     }
 
     setDuration(duration){
         this.duration = duration;
+    }
+
+    setSummary(summary){
+        this.summary = summary;
     }
 
 /*---------------------------------------------------
@@ -50,9 +54,9 @@ class ContentResource{
     }
 
     changeLabel(index, value, languageCode){
-        this.label[index].changeLabelTest(value);
+        this.label.changeLabelTest(value);
         if(languageCode){
-            this.label[index].setLanguage(languageCode);
+            this.label.setLanguage(languageCode);
         }
     }
 
@@ -60,7 +64,7 @@ class ContentResource{
         if (index == undefined){
             index = 0;
         }
-        return this.label[index];
+        return this.label;
     }
     
     getAllLabels(){
@@ -78,5 +82,10 @@ class ContentResource{
     getDuration(){
         return this.duration;
     }
+
+    getSummary(){
+        return this.summary;
+    }
+
 
 } export default ContentResource

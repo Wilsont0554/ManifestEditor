@@ -31,13 +31,12 @@ function LabelElement(props){
 
     return(
     <>
-        <li>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <select 
                     value={selectedLanguage} 
                     onChange={(e) => {
                         setSelectedLanguage(e.target.value);
-                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).changeLabel(props.labelIndex, labelValue, e.target.value);
+                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).changeLabel(props.labelIndex, labelValue, e.target.value);
                         props.setcount(props.count + 1);
                     }}
                     style={{ padding: '5px' }}
@@ -53,12 +52,11 @@ function LabelElement(props){
                     onChange={e => 
                     {
                         setlabelValue(e.target.value); 
-                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).changeLabel(props.labelIndex, e.target.value, selectedLanguage);
+                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).changeLabel(props.labelIndex, e.target.value, selectedLanguage);
                         props.setcount(props.count + 1);
                     }}
                 />
             </div>
-        </li>
     </>
     )
 

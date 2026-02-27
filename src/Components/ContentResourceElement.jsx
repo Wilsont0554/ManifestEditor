@@ -8,7 +8,7 @@ function ContentResourceElement(props){
     const [selectedType, setType] = useState('');
 
     const types = {
-        "Image": "image/jpex",
+        "Image": "image/jpeg",
         "Model" : "model/gltf-binary"
     }
 
@@ -41,18 +41,22 @@ function ContentResourceElement(props){
             </input>
             
             <button onClick={() => {
-                props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).createLabel();
+                props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().createLabel();
                 props.setcount(props.count + 1);
             }}>Create Label</button>
-            <ol>
-                {props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).getAllLabels().map((label, labelIndex) => (
-                    <LabelElement key={labelIndex} labelIndex={labelIndex} {...props}></LabelElement>
-                ))}
-            </ol>
+
+            <LabelElement {...props}></LabelElement>
+
         </li>
     </>
     )
 /*
+
+<ol>
+                {props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).getAllLabels().map((label, labelIndex) => (
+                    <LabelElement key={labelIndex} labelIndex={labelIndex} {...props}></LabelElement>
+                ))}
+            </ol>
     <li key={index}>
         <input placeholder={index} type="text" value={annotationURL} onChange={e => manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index).changeID(e.target.value)}></input>
     </li>
