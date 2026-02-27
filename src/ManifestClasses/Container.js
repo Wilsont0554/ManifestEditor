@@ -1,28 +1,33 @@
 import AnnotationPage from './AnnotationPage'
 
 class Container{
-    constructor(type){
-        this.type = type;
-        this.items = [];
-        this.addAnnotationPage(new AnnotationPage());
-    }
 
-    addAnnotationPage(annotationPage){
-        this.items.push(annotationPage)
-    }
+    static VALID_TYPES = new Set(['Timeline', 'Canvas', 'Scene']);
 
-    getAnnotationPage(index){
-        if (index == undefined){
-            index = 0;
+    constructor(id, type){
+        // Going to need better validation that the input here is a URL
+        this.id = id == undefined ? "https://example.org/manifest_Example.com" : id;
+        
+        if(Container.VALID_TYPES.has(type)) {
+            this.type = type;
         }
-        return this.items[index];
+        else this.type = "Default Type"; // shouldnt reach here would require validation before hand
+
+        this.items = []; // this would/will contain any of the optional json objects
+
     }
 
-    setType(type){
-        this.type = type;
+    getItems(){
+        return Container.items();
     }
 
     getType(){
-        return this.type;
+        return Container.type;
     }
+
+    getID(){
+        return Container.id;
+    }
+
+    
 } export default Container
