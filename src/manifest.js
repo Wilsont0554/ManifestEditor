@@ -13,8 +13,6 @@ class Manifest{
         }
     }
 
-    
-
     /**
      * 
      * @param {*} id is the ID of the annotation page, the example URL

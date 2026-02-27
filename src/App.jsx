@@ -58,10 +58,10 @@ function App() {
         <nav className="app-nav__links">
           <a href="#home">Home</a>
           <a href="#manifest-creator">Manifest Creator</a>
-          <a href="https://github.com" target="_blank" rel="noreferrer">
+          <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer">
             Github
           </a>
-          <a href="https://iiif.io/api/presentation/3.0/" target="_blank" rel="noreferrer">
+          <a href="https://preview.iiif.io/api/full_manifests/presentation/4.0/#scene" target="_blank" rel="noreferrer">
             Documentation
           </a>
         </nav>
