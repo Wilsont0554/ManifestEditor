@@ -1,42 +1,97 @@
-#root {
-  max-width: 1280px;
+.app-shell {
+  min-height: 100vh;
+  background: #f2f3f5;
+  color: #1f2937;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.8rem;
+  background: #f7f7f7;
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.app-nav__brand {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #121417;
+}
+
+.app-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.app-nav__links a {
+  color: #121417;
+  font-size: 1.05rem;
+  text-decoration: none;
+}
+
+.app-nav__links a:hover {
+  text-decoration: underline;
+}
+
+.app-main {
+  min-height: calc(100vh - 84px);
+}
+
+.manifest-creator {
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
+}
+
+.manifest-creator__download {
+  width: fit-content;
+  margin: 0 0 1rem;
+  color: #0f172a;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.manifest-creator__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.manifest-creator__controls select {
+  min-width: 130px;
+}
+
+.manifest-creator__list {
+  margin: 0 0 1rem;
+}
+
+.app-footer {
+  border-top: 1px solid #d1d5db;
+  background: #f8fafc;
+  color: #475569;
   text-align: center;
+  padding: 0.75rem 1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+@media (max-width: 900px) {
+  .app-nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.65rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .app-nav__brand {
+    font-size: 1.65rem;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .app-nav__links {
+    gap: 1rem;
+    flex-wrap: wrap;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

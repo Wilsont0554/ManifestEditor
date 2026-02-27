@@ -4,16 +4,60 @@ import Label from '../ManifestClasses/Label.js'
 function LabelElement(props){
 
     const [labelValue, setlabelValue] = useState('');
+    const [selectedLanguage, setSelectedLanguage] = useState('en');
+    
+    // Create a temporary Label instance to get supported languages
+    const tempLabel = new Label('');
+    const supportedLanguages = tempLabel.getSupportedLanguages();
+    
+    // Map language codes to language names
+    const languageNames = {
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'it': 'Italian',
+        'ru': 'Russian',
+        'zh': 'Chinese',
+        'jp': 'Japanese',
+        'pt': 'Portuguese',
+        'ar': 'Arabic',
+        'hi': 'Hindi',
+        'sv': 'Swedish',
+        'nl': 'Dutch',
+        'ko': 'Korean',
+        'tr': 'Turkish'
+    };
 
     return(
     <>
         <li>
-            <input placeholder="A brief description" type="text" value={labelValue} onChange={e => 
-                {
-                    setlabelValue(e.target.value); 
-                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).setLabel(props.labelIndex, e.target.value);
-                    props.setcount(props.count + 1);
-                }}></input>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <select 
+                    value={selectedLanguage} 
+                    onChange={(e) => {
+                        setSelectedLanguage(e.target.value);
+                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).changeLabel(props.labelIndex, labelValue, e.target.value);
+                        props.setcount(props.count + 1);
+                    }}
+                    style={{ padding: '5px' }}
+                >
+                    {supportedLanguages.map(lang => (
+                        <option key={lang} value={lang}>{languageNames[lang]}</option>
+                    ))}
+                </select>
+                <input 
+                    placeholder="A brief description" 
+                    type="text" 
+                    value={labelValue} 
+                    onChange={e => 
+                    {
+                        setlabelValue(e.target.value); 
+                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).changeLabel(props.labelIndex, e.target.value, selectedLanguage);
+                        props.setcount(props.count + 1);
+                    }}
+                />
+            </div>
         </li>
     </>
     )

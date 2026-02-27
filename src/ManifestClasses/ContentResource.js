@@ -46,8 +46,24 @@ class ContentResource{
         return [this.x,this.y, this.z];
     }
 
-    getID(){
-        return this.id;
+    setDimensions(height, width){
+        this.height = height;
+        this.width = width;
+    }
+
+    setLabel(index, value){
+        this.label[index].changeLabelTest(value);
+    }
+
+    createLabel(languageCode = 'en'){
+        this.label.push(new Label('', languageCode)); 
+    }
+
+    changeLabel(index, value, languageCode){
+        this.label[index].changeLabelTest(value);
+        if(languageCode){
+            this.label[index].setLanguage(languageCode);
+        }
     }
 
     getLabel(index){
