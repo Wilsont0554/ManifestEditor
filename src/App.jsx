@@ -431,7 +431,15 @@ function App() {
               </div>
             </div>
 
-            <section className="canvas-panel" aria-label="Canvas editor">
+            <div className="manifest-workspace">
+              <section className="manifest-json-preview" aria-label="Manifest JSON preview">
+                <div className="manifest-json-preview__header">
+                  <h3>JSON Preview</h3>
+                </div>
+                <pre>{JSON.stringify(manifestObj, null, 2)}</pre>
+              </section>
+
+              <section className="canvas-panel" aria-label="Canvas editor">
               <div className="canvas-panel__header">
                 <h2>Canvas</h2>
                 <button
@@ -909,12 +917,8 @@ function App() {
                   Reset Canvas Values
                 </button>
               </div>
-            </section>
-
-            <details className="manifest-json-preview">
-              <summary>Preview JSON</summary>
-              <pre>{JSON.stringify(manifestObj, null, 2)}</pre>
-            </details>
+              </section>
+            </div>
           </section>
         ) : (
           <section className="home-panel">

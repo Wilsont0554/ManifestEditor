@@ -102,6 +102,13 @@
   cursor: pointer;
 }
 
+.manifest-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(0, 1.9fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+
 .canvas-panel {
   border: 1px solid #9fb0c7;
   border-radius: 12px;
@@ -280,28 +287,37 @@
 }
 
 .manifest-json-preview {
-  margin-top: 0.9rem;
   border: 1px solid #ced6e3;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #ffffff;
-  padding: 0.65rem 0.75rem;
+  overflow: hidden;
+  min-height: 734px;
+  display: flex;
+  flex-direction: column;
 }
 
-.manifest-json-preview summary {
-  font-size: 1.02rem;
-  cursor: pointer;
+.manifest-json-preview__header {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #d5dce7;
+  background: #f7f8fb;
+}
+
+.manifest-json-preview__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #1f2937;
 }
 
 .manifest-json-preview pre {
-  margin: 0.7rem 0 0;
+  margin: 0;
   background: #f3f6fb;
-  border: 1px solid #e1e7f2;
-  border-radius: 6px;
-  padding: 0.8rem;
-  max-height: 340px;
+  padding: 0.9rem;
+  min-height: 689px;
+  max-height: 78vh;
   overflow: auto;
   font-size: 0.78rem;
+  flex: 1;
 }
 
 .home-panel {
@@ -377,6 +393,10 @@
   .manifest-toolbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .manifest-workspace {
+    grid-template-columns: 1fr;
   }
 
   .manifest-toolbar__controls {
