@@ -1,62 +1,72 @@
-import React, { useState } from "react";
-import Label from '../ManifestClasses/Label.js'
+import React, { useMemo, useState } from "react";
 import LabelElement from "./LabelElement.jsx";
 
-function ContentResourceElement(props){
+function ContentResourceElement(props) {
+  const [annotationURL, setAnnotationURL] = useState("");
+  const [selectedType, setSelectedType] = useState("Image");
 
-    const [annotationURL, setAnnotationURL] = useState('');
-    const [selectedType, setType] = useState('');
+  const canvasIndex = props.canvasIndex ?? 0;
+  const types = useMemo(
+    () => ({
+      Image: "image/jpeg",
+      Model: "model/gltf-binary",
+    }),
+    [],
+  );
 
-    const types = {
-        "Image": "image/jpeg",
-        "Model" : "model/gltf-binary"
+  const container = props.manifestObj.getContainerObj(canvasIndex);
+  const annotation = container.getAnnotationPage().getAnnotation(0);
+  const contentResource = annotation.getContentResource(props.contentResourceIndex);
+
+  const bumpCount = () => {
+    if (typeof props.setcount === "function") {
+      props.setcount(props.count + 1);
     }
+  };
 
-    return(
-    <>
-        <li>
-            
-            <select 
-                    value={selectedType} 
-                    onChange={(e) => {
-                        setType(e.target.value);
-                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).setType(e.target.value);
-                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).setFormat(types[e.target.value]);
-                        props.setcount(props.count + 1);
-                    }}
-                    style={{ padding: '5px' }}
-                >
+  return (
+    <li>
+      <select
+        value={selectedType}
+        onChange={(event) => {
+          const nextType = event.target.value;
+          setSelectedType(nextType);
+          contentResource.setType(nextType);
+          contentResource.setFormat(types[nextType]);
+          bumpCount();
+        }}
+        style={{ padding: "5px" }}
+      >
+        {Object.keys(types).map((type) => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
 
-                {Object.keys(types).map(type => (
-                    <option key={type} value={type}>{type}</option>
-                ))}
-            </select>
+      <input
+        placeholder="URL"
+        type="text"
+        value={annotationURL}
+        onChange={(event) => {
+          const nextUrl = event.target.value;
+          setAnnotationURL(nextUrl);
+          if (typeof contentResource.changeID === "function") {
+            contentResource.changeID(nextUrl);
+          } else {
+            contentResource.setID(nextUrl);
+          }
+          bumpCount();
+        }}
+      />
 
-            <input placeholder="URL" type="text" value={annotationURL} onChange={e => 
-                {
-                    setAnnotationURL(e.target.value); 
-                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.index).setID(e.target.value);
-                    props.setcount(props.count + 1);
-                }}>
-            </input>
-            <p>Annotation Label</p>
-            <LabelElement {...props} currentObject={props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation()}></LabelElement>
+      <p>Annotation Label</p>
+      <LabelElement {...props} currentObject={annotation} labelIndex={0} />
 
-            <p>Content Resource Label</p>
-            <LabelElement {...props} currentObject={props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex)}/>
-
-        </li>
-    </>
-    )
-/*
-
-<ol>
-                {props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).getAllLabels().map((label, labelIndex) => (
-                    <LabelElement key={labelIndex} labelIndex={labelIndex} {...props}></LabelElement>
-                ))}
-            </ol>
-    <li key={index}>
-        <input placeholder={index} type="text" value={annotationURL} onChange={e => manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index).changeID(e.target.value)}></input>
+      <p>Content Resource Label</p>
+      <LabelElement {...props} currentObject={contentResource} labelIndex={0} />
     </li>
-*/
-} export default ContentResourceElement
+  );
+}
+
+export default ContentResourceElement;

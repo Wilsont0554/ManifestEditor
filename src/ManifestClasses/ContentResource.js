@@ -1,92 +1,149 @@
-import Label from './Label.js'
+import Label from "./Label.js";
 
-class ContentResource{
-    constructor(id, type, format){
-        this.id = id;
-        this.type = type;
-        this.format = format;
-        this.label;
-        this.createLabel("en");
+class ContentResource {
+  constructor(id = "", type = "Image", format = "image/jpeg") {
+    this.id = id;
+    this.type = type;
+    this.format = format;
+    this.label = new Label("", "en");
+    this.service = [];
+    this.height = undefined;
+    this.width = undefined;
+    this.duration = undefined;
+    this.summary = undefined;
+  }
+
+  setID(value) {
+    this.id = value;
+  }
+
+  changeID(value) {
+    this.id = value;
+  }
+
+  getID() {
+    return this.id;
+  }
+
+  setType(type) {
+    this.type = type;
+  }
+
+  setFormat(format) {
+    this.format = format;
+  }
+
+  getType() {
+    return this.type;
+  }
+
+  getFormat() {
+    return this.format;
+  }
+
+  setDimensions(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+
+  getDimensions() {
+    return [this.height, this.width];
+  }
+
+  setDuration(duration) {
+    this.duration = duration;
+  }
+
+  getDuration() {
+    return this.duration;
+  }
+
+  setSummary(summary) {
+    this.summary = summary;
+  }
+
+  getSummary() {
+    return this.summary;
+  }
+
+  setLabel(index, value) {
+    this.label.changeLabelTest(value);
+  }
+
+  createLabel(languageCode = "en") {
+    this.label = new Label("", languageCode);
+  }
+
+  createLabelTest(languageCode = "en") {
+    this.createLabel(languageCode);
+  }
+
+  changeLabel(index, value, languageCode) {
+    this.label.changeLabelTest(value);
+    if (languageCode) {
+      this.label.setLanguage(languageCode);
+    }
+  }
+
+  getLabel(index) {
+    return this.label;
+  }
+
+  getAllLabels() {
+    return this.label ? [this.label] : [];
+  }
+
+  setImageService(serviceId, serviceType = "ImageService3", profile = "level1") {
+    if (!serviceId) {
+      this.service = [];
+      return;
     }
 
-/*---------------------------------------------------
-                    SETTERS
----------------------------------------------------*/
-    setID(value){
-        this.id = value;
+    this.service = [
+      {
+        id: serviceId,
+        type: serviceType,
+        profile,
+      },
+    ];
+  }
+
+  clearImageService() {
+    this.service = [];
+  }
+
+  toJSON() {
+    const output = {
+      id: this.id,
+      type: this.type,
+      format: this.format,
+    };
+
+    if (this.label) {
+      output.label = this.label;
     }
 
-    setType(type){
-        this.type = type;
+    if (this.service.length > 0) {
+      output.service = this.service;
     }
 
-    setFormat(format){
-        this.format = format;
+    if (this.height != undefined) {
+      output.height = this.height;
     }
 
-    setDimensions(height, width){
-        this.height = height;
-        this.width = width;
+    if (this.width != undefined) {
+      output.width = this.width;
     }
 
-    setLabel(index, value){
-        this.label[index].changeLabelTest(value);
-    }
-    
-    createLabel(languageCode = 'en'){
-        this.label = new Label('', languageCode); 
+    if (this.duration != undefined) {
+      output.duration = this.duration;
     }
 
-    setDuration(duration){
-        this.duration = duration;
+    if (this.summary != undefined) {
+      output.summary = this.summary;
     }
 
-    setSummary(summary){
-        this.summary = summary;
-    }
-
-/*---------------------------------------------------
-                    GETTERS
----------------------------------------------------*/
-
-    //returns as 0:height, 1:width
-    getDimensions(){
-        return [this.height, this.width];
-    }
-
-    changeLabel(index, value, languageCode){
-        this.label.changeLabelTest(value);
-        if(languageCode){
-            this.label.setLanguage(languageCode);
-        }
-    }
-
-    getLabel(index){
-        if (index == undefined){
-            index = 0;
-        }
-        return this.label;
-    }
-    
-    getAllLabels(){
-        return this.label;
-    }
-
-    getType(){
-        return this.type;
-    }
-
-    getFormat(){
-        return this.format;
-    }
-
-    getDuration(){
-        return this.duration;
-    }
-
-    getSummary(){
-        return this.summary;
-    }
-
-
-} export default ContentResource
+    return output;
+  }
+}
+export default ContentResource;
