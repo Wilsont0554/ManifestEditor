@@ -76,7 +76,7 @@ function App() {
             >
               Download JSON
             </p>
-
+            
             <div className="manifest-creator__controls">
               <select
                 value={containerType}
