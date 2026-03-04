@@ -88,6 +88,7 @@ function App() {
               >
                 <option>Canvas</option>
                 <option>Scene</option>
+                <option>Time Line</option>
               </select>
 
               <button type="button" onClick={createAnnotation}>
