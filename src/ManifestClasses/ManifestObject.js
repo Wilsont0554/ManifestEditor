@@ -6,7 +6,7 @@ class ManifestObject{
         this.id = "https://example.org/to13swr5ws-mlwptp83";
         this.type = "Manifest";
         this.items = [];
-        this.addContainer(new Container("https://example.org/manifest_Example.com", containerType))
+        this.addContainer(new Container(this.id, containerType))
     }
 
     addContainer(container){
