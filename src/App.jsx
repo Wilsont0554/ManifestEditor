@@ -4,6 +4,7 @@ import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/ManifestObject.js";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/ContentResource.js";
+import Container from "./ManifestClasses/Container.js";
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -78,26 +79,26 @@ function App() {
       <main className="app-main">
         {activeView === "manifest-creator" ? (
           <section className="manifest-creator">
-            <div className="main-content">
-              <p
-                className="manifest-creator__download"
-                onClick={() => JSONToFile(manifestObj, "manifest")}
+            <p
+              className="manifest-creator__download"
+              onClick={() => JSONToFile(manifestObj, "manifest")}
+            >
+              Download JSON
+            </p>
+            
+            <div className="manifest-creator__controls">
+              <select
+                value={containerType}
+                onChange={(e) => {
+                  manifestObj.getContainerObj().setType(e.target.value);
+                  setContainerType(e.target.value);
+                  setcount((value) => value + 1);
+                }}
               >
-                Download JSON
-              </p>
-
-              <div className="manifest-creator__controls">
-                <select
-                  value={containerType}
-                  onChange={(e) => {
-                    manifestObj.getContainerObj().setType(e.target.value);
-                    setContainerType(e.target.value);
-                    setcount((value) => value + 1);
-                  }}
-                >
-                  <option>Canvas</option>
-                  <option>Scene</option>
-                </select>
+                <option value="canvas">Canvas</option>
+                <option value="scene">Scene</option>
+                <option value="timeline">Timeline</option>
+              </select>
 
                 <button type="button" onClick={createAnnotation}>
                   Add Content Resource
