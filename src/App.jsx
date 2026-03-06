@@ -118,10 +118,7 @@ function App() {
                   </li>
                 ))}
               </ol>
-
               <JsonEditor data={manifestObj} />
-            </div>
-
             {/* NEW: Sidebar for editing */}
             <aside className="manifest-sidebar">
               <h3>Edit Resource</h3>
