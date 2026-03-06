@@ -94,4 +94,54 @@
     gap: 1rem;
     flex-wrap: wrap;
   }
+  .manifest-creator {
+    display: flex;
+    gap: 20px;
+}
+
+  .main-content {
+    flex: 1;
+}
+
+  .manifest-sidebar {
+    width: 300px;
+    border-left: 1px solid #ccc;
+    padding-left: 20px;
+    background-color: #f9f9f9;
+}
+
+  .resource-list-item button {
+    margin: 5px;
+  padding: 10px;
+}
+
+  .resource-list-item button.active {
+    background-color: #007bff;
+    color: white;
+}
+  .sidebar-editor-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 10px;
+}
+
+  .sidebar-editor-container h4 {
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      color: #444;
+}
+
+  .field-group {
+      display: flex;
+      flex-direction: column;
+}
+
+  .field-group label {
+      font-weight: bold;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #666;
+}
+
 }
