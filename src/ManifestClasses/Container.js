@@ -32,19 +32,25 @@ class Container{
         this.addAnnotationPage(new AnnotationPage(this.id, options.annotationPageId || `${this.id}/page/p1/1`));
     }
 
-    addAnnotationPage(annotationPage){
-        this.items.push(annotationPage)
+/*------------------------------------------------------------
+    These delete fields if the user changes manifest types
+--------------------------------------------------------------*/
+
+    deleteDimensions(){
+        delete this.height;
+        delete this.width;
     }
 
-    getAnnotationPage(index){
-        if (index == undefined){
-            index = 0;
-        }
-        return this.items[index];
+    deleteDuration(){
+        delete this.duration;
     }
 
-    setType(type){
-        this.type = type;
+/*------------------------------------------------------------
+                          GETTERS
+--------------------------------------------------------------*/   
+
+    getItems(){
+        return this.items;
     }
 
     setId(id){

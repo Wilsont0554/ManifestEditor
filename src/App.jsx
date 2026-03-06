@@ -2,6 +2,7 @@ import "./App.css";
 import React, { useEffect, useMemo, useState } from "react";
 import ManifestObject from "./ManifestClasses/ManifestObject.js";
 import ContentResource from "./ManifestClasses/ContentResource.js";
+import Container from "./ManifestClasses/Container.js";
 
 const CANVAS_TABS = [
   "Overview",
@@ -366,6 +367,11 @@ function App() {
     ? activeContainer.getAnnotationPage().getAnnotation(0).getAllContentResource()
     : [];
 
+  // Helper to get the currently selected resource object
+  const selectedResource = selectedResourceIndex !== null 
+    ? contentResources[selectedResourceIndex] 
+    : null;
+
   return (
     <div className="app-shell">
       <header className="app-nav">
@@ -373,7 +379,7 @@ function App() {
         <nav className="app-nav__links">
           <a href="#home">Home</a>
           <a href="#manifest-creator">Manifest Creator</a>
-          <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer">
+          <a href="https://github.com" target="_blank" rel="noreferrer">
             Github
           </a>
           <a
@@ -931,6 +937,7 @@ function App() {
       <footer className="app-footer">{"\u00A9"} manifest editor</footer>
     </div>
   );
+
 }
 
 export default App;

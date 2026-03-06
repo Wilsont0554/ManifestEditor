@@ -13,7 +13,7 @@ class ManifestObject{
         this.seeAlso = [];
         this.rendering = [];
         this.items = [];
-        this.addContainer(new Container(containerType))
+        this.addContainer(new Container(this.id, containerType))
     }
 
     addContainer(container){
