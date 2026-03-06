@@ -15,6 +15,9 @@ function App() {
   const [count, setcount] = useState(0);
   const [containerType, setContainerType] = useState("Scene");
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
+  
+  // NEW: State to track which resource is currently being edited in the sidebar
+  const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
 
   useEffect(() => {
     const onHashChange = () => {
@@ -52,6 +55,11 @@ function App() {
     .getAnnotation(0)
     .getAllContentResource();
 
+  // Helper to get the currently selected resource object
+  const selectedResource = selectedResourceIndex !== null 
+    ? contentResources[selectedResourceIndex] 
+    : null;
+
   return (
     <div className="app-shell">
       <header className="app-nav">
@@ -59,10 +67,10 @@ function App() {
         <nav className="app-nav__links">
           <a href="#home">Home</a>
           <a href="#manifest-creator">Manifest Creator</a>
-          <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer">
+          <a href="https://github.com" target="_blank" rel="noreferrer">
             Github
           </a>
-          <a href="https://preview.iiif.io/api/full_manifests/presentation/4.0/#scene" target="_blank" rel="noreferrer">
+          <a href="https://iiif.io/api/presentation/3.0/" target="_blank" rel="noreferrer">
             Documentation
           </a>
         </nav>
@@ -71,6 +79,7 @@ function App() {
       <main className="app-main">
         {activeView === "manifest-creator" ? (
           <section className="manifest-creator">
+          <div className="main-content">
             <p
               className="manifest-creator__download"
               onClick={() => JSONToFile(manifestObj, "manifest")}
@@ -89,28 +98,48 @@ function App() {
               >
                 <option value="canvas">Canvas</option>
                 <option value="scene">Scene</option>
-                <option value="timeline">Time Line</option>
+                <option value="timeline">Timeline</option>
               </select>
 
-              <button type="button" onClick={createAnnotation}>
-                Add Content Resource
-              </button>
-            </div>
+                <button type="button" onClick={createAnnotation}>
+                  Add Content Resource
+                </button>
+              </div>
 
-            <ol className="manifest-creator__list">
-              {contentResources.map((annotation, contentResourceIndex) => (
-                <ContentResourceElement
-                  key={contentResourceIndex}
-                  count={count}
-                  setcount={setcount}
-                  index={contentResourceIndex}
-                  contentResourceIndex={contentResourceIndex}
-                  manifestObj={manifestObj}
-                />
-              ))}
-            </ol>
+              <ol className="manifest-creator__list">
+                {contentResources.map((resource, index) => (
+                  <li key={index} className="resource-list-item">
+                    {/* Clicking this button sets the sidebar context */}
+                    <button 
+                      onClick={() => setSelectedResourceIndex(index)}
+                      className={selectedResourceIndex === index ? 'active' : ''}
+                    >
+                      Content Resource {index + 1}
+                    </button>
+                  </li>
+                ))}
+              </ol>
 
-            <JsonEditor data={manifestObj} />
+              <JsonEditor data={manifestObj} />
+
+            {/* NEW: Sidebar for editing */}
+            <aside className="manifest-sidebar">
+              <h3>Edit Resource</h3>
+              {selectedResource ? (
+                <div className="sidebar-controls">
+                  <p>Editing Resource {selectedResourceIndex + 1}</p>
+                  <ContentResourceElement
+                    count={count}
+                    setcount={setcount}
+                    index={selectedResourceIndex}
+                    contentResourceIndex={selectedResourceIndex}
+                    manifestObj={manifestObj}
+                  />
+                </div>
+              ) : (
+                <p>Select a resource to edit</p>
+              )}
+            </aside>
           </section>
         ) : null}
       </main>
@@ -118,6 +147,7 @@ function App() {
       <footer className="app-footer">{"\u00A9"} manifest editor</footer>
     </div>
   );
+
 }
 
 export default App;
