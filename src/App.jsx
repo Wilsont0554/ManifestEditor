@@ -4,6 +4,7 @@ import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/ManifestObject.js";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/ContentResource.js";
+import Container from "./ManifestClasses/Container.js";
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -86,8 +87,9 @@ function App() {
                   setcount((value) => value + 1);
                 }}
               >
-                <option>Canvas</option>
-                <option>Scene</option>
+                <option value="canvas">Canvas</option>
+                <option value="scene">Scene</option>
+                <option value="timeline">Time Line</option>
               </select>
 
               <button type="button" onClick={createAnnotation}>
