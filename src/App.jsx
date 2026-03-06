@@ -79,6 +79,7 @@ function App() {
       <main className="app-main">
         {activeView === "manifest-creator" ? (
           <section className="manifest-creator">
+          <div className="main-content">
             <p
               className="manifest-creator__download"
               onClick={() => JSONToFile(manifestObj, "manifest")}
@@ -119,6 +120,7 @@ function App() {
                 ))}
               </ol>
               <JsonEditor data={manifestObj} />
+
             {/* NEW: Sidebar for editing */}
             <aside className="manifest-sidebar">
               <h3>Edit Resource</h3>
@@ -144,6 +146,7 @@ function App() {
       <footer className="app-footer">{"\u00A9"} manifest editor</footer>
     </div>
   );
+
 }
 
 export default App;
