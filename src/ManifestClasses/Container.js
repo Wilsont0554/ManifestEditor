@@ -2,7 +2,7 @@ import AnnotationPage from './AnnotationPage'
 
 class Container{
 
-    static VALID_TYPES = new Set(['Timeline', 'Canvas', 'Scene']);
+    static VALID_TYPES = new Set(['timeline', 'canvas', 'scene']);
 
     constructor(id, type){
         // Going to need better validation that the input here is a URL
@@ -17,12 +17,12 @@ class Container{
 --------------------------------------------------------------*/
 
     deleteDimensions(){
-        this.height = null;
-        this.width = null;
+        delete this.height;
+        delete this.width;
     }
 
     deleteDuration(){
-        this.duration = null;
+        delete this.duration;
     }
 
 /*------------------------------------------------------------
@@ -30,7 +30,7 @@ class Container{
 --------------------------------------------------------------*/   
 
     getItems(){
-        return this.items();
+        return this.items;
     }
 
     getType(){
@@ -71,6 +71,18 @@ class Container{
 
     setType(type){
         this.type = type;
+        if(type == "canvas"){
+            this.setDimensions(0,0);
+            this.deleteDuration();
+        }
+        else if(type == "timeline"){
+            this.setDuration(0);
+            this.deleteDimensions();
+        }
+        else{ // Scene
+            this.deleteDimensions();
+            this.deleteDuration();
+        }
     }
 
 /*------------------------------------------------------------
@@ -79,6 +91,24 @@ class Container{
 
      addAnnotationPage(annotation){
         this.items.push(annotation);
+     }
+
+     toJSON() {
+        const out = {
+            id: this.id,
+            type: this.type,
+        };
+
+        if(this.type === "timeline" && this.duration !== undefined) {
+            out.duration = this.duration;
+        }
+
+        if(this.type === "canvas" && this.height !== undefined && this.width !== undefined){
+            out.height = this.height;
+            out.width = this.width;
+        }
+        out.item = this.items;
+        return out;
      }
     
 } export default Container
