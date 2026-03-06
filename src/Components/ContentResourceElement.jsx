@@ -13,22 +13,29 @@ function ContentResourceElement(props) {
 
     const types = {
         "Image": "image/jpeg",
-        "Model": "model/gltf-binary"
+        "Model": "model/gltf-binary",
+
+        "AmbientLight" : undefined,
+        "DirectionalLight" : undefined,
+        "PointLight" : undefined,
+        "SpotLight" : undefined
     };
+
+    function updateResource(e){
+        resource.setType(e.target.value);
+        resource.setFormat(types[e.target.value]);
+        setcount(count + 1); // Trigger re-render of App.js
+    }
 
     if (!resource) return <p>No resource found.</p>;
 
     return (
         <div className="sidebar-editor-container">
             <div className="field-group">
-                <label>Type</label>
+                <label>Type </label>
                 <select
                     value={resource.getType() || ""} 
-                    onChange={(e) => {
-                        resource.setType(e.target.value);
-                        resource.setFormat(types[e.target.value]);
-                        setcount(count + 1); // Trigger re-render of App.js
-                    }}
+                    onChange={(e) => {updateResource(e)}}
                 >
                     <option value="" disabled>Select Type</option>
                     {Object.keys(types).map(type => (
@@ -37,8 +44,34 @@ function ContentResourceElement(props) {
                 </select>
             </div>
 
+            {resource.getType() === "AmbientLight" ? (
+                <div className="field-group">
+                    <label>Color </label>
+                    <input
+                        placeholder="#FFFFF"
+                        type="color"
+                        value={resource.color || ""} 
+                        onChange={(e) => {
+                            resource.setColor(e.target.value);
+                            setcount(count + 1);
+                        }}
+                    />
+                    <br/>
+                    <label>Intensity </label>
+                    <input
+                        placeholder="5"
+                        type="number"
+                        value={resource.color || ""} 
+                        onChange={(e) => {
+                            resource.setColor(e.target.value);
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            ) : null}
+
             <div className="field-group">
-                <label>URL</label>
+                <label>URL </label>
                 <input
                     placeholder="https://..."
                     type="text"

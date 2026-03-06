@@ -5,6 +5,7 @@ import ManifestObject from "./ManifestClasses/ManifestObject.js";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/ContentResource.js";
 import Container from "./ManifestClasses/Container.js";
+import Light from "./ManifestClasses/Light.js";
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -46,6 +47,15 @@ function App() {
       .getAnnotationPage()
       .getAnnotation()
       .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    setcount((value) => value + 1);
+  }
+
+  function createLight() {
+    manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation()
+      .addContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
     setcount((value) => value + 1);
   }
 
@@ -103,6 +113,9 @@ function App() {
 
                 <button type="button" onClick={createAnnotation}>
                   Add Content Resource
+                </button>
+                <button type="button" onClick={createLight}>
+                  Add Light
                 </button>
               </div>
 

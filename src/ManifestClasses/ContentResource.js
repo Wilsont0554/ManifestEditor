@@ -87,6 +87,9 @@ class ContentResource{
     getSummary(){
         return this.summary;
     }
-
+    
+/*---------------------------------------------------
+                    DELETE
+---------------------------------------------------*/
 
 } export default ContentResource
