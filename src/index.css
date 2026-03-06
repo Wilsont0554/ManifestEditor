@@ -50,3 +50,35 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+/* This makes the main container a Flexbox row */
+.manifest-creator {
+  display: flex; 
+  flex-direction: row;
+  align-items: flex-start;
+  min-height: 80vh;
+  gap: 20px;
+}
+
+/* This takes up the left side */
+.main-content {
+  flex: 1; 
+  padding: 20px;
+}
+
+/* This creates the sidebar on the right */
+.manifest-sidebar {
+  width: 350px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background-color: #f4f4f4;
+  border-left: 2px solid #ddd;
+  padding: 20px;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
