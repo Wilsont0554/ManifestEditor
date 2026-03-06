@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/ManifestObject.js";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
+import ContentResourceMetadataElement from "./Components/ContentResourceMetadataElement.jsx";
 import MetadataElement from "./Components/MetadataElement.jsx";
 import ContentResource from "./ManifestClasses/ContentResource.js";
 import Container from "./ManifestClasses/Container.js";
@@ -19,6 +20,10 @@ function App() {
   
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
+  // NEW: State to track if we're editing metadata for the selected resource
+  const [isEditingMetadata, setIsEditingMetadata] = useState(false);
+  // NEW: State to track which resources have had metadata initialized
+  const [metadataInitialized, setMetadataInitialized] = useState(new Set());
 
   useEffect(() => {
     const onHashChange = () => {
@@ -47,11 +52,6 @@ function App() {
       .getAnnotationPage()
       .getAnnotation()
       .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
-    setcount((value) => value + 1);
-  }
-
-  function addMetadata() {
-    manifestObj.getMetadata().addEntry('', '', 'en');
     setcount((value) => value + 1);
   }
 
@@ -110,10 +110,6 @@ function App() {
                 <button type="button" onClick={createAnnotation}>
                   Add Content Resource
                 </button>
-
-              <button type="button" onClick={addMetadata}>
-                Add Metadata
-              </button>
               </div>
 
               <ol className="manifest-creator__list">
@@ -121,27 +117,52 @@ function App() {
                   <li key={index} className="resource-list-item">
                     {/* Clicking this button sets the sidebar context */}
                     <button 
-                      onClick={() => setSelectedResourceIndex(index)}
+                      onClick={() => {
+                        setSelectedResourceIndex(index);
+                        setIsEditingMetadata(false); // Reset metadata editing when selecting a different resource
+                      }}
                       className={selectedResourceIndex === index ? 'active' : ''}
                     >
                       Content Resource {index + 1}
                     </button>
+                    
+                    {/* Add/Edit Metadata button appears next to each content resource */}
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setSelectedResourceIndex(index);
+                        const resource = contentResources[index];
+                        if (resource) {
+                          const hasMetadata = metadataInitialized.has(index) || resource.getMetadata().getAllEntries().length > 0;
+                          
+                          if (!hasMetadata) {
+                            // First time clicking - add an empty metadata entry
+                            resource.getMetadata().addEntry('', '', 'en');
+                            setMetadataInitialized(prev => new Set([...prev, index]));
+                          }
+                          
+                          setIsEditingMetadata(true);
+                          setcount((value) => value + 1);
+                        }
+                      }}
+                      style={{
+                        marginLeft: '10px',
+                        padding: '4px 8px',
+                        fontSize: '0.8em',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {metadataInitialized.has(index) || (contentResources[index] && contentResources[index].getMetadata().getAllEntries().length > 0) 
+                        ? 'Edit Metadata' 
+                        : 'Add Metadata'}
+                    </button>
                   </li>
                 ))}
               </ol>
-
-            <h3>Metadata</h3>
-            <ol className="manifest-creator__list">
-              {manifestObj.getMetadata().getAllEntries().map((metadata, metadataIndex) => (
-                <MetadataElement
-                  key={metadataIndex}
-                  metadataIndex={metadataIndex}
-                  count={count}
-                  setcount={setcount}
-                  manifestObj={manifestObj}
-                />
-              ))}
-            </ol>
 
               <JsonEditor data={manifestObj} />
           </div>
@@ -152,13 +173,30 @@ function App() {
               {selectedResource ? (
                 <div className="sidebar-controls">
                   <p>Editing Resource {selectedResourceIndex + 1}</p>
-                  <ContentResourceElement
-                    count={count}
-                    setcount={setcount}
-                    index={selectedResourceIndex}
-                    contentResourceIndex={selectedResourceIndex}
-                    manifestObj={manifestObj}
-                  />
+
+                  {!isEditingMetadata ? (
+                    <>
+                      <ContentResourceElement
+                        count={count}
+                        setcount={setcount}
+                        index={selectedResourceIndex}
+                        contentResourceIndex={selectedResourceIndex}
+                        manifestObj={manifestObj}
+                        setIsEditingMetadata={setIsEditingMetadata}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <ContentResourceMetadataElement
+                        count={count}
+                        setcount={setcount}
+                        index={selectedResourceIndex}
+                        contentResourceIndex={selectedResourceIndex}
+                        manifestObj={manifestObj}
+                        setIsEditingMetadata={setIsEditingMetadata}
+                      />
+                    </>
+                  )}
                 </div>
               ) : (
                 <p>Select a resource to edit</p>

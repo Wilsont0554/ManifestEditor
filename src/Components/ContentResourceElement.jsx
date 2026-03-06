@@ -2,7 +2,7 @@ import React from "react";
 import LabelElement from "./LabelElement.jsx";
 
 function ContentResourceElement(props) {
-    const { manifestObj, contentResourceIndex, setcount, count } = props;
+    const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata } = props;
 
     // Grab the specific resource from the class instance
     const resource = manifestObj
@@ -62,6 +62,25 @@ function ContentResourceElement(props) {
                     {...props} 
                     currentObject={resource} 
                 />
+            </div>
+
+            <div className="field-group" style={{ marginTop: '20px' }}>
+                <button
+                    type="button"
+                    onClick={() => setIsEditingMetadata(true)}
+                    style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.9em'
+                    }}
+                >
+                    Edit Metadata
+                </button>
             </div>
         </div>
     );

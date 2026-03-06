@@ -1,4 +1,5 @@
 import Label from './Label.js'
+import Metadata from './Metadata.js'
 
 class ContentResource{
     constructor(id, type, format){
@@ -6,6 +7,7 @@ class ContentResource{
         this.type = type;
         this.format = format;
         this.label;
+        this.metadata = new Metadata();
         this.createLabel("en");
     }
 
@@ -88,5 +90,8 @@ class ContentResource{
         return this.summary;
     }
 
+    getMetadata(){
+        return this.metadata;
+    }
 
 } export default ContentResource
