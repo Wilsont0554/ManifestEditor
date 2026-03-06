@@ -79,6 +79,7 @@ function App() {
       <main className="app-main">
         {activeView === "manifest-creator" ? (
           <section className="manifest-creator">
+          <div className="main-content">
             <p
               className="manifest-creator__download"
               onClick={() => JSONToFile(manifestObj, "manifest")}
