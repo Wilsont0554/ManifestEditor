@@ -120,7 +120,6 @@ function App() {
               </ol>
 
               <JsonEditor data={manifestObj} />
-            </div>
 
             {/* NEW: Sidebar for editing */}
             <aside className="manifest-sidebar">
@@ -147,6 +146,7 @@ function App() {
       <footer className="app-footer">{"\u00A9"} manifest editor</footer>
     </div>
   );
+
 }
 
 export default App;
