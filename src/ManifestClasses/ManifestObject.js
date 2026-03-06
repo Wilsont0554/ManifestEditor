@@ -7,8 +7,8 @@ class ManifestObject{
         this.id = "https://example.org/to13swr5ws-mlwptp83";
         this.type = "Manifest";
         this.items = [];
+        this.addContainer(new Container(this.id, containerType))
         this.metadata = new Metadata();
-        this.addContainer(new Container(containerType))
     }
 
     addContainer(container){
