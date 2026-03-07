@@ -2,7 +2,7 @@ import AnnotationPage from './AnnotationPage'
 
 class Container{
 
-    static VALID_TYPES = new Set(['timeline', 'canvas', 'scene']);
+    static VALID_TYPES = new Set(['Timeline', 'Canvas', 'Scene']);
 
     constructor(id, type){
         // Going to need better validation that the input here is a URL
