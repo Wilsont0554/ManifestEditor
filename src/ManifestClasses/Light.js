@@ -24,8 +24,12 @@ class Light extends ContentResource{
         this.color = color;
     }
 
-    setIntensity(intensity){
-        this.intensity = intensity;
+    setIntensity(type, quantityValue, unit){
+        this.intensity = {
+            "type" : type,
+            "quantityValue" : quantityValue,
+            "unit" : unit
+        }
     }
 
 } export default Light

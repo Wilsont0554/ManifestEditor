@@ -49,6 +49,10 @@ class ContentResource{
                     GETTERS
 ---------------------------------------------------*/
 
+    getID(){
+        return this.id;
+    }
+
     //returns as 0:height, 1:width
     getDimensions(){
         return [this.height, this.width];

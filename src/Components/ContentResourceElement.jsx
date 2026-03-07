@@ -11,15 +11,22 @@ function ContentResourceElement(props) {
         .getAnnotation(0)
         .getContentResource(contentResourceIndex);
 
-    const types = {
-        "Image": "image/jpeg",
-        "Model": "model/gltf-binary",
+    var types;
 
-        "AmbientLight" : undefined,
-        "DirectionalLight" : undefined,
-        "PointLight" : undefined,
-        "SpotLight" : undefined
-    };
+    if (resource.getType().includes("Light")){
+        types = {
+            "AmbientLight" : undefined,
+            "DirectionalLight" : undefined,
+            "PointLight" : undefined,
+            "SpotLight" : undefined
+        }
+    }
+    else{
+        types = {
+            "Image": "image/jpeg",
+            "Model": "model/gltf-binary",
+        };
+    }
 
     function updateResource(e){
         resource.setType(e.target.value);
@@ -44,7 +51,7 @@ function ContentResourceElement(props) {
                 </select>
             </div>
 
-            {resource.getType() === "AmbientLight" ? (
+            {resource.getType().includes("Light") ? (
                 <div className="field-group">
                     <label>Color </label>
                     <input
@@ -61,28 +68,32 @@ function ContentResourceElement(props) {
                     <input
                         placeholder="5"
                         type="number"
-                        value={resource.color || ""} 
+                        min={0}
+                        max={1}
+                        step={0.1}
                         onChange={(e) => {
-                            resource.setColor(e.target.value);
+                            resource.setIntensity("Quantity", e.target.value, "relative");
                             setcount(count + 1);
                         }}
                     />
                 </div>
             ) : null}
 
-            <div className="field-group">
-                <label>URL </label>
-                <input
-                    placeholder="https://..."
-                    type="text"
-                    value={resource.id || ""} 
-                    onChange={(e) => {
-                        resource.setID(e.target.value);
-                        setcount(count + 1);
-                    }}
-                />
-            </div>
+            {!resource.getType().includes("Light") ? (
 
+                <div className="field-group">
+                    <label>URL</label>
+                    <input
+                        placeholder="https://..."
+                        type="text"
+                        value={resource.id || ""} 
+                        onChange={(e) => {
+                            resource.setID(e.target.value);
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            ) : null}
             <div className="label-section">
                 <h4>Annotation Label</h4>
                 <LabelElement 

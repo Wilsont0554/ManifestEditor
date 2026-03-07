@@ -14,8 +14,8 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerType, setContainerType] = useState("Scene");
-  const [manifestObj] = useState(() => new ManifestObject("Scene"));
+  const [containerType, setContainerType] = useState("scene");
+  const [manifestObj] = useState(() => new ManifestObject("scene"));
   
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
@@ -125,9 +125,8 @@ function App() {
                     {/* Clicking this button sets the sidebar context */}
                     <button 
                       onClick={() => setSelectedResourceIndex(index)}
-                      className={selectedResourceIndex === index ? 'active' : ''}
-                    >
-                      Content Resource {index + 1}
+                      className={selectedResourceIndex === index ? 'active' : ''}>
+                    <img className="CRPreview" src={resource.getID()} alt={"Content Resource " + (index + 1)}></img>
                     </button>
                   </li>
                 ))}
