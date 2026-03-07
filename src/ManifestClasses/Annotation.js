@@ -6,21 +6,18 @@ class Annotation{
         this.id = "https://example.org/iiif/3d/anno1";
         this.type = "Annotation";
         this.motivation = ["painting"];
-        this.body=[];
+        this.body = {};
         this.target = "https://example.org/iiif/scene1/page/p1/1";
         this.label;
         this.createLabel("en");
     }
 
-    addContentResource(contentResource){
-        this.body.push(contentResource);
+    setContentResource(contentResource){
+        this.body = contentResource;
     }
 
-    getContentResource(index){
-        if (index == undefined){
-            index = 0;
-        }
-        return this.body[index];
+    getContentResource(){
+        return this.body;
     }
 
     setLabel(index, value){
