@@ -3,9 +3,10 @@ import Annotation from './ContentResource.js';
 import Label from './Label.js';
 
 class UtilityClass{
-	this.type = "Example/Blank";
+	let type: string = "Agent Super Man";
+	let label: Label;
 
-	constructor(type){
+	public constructor(type: string){
 		this.type = type;
 		this.label = new Label('English', 'en');
 	}
@@ -57,22 +58,25 @@ class UtilityClass{
 	}
 
 	getSummaryFields(){
-		retunr this.summaryFields;
+		return this.summaryFields;
 	}
 
 /*------------------------------------------------------------
                           SETTERS
 --------------------------------------------------------------*/
 	// Also creates ID in this context
-	setID(id){
-		this.ID = id;
+	setID(inputID: string){
+		if(this.ID == undefined) let id: string = inputID;
+		else this.ID = inputID;
 	}
 
-	setType(type){
+	setType(type: string){
 		this.type = type;
 	}
 
 	
+
+
 
 
 
