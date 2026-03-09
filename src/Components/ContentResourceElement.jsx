@@ -8,8 +8,8 @@ function ContentResourceElement(props) {
     const resource = manifestObj
         .getContainerObj()
         .getAnnotationPage()
-        .getAnnotation(0)
-        .getContentResource(contentResourceIndex);
+        .getAnnotation(contentResourceIndex)
+        .getContentResource();
 
     const types = {
         "Image": "image/jpeg",
@@ -54,7 +54,7 @@ function ContentResourceElement(props) {
                 <h4>Annotation Label</h4>
                 <LabelElement 
                     {...props} 
-                    currentObject={manifestObj.getContainerObj().getAnnotationPage().getAnnotation()} 
+                    currentObject={manifestObj.getContainerObj().getAnnotationPage().getAnnotation(contentResourceIndex)} 
                 />
 
                 <h4>Content Resource Label</h4>
