@@ -1,10 +1,11 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import { JsonEditor } from "json-edit-react";
-import ManifestObject from "./ManifestClasses/ManifestObject.js";
+import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
-import ContentResource from "./ManifestClasses/ContentResource.js";
-import Container from "./ManifestClasses/Container.js";
+import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
+import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
+import Container from "./ManifestClasses/TypeScript/Container.ts";
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -41,23 +42,40 @@ function App() {
   };
 
   function createAnnotation() {
+    let index = 0;
+    for (let i = 0; i < annotationResource.length; i++){
+      if (annotationResource[i].getContentResource() == undefined){
+        manifestObj
+        .getContainerObj()
+        .getAnnotationPage()
+        .getAnnotation(i)
+        .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+        setcount((value) => value + 1);
+      }
+      index++;
+    }
+
     manifestObj
-      .getContainerObj()
-      .getAnnotationPage()
-      .getAnnotation()
-      .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    .getContainerObj()
+    .getAnnotationPage()
+    .addAnnotation(new Annotation());
+
+    manifestObj
+    .getContainerObj()
+    .getAnnotationPage()
+    .getAnnotation(index)
+    .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
     setcount((value) => value + 1);
   }
 
-  const contentResources = manifestObj
+  const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .getAnnotation(0)
-    .getAllContentResource();
+    .getAllAnnotations()
 
   // Helper to get the currently selected resource object
   const selectedResource = selectedResourceIndex !== null 
-    ? contentResources[selectedResourceIndex] 
+    ? annotationResource[selectedResourceIndex].getContentResource()
     : null;
 
   return (
@@ -107,11 +125,11 @@ function App() {
               </div>
 
               <ol className="manifest-creator__list">
-                {contentResources.map((resource, index) => (
+                {annotationResource.map((resource, index) => (
                   <li key={index} className="resource-list-item">
                     {/* Clicking this button sets the sidebar context */}
                     <button 
-                      onClick={() => setSelectedResourceIndex(index)}
+                      onClick={() => {setSelectedResourceIndex(index);}}
                       className={selectedResourceIndex === index ? 'active' : ''}
                     >
                       Content Resource {index + 1}
