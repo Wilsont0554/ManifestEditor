@@ -3,7 +3,7 @@ function HomePage() {
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Manifest Editor</h1>
       <p className="mt-3 max-w-2xl text-slate-600">
-        Build IIIF manifests, edit annotation details, and export the result as a JSON file.
+        Build IIIF 4.0 manifests, edit annotation details, and export the result as a JSON file.
       </p>
 
       <a
