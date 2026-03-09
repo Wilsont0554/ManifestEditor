@@ -12,7 +12,7 @@ class AgentClass{
 	}
 
 /*------------------------------------------------------------
-    These delete fields if the user changes manifest types
+    					DELETE FIELDS
 --------------------------------------------------------------*/
 	/* deleteHomePage(){
 		delete this.homePage; // trent is making homepage.
