@@ -11,12 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@allmaps/iiif-parser": "^1.0.0-beta.47",
-    "iiif-builder": "^2.0.0",
     "json-edit-react": "^1.29.0",
-    "manifest-editor": "^2.0.2",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-router": "^7.13.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -30,6 +28,7 @@
     "globals": "^16.5.0",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1"
   }
 }
