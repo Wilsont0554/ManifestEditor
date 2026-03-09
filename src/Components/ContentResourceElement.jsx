@@ -8,8 +8,8 @@ function ContentResourceElement(props) {
     const resource = manifestObj
         .getContainerObj()
         .getAnnotationPage()
-        .getAnnotation(0)
-        .getContentResource(contentResourceIndex);
+        .getAnnotation(contentResourceIndex)
+        .getContentResource();
 
     var types;
 
@@ -76,6 +76,22 @@ function ContentResourceElement(props) {
                             setcount(count + 1);
                         }}
                     />
+
+                    {resource.getType().includes("Light") ? (
+                        <div>
+                            <br/>
+                            <label>LookAt </label>
+                            <input
+                                placeholder="https://..."
+                                type="text"
+                                onChange={(e) => {
+                                    resource.setLookAt(e.target.value);
+                                    setcount(count + 1);
+                                }}
+                            />
+                        </div>
+                    ) : null}
+
                 </div>
             ) : null}
 
@@ -98,7 +114,7 @@ function ContentResourceElement(props) {
                 <h4>Annotation Label</h4>
                 <LabelElement 
                     {...props} 
-                    currentObject={manifestObj.getContainerObj().getAnnotationPage().getAnnotation()} 
+                    currentObject={manifestObj.getContainerObj().getAnnotationPage().getAnnotation(contentResourceIndex)} 
                 />
 
                 <h4>Content Resource Label</h4>

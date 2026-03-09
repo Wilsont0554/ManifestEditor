@@ -32,4 +32,18 @@ class Light extends ContentResource{
         }
     }
 
+    setLookAt(lookID){
+        this.lookAt = {
+            "id" : lookID
+        };
+    }
+
+/*---------------------------------------------------
+                    REMOVE
+---------------------------------------------------*/
+
+    removeLookAt(){
+        this.lookAt = undefined;
+    }
+
 } export default Light

@@ -6,6 +6,7 @@ import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/ContentResource.js";
 import Container from "./ManifestClasses/Container.js";
 import Light from "./ManifestClasses/Light.js";
+import Annotation from "./ManifestClasses/Annotation.js";
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -41,33 +42,50 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  function createAnnotation() {
-    manifestObj
-      .getContainerObj()
-      .getAnnotationPage()
-      .getAnnotation()
-      .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
-    setcount((value) => value + 1);
-  }
+  function createAnnotation(resourceType) {
+    let index = 0;
+    for (let i = 0; i < annotationResource.length; i++){
+      if (annotationResource[i].getContentResource() == undefined){
+        manifestObj
+        .getContainerObj()
+        .getAnnotationPage()
+        .getAnnotation(i)
+        .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+        setcount((value) => value + 1);
+      }
+      index++;
+    }
 
-  function createLight() {
     manifestObj
-      .getContainerObj()
-      .getAnnotationPage()
-      .getAnnotation()
-      .addContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
-    setcount((value) => value + 1);
-  }
-
-  const contentResources = manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .getAnnotation(0)
-    .getAllContentResource();
+    .addAnnotation(new Annotation());
+
+    if (resourceType == "Default"){
+       manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    } 
+    else if (resourceType == "Light"){
+      manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
+    }
+    setcount((value) => value + 1);
+  }
+
+  const annotationResource = manifestObj
+    .getContainerObj()
+    .getAnnotationPage()
+    .getAllAnnotations()
 
   // Helper to get the currently selected resource object
   const selectedResource = selectedResourceIndex !== null 
-    ? contentResources[selectedResourceIndex] 
+    ? annotationResource[selectedResourceIndex].getContentResource()
     : null;
 
   return (
@@ -111,22 +129,22 @@ function App() {
                 <option value="timeline">Timeline</option>
               </select>
 
-                <button type="button" onClick={createAnnotation}>
+                <button type="button" onClick={() => {createAnnotation("Default")}}>
                   Add Content Resource
                 </button>
-                <button type="button" onClick={createLight}>
+                <button type="button" onClick={() => {createAnnotation("Light")}}>
                   Add Light
                 </button>
               </div>
 
               <ol className="manifest-creator__list">
-                {contentResources.map((resource, index) => (
+                {annotationResource.map((resource, index) => (
                   <li key={index} className="resource-list-item">
                     {/* Clicking this button sets the sidebar context */}
                     <button 
                       onClick={() => setSelectedResourceIndex(index)}
                       className={selectedResourceIndex === index ? 'active' : ''}>
-                    <img className="CRPreview" src={resource.getID()} alt={"Content Resource " + (index + 1)}></img>
+                    <img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>
                     </button>
                   </li>
                 ))}
