@@ -1,5 +1,3 @@
-import Container from './TypeScript/Container.ts';
-import Annotation from './TypeScript/ContentResource.ts';
 import Label from './TypeScript/Label.ts';
 
 class AgentClass{
