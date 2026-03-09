@@ -5,6 +5,8 @@ import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
+import Light from "./ManifestClasses/Light.js";
+
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -142,7 +144,7 @@ function App() {
                     <button 
                       onClick={() => setSelectedResourceIndex(index)}
                       className={selectedResourceIndex === index ? 'active' : ''}>
-                    <img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>
+                    {/*<img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>*/}
                     </button>
                   </li>
                 ))}
