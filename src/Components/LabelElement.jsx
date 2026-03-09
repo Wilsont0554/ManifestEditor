@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Label from '../ManifestClasses/Label.js'
+import Label from '../ManifestClasses/TypeScript/Label.ts'
 
 function LabelElement(props){
 
