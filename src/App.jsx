@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "./Components/navbar/index.jsx";
+import Navbar from "./components/navbar/index.jsx";
 import HomePage from "./pages/home/index.jsx";
 import ManifestEditorPage from "./pages/manifest-editor/index.jsx";
 import ContentResource from "./utils/manifest/ContentResource.js";
