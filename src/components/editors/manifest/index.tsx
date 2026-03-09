@@ -7,10 +7,8 @@ import NavPlaceTab from "./manifest-component/tabs/nav-place-tab";
 import OverviewTab from "./manifest-component/tabs/overview-tab";
 import StructureTab from "./manifest-component/tabs/structure-tab";
 import TechnicalTab from "./manifest-component/tabs/technical-tab";
-import type ManifestObject from "../../../pages/manifest-editor/manifest/ManifestObject";
 
 interface ManifestComponentProps {
-  manifestObj: ManifestObject;
   setCount: Dispatch<SetStateAction<number>>;
   width: number;
   onClose: () => void;
@@ -19,7 +17,6 @@ interface ManifestComponentProps {
 }
 
 function ManifestComponent({
-  manifestObj,
   setCount,
   width,
   onClose,
@@ -31,30 +28,30 @@ function ManifestComponent({
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
 
-  let tabContent = <OverviewTab manifestObj={manifestObj} />;
+  let tabContent = <OverviewTab/>;
 
   if (activeTab === "descriptive") {
-    tabContent = <DescriptiveTab manifestObj={manifestObj} setCount={setCount} />;
+    tabContent = <DescriptiveTab/>;
   }
 
   if (activeTab === "metadata") {
-    tabContent = <MetadataTab manifestObj={manifestObj} setCount={setCount} />;
+    tabContent = <MetadataTab/>;
   }
 
   if (activeTab === "technical") {
-    tabContent = <TechnicalTab manifestObj={manifestObj} setCount={setCount} />;
+    tabContent = <TechnicalTab/>;
   }
 
   if (activeTab === "linking") {
-    tabContent = <LinkingTab manifestObj={manifestObj} setCount={setCount} />;
+    tabContent = <LinkingTab/>;
   }
 
   if (activeTab === "structure") {
-    tabContent = <StructureTab manifestObj={manifestObj} />;
+    tabContent = <StructureTab/>;
   }
 
   if (activeTab === "nav-place") {
-    tabContent = <NavPlaceTab manifestObj={manifestObj} setCount={setCount} />;
+    tabContent = <NavPlaceTab/>;
   }
 
   useEffect(() => {

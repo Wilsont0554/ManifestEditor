@@ -1,6 +1,6 @@
 import type { ManifestTabProps } from "../manifest-component-constants";
 
-function OverviewTab(_props: ManifestTabProps) {
+function OverviewTab() {
   return <div className="min-h-40" />;
 }
 

@@ -1,6 +1,6 @@
 import type { ManifestTabProps } from "../manifest-component-constants";
 
-function StructureTab(_props: ManifestTabProps) {
+function StructureTab() {
   return <div className="min-h-40" />;
 }
 

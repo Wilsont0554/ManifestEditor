@@ -1,6 +1,4 @@
-import type { ManifestTabProps } from "../manifest-component-constants";
-
-function DescriptiveTab(_props: ManifestTabProps) {
+function DescriptiveTab() {
   return <div className="min-h-40" />;
 }
 

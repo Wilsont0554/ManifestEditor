@@ -1,6 +1,6 @@
 import type { ManifestTabProps } from "../manifest-component-constants";
 
-function LinkingTab(_props: ManifestTabProps) {
+function LinkingTab() {
   return <div className="min-h-40" />;
 }
 

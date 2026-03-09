@@ -7,11 +7,19 @@
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@ManifestClasses/*": ["src/ManifestClasses/*"],
+      "@utils/*": ["src/utils/*"]
+    }
   },
   "include": ["src", "vite.config.ts", "eslint.config.ts"]
 }

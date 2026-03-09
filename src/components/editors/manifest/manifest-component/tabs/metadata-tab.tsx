@@ -1,6 +1,6 @@
 import type { ManifestTabProps } from "../manifest-component-constants";
 
-function MetadataTab(_props: ManifestTabProps) {
+function MetadataTab() {
   return <div className="min-h-40" />;
 }
 
