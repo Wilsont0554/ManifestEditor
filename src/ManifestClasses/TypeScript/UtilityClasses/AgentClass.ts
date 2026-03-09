@@ -1,6 +1,6 @@
-import Container from './Container.ts';
-import Annotation from './ContentResource.ts';
-import Label from './Label.ts';
+import Container from './TypeScript/Container.ts';
+import Annotation from './TypeScript/ContentResource.ts';
+import Label from './TypeScript/Label.ts';
 
 class AgentClass{
 	let type: string = "Agent Super Man";
@@ -38,7 +38,7 @@ class AgentClass{
                           GETTERS
 --------------------------------------------------------------*/
 	getID(){
-		return this.ID != undefined ? this.ID : "DefaultIDField";
+		return this.ID != undefined ? this.ID : "Default_ID_Field";
 	}
 
 	getLabel(){
