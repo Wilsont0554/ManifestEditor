@@ -1,5 +1,4 @@
 import Label from './Label.js'
-import ContentResource from './ContentResource.js';
 
 class Annotation{
     constructor(){

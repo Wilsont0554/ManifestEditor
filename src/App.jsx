@@ -1,9 +1,33 @@
-import "./App.css";
-import React, { useEffect, useState } from "react";
-import { JsonEditor } from "json-edit-react";
-import ManifestObject from "./ManifestClasses/ManifestObject.js";
-import ContentResourceElement from "./Components/ContentResourceElement.jsx";
-import ContentResource from "./ManifestClasses/ContentResource.js";
+import { useEffect, useState } from "react";
+import Navbar from "./Components/navbar/index.jsx";
+import HomePage from "./pages/home/index.jsx";
+import ManifestEditorPage from "./pages/manifest-editor/index.jsx";
+import ContentResource from "./utils/manifest/ContentResource.js";
+import ManifestObject from "./utils/manifest/ManifestObject.js";
+import { downloadJsonFile } from "./utils/file.js";
+
+const NAV_LINKS = [
+  {
+    label: "Home",
+    href: "#home",
+    type: "internal",
+  },
+  {
+    label: "Manifest Creator",
+    href: "#manifest-creator",
+    type: "internal",
+  },
+  {
+    label: "Github",
+    href: "https://github.com/Wilsont0554/ManifestEditor",
+    type: "external",
+  },
+  {
+    label: "Documentation",
+    href: "https://preview.iiif.io/api/full_manifests/presentation/4.0/#scene",
+    type: "external",
+  },
+];
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -11,7 +35,7 @@ function getViewFromHash() {
 
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
-  const [count, setcount] = useState(0);
+  const [_count, setCount] = useState(0);
   const [containerType, setContainerType] = useState("Scene");
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
 
@@ -24,25 +48,24 @@ function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  const JSONToFile = (obj, filename) => {
-    const blob = new Blob([JSON.stringify(obj, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${filename}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   function createAnnotation() {
     manifestObj
       .getContainerObj()
       .getAnnotationPage()
       .getAnnotation()
       .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
-    setcount((value) => value + 1);
+
+    setCount((value) => value + 1);
+  }
+
+  function handleContainerTypeChange(nextType) {
+    manifestObj.getContainerObj().setType(nextType);
+    setContainerType(nextType);
+    setCount((value) => value + 1);
+  }
+
+  function handleDownloadManifest() {
+    downloadJsonFile(manifestObj, "manifest");
   }
 
   const contentResources = manifestObj
@@ -52,68 +75,28 @@ function App() {
     .getAllContentResource();
 
   return (
-    <div className="app-shell">
-      <header className="app-nav">
-        <p className="app-nav__brand">Manifest Editor</p>
-        <nav className="app-nav__links">
-          <a href="#home">Home</a>
-          <a href="#manifest-creator">Manifest Creator</a>
-          <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer">
-            Github
-          </a>
-          <a href="https://preview.iiif.io/api/full_manifests/presentation/4.0/#scene" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <Navbar activeView={activeView} links={NAV_LINKS} />
 
-      <main className="app-main">
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
         {activeView === "manifest-creator" ? (
-          <section className="manifest-creator">
-            <p
-              className="manifest-creator__download"
-              onClick={() => JSONToFile(manifestObj, "manifest")}
-            >
-              Download JSON
-            </p>
-            
-            <div className="manifest-creator__controls">
-              <select
-                value={containerType}
-                onChange={(e) => {
-                  manifestObj.getContainerObj().setType(e.target.value);
-                  setContainerType(e.target.value);
-                  setcount((value) => value + 1);
-                }}
-              >
-                <option>Canvas</option>
-                <option>Scene</option>
-              </select>
-
-              <button type="button" onClick={createAnnotation}>
-                Add Content Resource
-              </button>
-            </div>
-
-            <ol className="manifest-creator__list">
-              {contentResources.map((annotation, contentResourceIndex) => (
-                <ContentResourceElement
-                  key={contentResourceIndex}
-                  count={count}
-                  setcount={setcount}
-                  index={contentResourceIndex}
-                  contentResourceIndex={contentResourceIndex}
-                  manifestObj={manifestObj}
-                />
-              ))}
-            </ol>
-
-            <JsonEditor data={manifestObj} />
-          </section>
-        ) : null}
+          <ManifestEditorPage
+            setCount={setCount}
+            containerType={containerType}
+            onContainerTypeChange={handleContainerTypeChange}
+            onAddContentResource={createAnnotation}
+            onDownloadManifest={handleDownloadManifest}
+            contentResources={contentResources}
+            manifestObj={manifestObj}
+          />
+        ) : (
+          <HomePage />
+        )}
       </main>
 
-      <footer className="app-footer">{"\u00A9"} manifest editor</footer>
+      <footer className="border-t border-slate-300 bg-slate-50 py-3 text-center text-sm text-slate-600">
+        {"\u00A9"} manifest editor
+      </footer>
     </div>
   );
 }

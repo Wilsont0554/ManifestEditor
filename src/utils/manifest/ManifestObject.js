@@ -1,5 +1,4 @@
 import Container from './Container.js'
-import Annotation from './ContentResource.js';
 
 class ManifestObject{
     constructor(containerType){

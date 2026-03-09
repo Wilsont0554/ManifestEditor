@@ -15,7 +15,7 @@ class AnnotationPage{
         if (index == undefined){
             index = 0;
         }
-        return this.items[0];
+        return this.items[index];
     }
 
     getAllAnnotations(){
