@@ -74,10 +74,4 @@ class UtilityClass{
 		this.type = type;
 	}
 
-	
-
-
-
-
-
 } export default AgentClass
