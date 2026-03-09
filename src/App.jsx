@@ -1,12 +1,10 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import { JsonEditor } from "json-edit-react";
-import ManifestObject from "./ManifestClasses/ManifestObject.js";
+import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
-import ContentResource from "./ManifestClasses/ContentResource.js";
-import Container from "./ManifestClasses/Container.js";
-import Light from "./ManifestClasses/Light.js";
-import Annotation from "./ManifestClasses/Annotation.js";
+import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
+import Container from "./ManifestClasses/TypeScript/Container.ts";
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
