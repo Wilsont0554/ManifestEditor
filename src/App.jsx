@@ -4,6 +4,7 @@ import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
+import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
 import Light from "./ManifestClasses/Light.js";
 
@@ -144,7 +145,7 @@ function App() {
                     <button 
                       onClick={() => setSelectedResourceIndex(index)}
                       className={selectedResourceIndex === index ? 'active' : ''}>
-                    {/*<img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>*/}
+                    <img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>
                     </button>
                   </li>
                 ))}

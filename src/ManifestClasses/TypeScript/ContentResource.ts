@@ -95,6 +95,9 @@ class ContentResource {
     getSummary(): string | undefined {
         return this.summary;
     }
+    getID(){
+        return this.id
+    }
 }
 
 export default ContentResource;
