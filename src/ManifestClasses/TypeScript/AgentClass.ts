@@ -1,22 +1,22 @@
-import Container from './Container.js';
-import Annotation from './ContentResource.js';
-import Label from './Label.js';
+import Container from './Container.ts';
+import Annotation from './ContentResource.ts';
+import Label from './Label.ts';
 
-class UtilityClass{
+class AgentClass{
 	let type: string = "Agent Super Man";
 	let label: Label;
 
 	public constructor(type: string){
 		this.type = type;
-		this.label = new Label('English', 'en');
+		this.label = this.createLabel("en");
 	}
 
 /*------------------------------------------------------------
     These delete fields if the user changes manifest types
 --------------------------------------------------------------*/
-	deleteHomePage(){
-		delete this.homePage;
-	}
+	/* deleteHomePage(){
+		delete this.homePage; // trent is making homepage.
+	} */
 
 	deleteID(){
 		delete this.ID;
@@ -38,7 +38,7 @@ class UtilityClass{
                           GETTERS
 --------------------------------------------------------------*/
 	getID(){
-		return this.ID;
+		return this.ID != undefined ? this.ID : "DefaultIDField";
 	}
 
 	getLabel(){
@@ -72,6 +72,14 @@ class UtilityClass{
 
 	setType(type: string){
 		this.type = type;
+	}
+
+/*------------------------------------------------------------
+                          CREATE
+--------------------------------------------------------------*/	
+
+	createLabel(languageCode: string = 'en'): Label {
+		return new Label('', languageCode);
 	}
 
 } export default AgentClass
