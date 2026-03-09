@@ -19,7 +19,7 @@ class Annotation {
         this.createLabel("en");
     }
 
-    addContentResource(contentResource: ContentResource) {
+    setContentResource(contentResource: ContentResource) {
         this.body.push(contentResource);
     }
 

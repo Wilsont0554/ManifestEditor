@@ -4,6 +4,7 @@ import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
+import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
 
 function getViewFromHash() {
