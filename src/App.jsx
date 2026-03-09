@@ -38,6 +38,7 @@ function App() {
   const [_count, setCount] = useState(0);
   const [containerType, setContainerType] = useState("Scene");
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
+  const isManifestEditorView = activeView === "manifest-creator";
 
   useEffect(() => {
     const onHashChange = () => {
@@ -78,8 +79,8 @@ function App() {
     <div className="min-h-screen bg-slate-100 text-slate-900">
       <Navbar activeView={activeView} links={NAV_LINKS} />
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-        {activeView === "manifest-creator" ? (
+      <main className={isManifestEditorView ? "w-full" : "mx-auto w-full max-w-6xl px-4 py-6 sm:px-6"}>
+        {isManifestEditorView ? (
           <ManifestEditorPage
             setCount={setCount}
             containerType={containerType}
@@ -94,9 +95,11 @@ function App() {
         )}
       </main>
 
-      <footer className="border-t border-slate-300 bg-slate-50 py-3 text-center text-sm text-slate-600">
-        {"\u00A9"} manifest editor
-      </footer>
+      {!isManifestEditorView ? (
+        <footer className="border-t border-slate-300 bg-slate-50 py-3 text-center text-sm text-slate-600">
+          {"\u00A9"} manifest editor
+        </footer>
+      ) : null}
     </div>
   );
 }
