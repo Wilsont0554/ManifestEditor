@@ -3,6 +3,11 @@ import Label from './TypeScript/Label.ts';
 class AgentClass{
 	let type: string = "Agent Super Man";
 	let label: Label;
+	let logo?: Logo;
+	let homePage?: HomePage; // HomePage type might need to be updated for syntax
+	let ID?: string;
+	let seeAlso?: SeeAlso;
+	let summary?: string;
 
 	public constructor(type: string){
 		this.type = type;
@@ -28,35 +33,35 @@ class AgentClass{
 		delete this.seeAlso;
 	}
 
-	deleteSummaryFields(){
-		delete summaryFields;
+	deleteSummary(){
+		delete this.summary;
 	}
 
 /*------------------------------------------------------------
                           GETTERS
 --------------------------------------------------------------*/
-	getID(){
+	getID(): string{
 		return this.ID != undefined ? this.ID : "Default_ID_Field";
 	}
 
-	getLabel(){
+	getLabel(): Label{
 		return this.label;
 	}
 
-	getHomePage(){
+	getHomePage(): HomePage{
 		return this.homePage;
 	}
 
-	getLogo(){
+	getLogo(): Logo{
 		return this.logo;
 	}
 
-	getSeeAlso(){
+	getSeeAlso(): SeeAlso{
 		return this.seeAlso;
 	}
 
-	getSummaryFields(){
-		return this.summaryFields;
+	getSummaryFields(): string{
+		return this.summary;
 	}
 
 /*------------------------------------------------------------
