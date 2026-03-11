@@ -1,6 +1,10 @@
-class Label{
-    constructor(value, languageCode = 'en'){
-        const languageClasses = {
+class Label {
+    private languageClasses: { [key: string]: any };
+    private currentLanguage?: string;
+    public language: any;
+
+    constructor(value: string, languageCode: string = 'en') {
+        this.languageClasses = {
             'en': English,
             'es': Spanish,
             'fr': French,
@@ -18,32 +22,29 @@ class Label{
             'tr': Turkish,
             'vi': Vietnamese
         };
-        
-        // Make languageClasses non-enumerable so it won't appear in JSON.stringify
+
         Object.defineProperty(this, 'languageClasses', {
-            value: languageClasses,
+            value: this.languageClasses,
             enumerable: false,
             writable: false
         });
-        
-        // Make currentLanguage non-enumerable
+
         Object.defineProperty(this, 'currentLanguage', {
             value: languageCode,
             enumerable: false,
             writable: true
         });
-        
+
         this.language = new this.languageClasses[languageCode](value);
     }
 
-    changeLabelTest(value){
+    changeLabelTest(value: string) {
         this.language.changeValue(value);
     }
 
-    setLanguage(languageCode){
-        if(this.languageClasses[languageCode]){
+    setLanguage(languageCode: string) {
+        if (this.languageClasses[languageCode]) {
             this.currentLanguage = languageCode;
-            // Get the current value before switching (extract from array)
             const currentArray = this.language[Object.keys(this.language)[0]];
             const currentValue = currentArray && currentArray.length > 0 ? currentArray[0] : '';
             this.language = new this.languageClasses[languageCode](currentValue);
@@ -52,161 +53,209 @@ class Label{
         }
     }
 
-    getLanguage(){
+    getLanguage() {
         return this.currentLanguage;
     }
 
-    getSupportedLanguages(){
+    getSupportedLanguages() {
         return Object.keys(this.languageClasses);
     }
-    
-    toJSON(){
-        // Return the inner language object so JSON shows { "en": ["text"] }
+
+    toJSON() {
         return this.language;
     }
-    
-} export default Label
+}
 
-class English{
-    constructor(value){
+export default Label;
+
+class English {
+    public en: string[];
+
+    constructor(value: string) {
         this.en = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.en = value ? [value] : [];
     }
 }
 
-class Spanish{
-    constructor(value){
+class Spanish {
+    public sp: string[];
+
+    constructor(value: string) {
         this.sp = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.sp = value ? [value] : [];
     }
 }
 
-class French{
-    constructor(value){
+class French {
+    public fr: string[];
+
+    constructor(value: string) {
         this.fr = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.fr = value ? [value] : [];
     }
 }
 
-class German{
-    constructor(value){
+class German {
+    public de: string[];
+
+    constructor(value: string) {
         this.de = value ? [value] : [];
-    } 
-    changeValue(value){
+    }
+
+    changeValue(value: string) {
         this.de = value ? [value] : [];
     }
 }
 
-class Italian{
-    constructor(value){
+class Italian {
+    public it: string[];
+
+    constructor(value: string) {
         this.it = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.it = value ? [value] : [];
     }
 }
 
-class Russian{
-    constructor(value){
+class Russian {
+    public ru: string[];
+
+    constructor(value: string) {
         this.ru = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.ru = value ? [value] : [];
     }
 }
 
-class Chinese{
-    constructor(value){
+class Chinese {
+    public zh: string[];
+
+    constructor(value: string) {
         this.zh = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.zh = value ? [value] : [];
     }
 }
 
-class Japanese{
-    constructor(value){
+class Japanese {
+    public jp: string[];
+
+    constructor(value: string) {
         this.jp = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.jp = value ? [value] : [];
     }
 }
 
-class Portuguese{
-    constructor(value){
+class Portuguese {
+    public pt: string[];
+
+    constructor(value: string) {
         this.pt = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.pt = value ? [value] : [];
     }
 }
 
-class Arabic{
-    constructor(value){
+class Arabic {
+    public ar: string[];
+
+    constructor(value: string) {
         this.ar = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.ar = value ? [value] : [];
     }
 }
 
-class Hindi{
-    constructor(value){
+class Hindi {
+    public hi: string[];
+
+    constructor(value: string) {
         this.hi = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.hi = value ? [value] : [];
     }
 }
 
-class Swedish{
-    constructor(value){
+class Swedish {
+    public sv: string[];
+
+    constructor(value: string) {
         this.sv = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.sv = value ? [value] : [];
     }
 }
 
-class Dutch{
-    constructor(value){
+class Dutch {
+    public nl: string[];
+
+    constructor(value: string) {
         this.nl = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.nl = value ? [value] : [];
     }
 }
 
-class Korean{
-    constructor(value){
+class Korean {
+    public ko: string[];
+
+    constructor(value: string) {
         this.ko = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.ko = value ? [value] : [];
     }
 }
 
-class Turkish{
-    constructor(value){
+class Turkish {
+    public tr: string[];
+
+    constructor(value: string) {
         this.tr = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.tr = value ? [value] : [];
     }
 }
 
-class Vietnamese{
-    constructor(value){
+class Vietnamese {
+    public vi: string[];
+
+    constructor(value: string) {
         this.vi = value ? [value] : [];
     }
-    changeValue(value){
+
+    changeValue(value: string) {
         this.vi = value ? [value] : [];
     }
 }
