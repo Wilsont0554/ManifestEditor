@@ -42,10 +42,9 @@ export default function InputWithLanguage({
         </select>
       </div>
 
-      <div className="w-full bg-gray-100 p-2 pr-0 gap-2 flex border-b-2 border-pink-500">
-        <input
-          className="flex-1 focus:outline-none bg-transparent"
-          type="text"
+      <div className="w-full bg-gray-100 pr-0 gap-2 flex border-b-2 border-pink-500">
+        <textarea
+          className="flex-1 focus:outline-none bg-transparent h-10.75 p-2"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />

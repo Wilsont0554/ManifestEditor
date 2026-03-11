@@ -2,7 +2,6 @@ import Navbar from "./components/navbar";
 import {Routes, Route} from "react-router";
 import HomePage from "@/pages/home";
 import ManifestEditorPage from "@/pages/manifest-editor";
-import { useVault } from "react-iiif-vault";
 import { useEffect } from "react";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
