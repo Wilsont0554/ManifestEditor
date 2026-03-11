@@ -1,15 +1,24 @@
-import { type Dispatch, type MouseEvent as ReactMouseEvent, type SetStateAction, useEffect, useState } from "react";
-import { MANIFEST_TABS, type ManifestTabId } from "./manifest-component/manifest-component-constants";
-import DescriptiveTab from "./manifest-component/tabs/descriptive-tab";
-import LinkingTab from "./manifest-component/tabs/linking-tab";
-import MetadataTab from "./manifest-component/tabs/metadata-tab";
-import NavPlaceTab from "./manifest-component/tabs/nav-place-tab";
-import OverviewTab from "./manifest-component/tabs/overview-tab";
-import StructureTab from "./manifest-component/tabs/structure-tab";
-import TechnicalTab from "./manifest-component/tabs/technical-tab";
+import {
+  type Dispatch,
+  type MouseEvent as ReactMouseEvent,
+  type SetStateAction,
+  useEffect,
+  useState,
+} from "react";
+import {
+  MANIFEST_TABS,
+  type ManifestTabId,
+} from "./manifest-component-constants";
+import DescriptiveTab from "./tabs/descriptive-tab";
+import LinkingTab from "./tabs/linking-tab";
+import MetadataTab from "./tabs/metadata-tab";
+import NavPlaceTab from "./tabs/nav-place-tab";
+import OverviewTab from "./tabs/overview-tab";
+import StructureTab from "./tabs/structure-tab";
+import TechnicalTab from "./tabs/technical-tab";
+import {useVault} from "react-iiif-vault";
 
 interface ManifestComponentProps {
-  setCount: Dispatch<SetStateAction<number>>;
   width: number;
   onClose: () => void;
   onReset: () => void;
@@ -17,7 +26,6 @@ interface ManifestComponentProps {
 }
 
 function ManifestComponent({
-  setCount,
   width,
   onClose,
   onReset,
@@ -27,31 +35,32 @@ function ManifestComponent({
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
+  const vault = useVault();
 
-  let tabContent = <OverviewTab/>;
+  let tabContent = <OverviewTab />;
 
   if (activeTab === "descriptive") {
-    tabContent = <DescriptiveTab/>;
+    tabContent = <DescriptiveTab />;
   }
 
   if (activeTab === "metadata") {
-    tabContent = <MetadataTab/>;
+    tabContent = <MetadataTab />;
   }
 
   if (activeTab === "technical") {
-    tabContent = <TechnicalTab/>;
+    tabContent = <TechnicalTab />;
   }
 
   if (activeTab === "linking") {
-    tabContent = <LinkingTab/>;
+    tabContent = <LinkingTab />;
   }
 
   if (activeTab === "structure") {
-    tabContent = <StructureTab/>;
+    tabContent = <StructureTab />;
   }
 
   if (activeTab === "nav-place") {
-    tabContent = <NavPlaceTab/>;
+    tabContent = <NavPlaceTab />;
   }
 
   useEffect(() => {
@@ -68,11 +77,16 @@ function ManifestComponent({
 
   function updateDividerPosition(event: ReactMouseEvent<HTMLDivElement>): void {
     const rect = event.currentTarget.getBoundingClientRect();
-    const nextY = Math.min(Math.max(event.clientY - rect.top, 88), rect.height - 88);
+    const nextY = Math.min(
+      Math.max(event.clientY - rect.top, 88),
+      rect.height - 88,
+    );
     setDividerY(nextY);
   }
 
-  function handleResizeMouseDown(event: ReactMouseEvent<HTMLButtonElement>): void {
+  function handleResizeMouseDown(
+    event: ReactMouseEvent<HTMLButtonElement>,
+  ): void {
     setIsResizing(true);
     onResizeStart(event);
   }
@@ -98,11 +112,12 @@ function ManifestComponent({
         }}
       >
         <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-300" />
-
         <button
           type="button"
           className={`absolute left-1/2 inline-flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-rose-100 bg-rose-50 text-base text-rose-600 shadow-sm transition duration-150 hover:border-rose-200 hover:bg-rose-100 ${
-            controlsVisible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+            controlsVisible
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
           }`}
           style={{ top: `${Math.max(dividerY - 56, 48)}px` }}
           onClick={onReset}
@@ -115,7 +130,9 @@ function ManifestComponent({
         <button
           type="button"
           className={`absolute left-1/2 flex h-14 w-5 -translate-x-1/2 -translate-y-1/2 cursor-col-resize items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition duration-150 hover:border-slate-300 ${
-            controlsVisible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+            controlsVisible
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
           }`}
           style={{ top: `${dividerY}px` }}
           onMouseDown={handleResizeMouseDown}
@@ -128,7 +145,9 @@ function ManifestComponent({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Manifest</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Manifest
+          </p>
           <button
             type="button"
             className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
@@ -158,7 +177,9 @@ function ManifestComponent({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{tabContent}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+          {tabContent}
+        </div>
       </div>
     </aside>
   );

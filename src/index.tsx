@@ -1,17 +1,16 @@
 import "./polyfills";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
+import { BrowserRouter } from "react-router";
+import { VaultProvider } from "react-iiif-vault";
 
-const rootElement = document.getElementById("root");
+const root: HTMLElement = document.getElementById("root") as HTMLElement;
 
-if (!rootElement) {
-  throw new Error("Root element not found");
-}
-
-createRoot(rootElement).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+createRoot(root).render(
+  <BrowserRouter>
+    <VaultProvider>
+      <App />
+    </VaultProvider>
+  </BrowserRouter>
 );

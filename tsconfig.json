@@ -18,7 +18,8 @@
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@ManifestClasses/*": ["src/ManifestClasses/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@pages/*": ["src/pages/*"]
     }
   },
   "include": ["src", "vite.config.ts", "eslint.config.ts"]

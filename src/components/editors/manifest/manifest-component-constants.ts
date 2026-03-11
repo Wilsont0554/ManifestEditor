@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import type ManifestObject from "../../../../pages/manifest-editor/manifest/ManifestObject";
+import ManifestObject from "@ManifestClasses/ManifestObject.ts";
 
 export const MANIFEST_TABS = [
   { id: "overview", label: "Overview" },

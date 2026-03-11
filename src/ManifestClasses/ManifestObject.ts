@@ -1,5 +1,4 @@
 import Container from './Container.ts';
-import Annotation from './ContentResource.ts';
 
 class ManifestObject {
     id: string;
