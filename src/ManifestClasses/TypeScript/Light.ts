@@ -4,9 +4,11 @@ class Light extends ContentResource {
     color?: string;
     intensity?: { type: string; quantityValue: number; unit: string };
     lookAt?: { id: string };
+    angle?: number;
 
     constructor(id: string, type: string) {
         super(id, type, "");
+        this.setFormat(undefined);
     }
 
     /*---------------------------------------------------
@@ -41,11 +43,19 @@ class Light extends ContentResource {
         };
     }
 
+    setAngle(angle: number): void{
+        this.angle = angle;
+    }
+
     /*---------------------------------------------------
                         REMOVE
     ---------------------------------------------------*/
     removeLookAt(): void {
         this.lookAt = undefined;
+    }
+
+    removeAngle(): void{
+        this.angle = undefined;
     }
 }
 

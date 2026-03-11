@@ -66,18 +66,18 @@ function ContentResourceElement(props) {
                     <br/>
                     <label>Intensity </label>
                     <input
-                        placeholder="5"
+                        placeholder="0.5"
                         type="number"
                         min={0}
                         max={1}
                         step={0.1}
                         onChange={(e) => {
-                            resource.setIntensity("Quantity", e.target.value, "relative");
+                            resource.setIntensity("Quantity", Number(e.target.value), "relative");
                             setcount(count + 1);
                         }}
                     />
 
-                    {resource.getType().includes("Light") ? (
+                    {resource.getType() == ("DirectionalLight") ? (
                         <div>
                             <br/>
                             <label>LookAt </label>
@@ -86,6 +86,24 @@ function ContentResourceElement(props) {
                                 type="text"
                                 onChange={(e) => {
                                     resource.setLookAt(e.target.value);
+                                    setcount(count + 1);
+                                }}
+                            />
+                        </div>
+                    ) : null}
+
+                    {resource.getType() == ("SpotLight") ? (
+                        <div>
+                            <br/>
+                            <label>Angle </label>
+                            <input
+                                placeholder="5"
+                                type="number"
+                                min={0}
+                                max={360}
+                                step={10}
+                                onChange={(e) => {
+                                    resource.setAngle(Number(e.target.value));
                                     setcount(count + 1);
                                 }}
                             />

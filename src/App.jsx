@@ -6,9 +6,12 @@ import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
-import Light from "./ManifestClasses/Light.js";
-
-
+import Light from "./ManifestClasses/TypeScript/Light.ts";
+/*
+models for testing exports:
+https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb
+*/
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
 }
@@ -16,8 +19,8 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerType, setContainerType] = useState("scene");
-  const [manifestObj] = useState(() => new ManifestObject("scene"));
+  const [containerType, setContainerType] = useState("Scene");
+  const [manifestObj] = useState(() => new ManifestObject("Scene"));
   
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
@@ -60,7 +63,7 @@ function App() {
     manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .addAnnotation(new Annotation());
+    .addAnnotation(new Annotation(manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length + 1));
 
     if (resourceType == "Default"){
        manifestObj
@@ -125,9 +128,9 @@ function App() {
                   setcount((value) => value + 1);
                 }}
               >
-                <option value="canvas">Canvas</option>
-                <option value="scene">Scene</option>
-                <option value="timeline">Timeline</option>
+                <option value="Canvas">Canvas</option>
+                <option value="Scene">Scene</option>
+                <option value="Timeline">Timeline</option>
               </select>
 
                 <button type="button" onClick={() => {createAnnotation("Default")}}>

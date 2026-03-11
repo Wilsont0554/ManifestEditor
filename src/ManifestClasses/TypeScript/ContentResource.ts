@@ -3,10 +3,10 @@ import Label from './Label.ts';
 class ContentResource {
     id: string;
     type: string;
-    format: string;
+    format: string | undefined;
     height?: number;
     width?: number;
-    label: Label;
+    label?: Label;
     duration?: number;
     summary?: string;
 
@@ -14,7 +14,7 @@ class ContentResource {
         this.id = id;
         this.type = type;
         this.format = format;
-        this.label = this.createLabel("en");
+        //this.label = this.createLabel("en");
     }
 
     /*---------------------------------------------------
@@ -28,7 +28,7 @@ class ContentResource {
         this.type = type;
     }
 
-    setFormat(format: string): void {
+    setFormat(format: string | undefined): void {
         this.format = format;
     }
 
@@ -38,7 +38,7 @@ class ContentResource {
     }
 
     setLabel(index: number, value: string): void {
-        this.label.changeLabelTest(value);
+        this.label?.changeLabelTest(value);
     }
 
     createLabel(languageCode: string = 'en'): Label {
@@ -63,20 +63,21 @@ class ContentResource {
     }
 
     changeLabel(index: number, value: string, languageCode?: string): void {
-        this.label.changeLabelTest(value);
+        this.label?.changeLabelTest(value);
         if (languageCode) {
-            this.label.setLanguage(languageCode);
+            this.label?.setLanguage(languageCode);
         }
     }
 
-    getLabel(index?: number): Label {
+    getLabel(index?: number): Label | undefined {
         if (index === undefined) {
             index = 0;
         }
+
         return this.label;
     }
 
-    getAllLabels(): Label {
+    getAllLabels(): Label | undefined {
         return this.label;
     }
 
@@ -84,7 +85,7 @@ class ContentResource {
         return this.type;
     }
 
-    getFormat(): string {
+    getFormat(): string | undefined {
         return this.format;
     }
 
