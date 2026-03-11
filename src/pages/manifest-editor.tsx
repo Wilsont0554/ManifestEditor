@@ -3,16 +3,21 @@ import {
   useEffect,
   useRef,
   useState,
-  useContext
+  useContext,
 } from "react";
 import { JsonEditor } from "json-edit-react";
-import ManifestComponent from "../components/editors/manifest";
+import ManifestComponent from "@components/editors/manifest";
 import { manifestObjContext } from "../context/manifest";
+import Button from "@components/shared/button";
+import ContentResource from "@/ManifestClasses/ContentResource";
+import { downloadJsonFile } from "@/utils/file";
+import Annotation from "@/ManifestClasses/Annotation";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_SPACE = 760;
+type ContainerType = "Canvas" | "Scene";
 
 interface ResizeState {
   startX: number;
@@ -20,10 +25,11 @@ interface ResizeState {
 }
 
 function ManifestEditorPage() {
+  const [containerType, setContainerType] = useState<ContainerType>("Scene");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const resizeStateRef = useRef<ResizeState | null>(null);
-  const  { manifestObj } = useContext(manifestObjContext);
+  const { manifestObj } = useContext(manifestObjContext);
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
       if (!resizeStateRef.current) {
@@ -31,7 +37,10 @@ function ManifestEditorPage() {
       }
 
       const { startX, startWidth } = resizeStateRef.current;
-      const maxWidthFromViewport = Math.max(MIN_INSPECTOR_WIDTH, window.innerWidth - 80);
+      const maxWidthFromViewport = Math.max(
+        MIN_INSPECTOR_WIDTH,
+        window.innerWidth - 80,
+      );
       const nextWidth = Math.min(
         Math.max(startWidth + (startX - event.clientX), MIN_INSPECTOR_WIDTH),
         Math.min(MAX_INSPECTOR_WIDTH, maxWidthFromViewport),
@@ -70,12 +79,31 @@ function ManifestEditorPage() {
     setIsInspectorOpen(true);
   }
 
+  function onContainerTypeChange(newType: ContainerType): void {
+    setContainerType(newType);
+    const containerObj = manifestObj.getContainerObj();
+    containerObj.type = newType; 
+  }
+
+  function onAddContentResource(): void {
+    manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .addAnnotation(new Annotation())
+  }
+
+  function handleDownloadManifest(): void {
+    downloadJsonFile(manifestObj, "manifest");
+  }
+
   return (
     <section className="relative min-h-[calc(100vh-76px)] w-full overflow-hidden border-t border-slate-200 bg-slate-100">
       <div
         className="w-full px-4 py-6 sm:px-6 lg:px-8"
         style={{
-          paddingRight: isInspectorOpen ? `clamp(0px, calc(100vw - 360px), ${INSPECTOR_DOCK_SPACE}px)` : undefined,
+          paddingRight: isInspectorOpen
+            ? `clamp(0px, calc(100vw - 360px), ${INSPECTOR_DOCK_SPACE}px)`
+            : undefined,
         }}
       >
         <div className="mr-auto max-w-245 space-y-4">
@@ -84,15 +112,32 @@ function ManifestEditorPage() {
               <button
                 className="cursor-pointer text-sm font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900"
                 type="button"
-                onClick={() => {}}
+                onClick={handleDownloadManifest}
               >
                 Download JSON
               </button>
+              <label htmlFor="container-type" className="sr-only">
+                Container Type
+              </label>
+
+              <select
+                id="container-type"
+                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                value={containerType}
+                onChange={(e) => onContainerTypeChange(e.target.value as ContainerType)}
+              >
+                <option>Canvas</option>
+                <option>Scene</option>
+              </select>
+
+              <Button type="button" onClick={onAddContentResource}>
+                Add Content Resource
+              </Button>
             </div>
           </div>
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <JsonEditor data={manifestObj} />
-          </div>
+        </div>
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <JsonEditor data={manifestObj} />
         </div>
       </div>
 

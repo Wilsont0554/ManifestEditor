@@ -42,7 +42,7 @@ export default function InputWithLanguage({
         </select>
       </div>
 
-      <div className="w-full bg-gray-100 p-3 pr-0 gap-2 flex border-b-2 border-pink-500">
+      <div className="w-full bg-gray-100 p-2 pr-0 gap-2 flex border-b-2 border-pink-500">
         <input
           className="flex-1 focus:outline-none bg-transparent"
           type="text"
