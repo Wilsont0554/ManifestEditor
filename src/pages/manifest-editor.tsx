@@ -3,19 +3,16 @@ import {
   useEffect,
   useRef,
   useState,
+  useContext
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ManifestComponent from "../components/editors/manifest";
-import Button from "../components/shared/button";
-import {useVault} from "react-iiif-vault";
-import ManifestObject from "@ManifestClasses/ManifestObject";
+import { manifestObjContext } from "../context/manifest";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_SPACE = 760;
-
-type ContainerType = "Canvas" | "Scene";
 
 interface ResizeState {
   startX: number;
@@ -26,7 +23,7 @@ function ManifestEditorPage() {
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const resizeStateRef = useRef<ResizeState | null>(null);
-
+  const  { manifestObj } = useContext(manifestObjContext);
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
       if (!resizeStateRef.current) {
@@ -73,8 +70,6 @@ function ManifestEditorPage() {
     setIsInspectorOpen(true);
   }
 
-  const vault = useVault();
-
   return (
     <section className="relative min-h-[calc(100vh-76px)] w-full overflow-hidden border-t border-slate-200 bg-slate-100">
       <div
@@ -83,7 +78,7 @@ function ManifestEditorPage() {
           paddingRight: isInspectorOpen ? `clamp(0px, calc(100vw - 360px), ${INSPECTOR_DOCK_SPACE}px)` : undefined,
         }}
       >
-        <div className="mr-auto max-w-[980px] space-y-4">
+        <div className="mr-auto max-w-245 space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -96,9 +91,7 @@ function ManifestEditorPage() {
             </div>
           </div>
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <JsonEditor data={
-              new ManifestObject("scene")
-            } />
+            <JsonEditor data={manifestObj} />
           </div>
         </div>
       </div>

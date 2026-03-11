@@ -16,7 +16,6 @@ import NavPlaceTab from "./tabs/nav-place-tab";
 import OverviewTab from "./tabs/overview-tab";
 import StructureTab from "./tabs/structure-tab";
 import TechnicalTab from "./tabs/technical-tab";
-import {useVault} from "react-iiif-vault";
 
 interface ManifestComponentProps {
   width: number;
@@ -35,7 +34,6 @@ function ManifestComponent({
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
-  const vault = useVault();
 
   let tabContent = <OverviewTab />;
 
