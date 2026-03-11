@@ -1,5 +1,10 @@
+import InputWithLanguage from "@components/shared/inputWithLanguage";
+import { useState } from "react";
+
 function DescriptiveTab() {
-  return <div className="min-h-40" />;
+  return(
+    <div></div>
+  )
 }
 
 export default DescriptiveTab;

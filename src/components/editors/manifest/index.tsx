@@ -164,7 +164,7 @@ function ManifestComponent({
                 type="button"
                 className={
                   activeTab === tab.id
-                    ? "border-b-2 border-rose-500 px-1 py-2 text-center text-sm font-medium text-slate-950"
+                    ? "border-b-2 border-pink-500 px-1 py-2 text-center text-sm font-medium text-slate-950"
                     : "border-b-2 border-transparent px-1 py-2 text-center text-sm font-medium text-slate-400 transition hover:text-slate-700"
                 }
                 onClick={() => setActiveTab(tab.id)}
