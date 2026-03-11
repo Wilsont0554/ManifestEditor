@@ -106,7 +106,7 @@ function App() {
             </p>
             
             <div className="manifest-creator__controls">
-              <select
+              {/*<select
                 value={containerType}
                 onChange={(e) => {
                   manifestObj.getContainerObj().setType(e.target.value);
@@ -117,10 +117,13 @@ function App() {
                 <option value="canvas">Canvas</option>
                 <option value="scene">Scene</option>
                 <option value="timeline">Timeline</option>
-              </select>
+              </select>*/}
 
                 <button type="button" onClick={createAnnotation}>
                   Add Content Resource
+                </button>
+                <button type="button" /* onClick={createContainer} */>
+                  Add Container
                 </button>
               </div>
 
