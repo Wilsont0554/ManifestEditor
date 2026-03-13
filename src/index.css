@@ -27,3 +27,27 @@
     min-height: 100vh;
   }
 }
+
+.manifest-tabs-scroll {
+  scrollbar-color: #c73074ab #ffd3e6;
+  scrollbar-width: thin;
+}
+
+.manifest-tabs-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.manifest-tabs-scroll::-webkit-scrollbar-track {
+  background: #ffd3e6;
+  border-radius: 9999px;
+}
+
+.manifest-tabs-scroll::-webkit-scrollbar-thumb {
+  background: #e62b7f;
+  border-radius: 9999px;
+}
+
+.manifest-tabs-scroll::-webkit-scrollbar-thumb:hover {
+  background: #e81d7b;
+}

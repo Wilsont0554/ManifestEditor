@@ -28,11 +28,11 @@ function Navbar() {
           >
             Manifest Editor
           </NavLink>
-          <a href="https://github.com" target="_blank" rel="noreferrer" className={linkInactiveStyle}>
+          <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer" className={linkInactiveStyle}>
             Github
           </a>
           <a
-            href="https://iiif.io/api/presentation/3.0/"
+            href="https://preview.iiif.io/api/full_manifests/presentation/4.0/"
             target="_blank"
             rel="noreferrer"
             >
