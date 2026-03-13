@@ -5,7 +5,6 @@ function ContentResourceElement(props) {
     const { manifestObj, contentResourceIndex, setcount, count } = props;
 
     var types;
-    var coords = {x: 0, y: 0, z: 0};
 
     // Grab the specific resource from the class instance
     const resource = manifestObj
@@ -142,9 +141,8 @@ function ContentResourceElement(props) {
                     <input
                         placeholder="0"
                         type="number"
-                        value={annotation.getTarget().getSelector().x} 
+                        value={annotation.getTarget().getX()} 
                         onChange={(e) => {
-                            coords.x = Number(e.target.value);
                             annotation.setX(Number(e.target.value));
                             setcount(count + 1);
                         }}
@@ -155,9 +153,8 @@ function ContentResourceElement(props) {
                     <input
                         placeholder="0"
                         type="number"
-                        value={annotation.getTarget().getSelector().y} 
+                        value={annotation.getTarget().getY()} 
                         onChange={(e) => {
-                            coords.y = Number(e.target.value);
                             annotation.setY(Number(e.target.value));
                             setcount(count + 1);
                         }}
@@ -168,9 +165,8 @@ function ContentResourceElement(props) {
                     <input
                         placeholder="0"
                         type="number"
-                        value={annotation.getTarget().getSelector().z} 
+                        value={annotation.getTarget().getZ()} 
                         onChange={(e) => {
-                            coords.z = Number(e.target.value);
                             annotation.setZ(Number(e.target.value));
                             setcount(count + 1);
                         }}

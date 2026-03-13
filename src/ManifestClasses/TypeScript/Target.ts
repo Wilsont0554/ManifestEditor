@@ -53,6 +53,16 @@ class Target{
         this.selector[0]!.z = x;
     }
 
+    getX(){
+        return this.selector[0]!.x
+    }
+    getY(){
+        return this.selector[0]!.y
+    }
+    getZ(){
+        return this.selector[0]!.z
+    }
+
     /*---------------------------------------------------
                         REMOVE
     ---------------------------------------------------*/
