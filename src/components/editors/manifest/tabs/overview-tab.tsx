@@ -1,6 +1,6 @@
-import type { ManifestTabProps } from "../manifest-component-constants";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import { useState } from "react";
+import ManifestTabBody from "../shared/manifest-tab-body";
 
 function OverviewTab() {
   const [languageCode, setLanguageCode] = useState("none");
@@ -13,7 +13,7 @@ function OverviewTab() {
   }
 
   return (
-    <div className="min-h-40">
+    <ManifestTabBody>
       <InputWithLanguage
         label = "Label"
         languageCode={languageCode}
@@ -21,7 +21,7 @@ function OverviewTab() {
         onChange={handleInputChange}
         onLanguageChange={handleLanguageChange}
       />
-    </div>
+    </ManifestTabBody>
   );
 }
 

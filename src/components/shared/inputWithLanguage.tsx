@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supportedLanguageCodes } from "@/types/iiif";
+import ManifestField from "@/components/editors/manifest/shared/manifest-field";
 
 interface InputWithLanguageProps {
   label: string;
@@ -44,10 +45,7 @@ export default function InputWithLanguage({
   };
   
   return (
-    <section className="flex w-full flex-col">
-      <label className="mb-2 block text-md font-bold text-slate-950">
-        {label}
-      </label>
+    <ManifestField label={label} className="flex w-full flex-col gap-2">
       <div
         className={`
           w-full overflow-hidden transition-all duration-300 ease-in-out
@@ -98,6 +96,6 @@ export default function InputWithLanguage({
           )}
         </button>
       </div>
-    </section>
+    </ManifestField>
   );
 }
