@@ -32,7 +32,21 @@ class Annotation {
     }
 
     setTarget(){
-        this.target = new Target("https://example.org/iiif/scene1");
+        this.target = new Target(); //"https://example.org/iiif/scene1"
+    }
+
+    getTarget(){
+        return this.target;
+    }
+
+    setX(x: number){
+        this.target?.setX(x);
+    }
+    setY(x: number){
+        this.target?.setY(x);
+    }
+    setZ(x: number){
+        this.target?.setZ(x);
     }
 
     createLabel(languageCode: string = 'en') {

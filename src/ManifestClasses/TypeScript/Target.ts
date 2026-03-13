@@ -1,18 +1,17 @@
 class Target{
-    id: string;
-    type?: string;
-    source?: {id: string; type: string};
-    selector: {type: string; x?: number; y?: number; z?: number; };
+    type: string;
+    source?: [{id: string; type: string}];
+    selector: [{type: string; x?: number; y?: number; z?: number; }];
 
-    constructor(id: string){
-        this.type = "Scene";
-        this.selector = {
-            type: "Scene",
+    constructor(){
+        this.type = "SpecificResource";
+        this.source = [{id : "https://example.org/iiif/scene1", type: "Scene"}]
+        this.selector = [{
+            type: "PointSelector",
             x: 0,
             y: 0,
             z: 0
-        };
-        this.id = id;
+        }];
     }
 
     /*---------------------------------------------------
@@ -28,9 +27,9 @@ class Target{
 
     getCoordinates(){
         const coordinates: number[] = [];
-        coordinates.push(this.selector?.x!);
-        coordinates.push(this.selector?.y!);
-        coordinates.push(this.selector?.z!);
+        coordinates.push(this.selector[0]?.x!);
+        coordinates.push(this.selector[0]?.y!);
+        coordinates.push(this.selector[0]?.z!);
 
         return coordinates;
         
@@ -41,13 +40,17 @@ class Target{
     ---------------------------------------------------*/
 
     setSelectorType(type: string){
-        this.selector!.type = type;
+        this.selector[0]!.type = type;
     }
 
-    setCoordinates(x: number, y: number, z: number){
-        this.selector!.x = x;
-        this.selector!.y = y;
-        this.selector!.z = z;
+    setX(x: number){
+        this.selector[0]!.x = x;
+    }
+    setY(x: number){
+        this.selector[0]!.y = x;
+    }
+    setZ(x: number){
+        this.selector[0]!.z = x;
     }
 
     /*---------------------------------------------------
