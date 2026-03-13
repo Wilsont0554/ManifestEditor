@@ -1,7 +1,7 @@
-import type { ManifestTabProps } from "../manifest-component-constants";
+import ManifestTabBody from "../shared/manifest-tab-body";
 
 function NavPlaceTab() {
-  return <div className="min-h-40" />;
+  return <ManifestTabBody />;
 }
 
 export default NavPlaceTab;
