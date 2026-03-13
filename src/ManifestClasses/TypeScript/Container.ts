@@ -96,6 +96,4 @@ class Container {
 
         return out;
     }
-}
-
-export default Container;
+} export default Container;

@@ -14,7 +14,7 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerType, setContainerType] = useState("Scene");
+  const [containerObj] = useState(() => new Container("PlaceHolder", "Scene"));
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
   
   // NEW: State to track which resource is currently being edited in the sidebar
@@ -68,6 +68,11 @@ function App() {
     setcount((value) => value + 1);
   }
 
+  function createContainer() {
+    containerObj
+      .getType();
+  }
+
   const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -106,21 +111,11 @@ function App() {
             </p>
             
             <div className="manifest-creator__controls">
-              <select
-                value={containerType}
-                onChange={(e) => {
-                  manifestObj.getContainerObj().setType(e.target.value);
-                  setContainerType(e.target.value);
-                  setcount((value) => value + 1);
-                }}
-              >
-                <option value="canvas">Canvas</option>
-                <option value="scene">Scene</option>
-                <option value="timeline">Timeline</option>
-              </select>
-
                 <button type="button" onClick={createAnnotation}>
                   Add Content Resource
+                </button>
+                <button type="button" onClick={createContainer}>
+                  Add Container
                 </button>
               </div>
 
