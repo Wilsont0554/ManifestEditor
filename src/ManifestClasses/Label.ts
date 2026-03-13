@@ -1,7 +1,13 @@
+type LanguageFactory = new (value: string) => {
+    changeValue(value: string): void;
+};
+
 class Label {
-    private languageClasses: { [key: string]: any };
+    private languageClasses: Record<string, LanguageFactory>;
     private currentLanguage?: string;
-    public language: any;
+    public language: {
+        changeValue(value: string): void;
+    };
 
     constructor(value: string, languageCode: string = 'en') {
         this.languageClasses = {
@@ -44,9 +50,14 @@ class Label {
 
     setLanguage(languageCode: string) {
         if (this.languageClasses[languageCode]) {
+            const currentLanguage = this.currentLanguage;
+            const currentRecord = this.language as Record<string, unknown>;
+            const currentArray = currentLanguage ? currentRecord[currentLanguage] : undefined;
+            const currentValue = Array.isArray(currentArray) && typeof currentArray[0] === 'string'
+                ? currentArray[0]
+                : '';
+
             this.currentLanguage = languageCode;
-            const currentArray = this.language[Object.keys(this.language)[0]];
-            const currentValue = currentArray && currentArray.length > 0 ? currentArray[0] : '';
             this.language = new this.languageClasses[languageCode](currentValue);
         } else {
             console.error(`Language code '${languageCode}' not supported`);
@@ -61,8 +72,24 @@ class Label {
         return Object.keys(this.languageClasses);
     }
 
+    getValue() {
+        if (!this.currentLanguage) {
+            return '';
+        }
+
+        const currentValue = (this.language as Record<string, unknown>)[this.currentLanguage];
+
+        return Array.isArray(currentValue) && currentValue.length > 0
+            ? String(currentValue[0])
+            : '';
+    }
+
+    hasValue() {
+        return this.getValue().length > 0;
+    }
+
     toJSON() {
-        return this.language;
+        return this.language as Record<string, unknown>;
     }
 }
 
@@ -81,14 +108,14 @@ class English {
 }
 
 class Spanish {
-    public sp: string[];
+    public ep: string[];
 
     constructor(value: string) {
-        this.sp = value ? [value] : [];
+        this.ep = value ? [value] : [];
     }
 
     changeValue(value: string) {
-        this.sp = value ? [value] : [];
+        this.ep = value ? [value] : [];
     }
 }
 

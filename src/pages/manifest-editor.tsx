@@ -9,7 +9,6 @@ import { JsonEditor } from "json-edit-react";
 import ManifestComponent from "@components/editors/manifest";
 import { manifestObjContext } from "../context/manifest";
 import Button from "@components/shared/button";
-import ContentResource from "@/ManifestClasses/ContentResource";
 import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 
@@ -17,7 +16,7 @@ const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_SPACE = 760;
-type ContainerType = "Canvas" | "Scene";
+type ContainerType = "canvas" | "scene";
 
 interface ResizeState {
   startX: number;
@@ -25,11 +24,12 @@ interface ResizeState {
 }
 
 function ManifestEditorPage() {
-  const [containerType, setContainerType] = useState<ContainerType>("Scene");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const resizeStateRef = useRef<ResizeState | null>(null);
-  const { manifestObj } = useContext(manifestObjContext);
+  const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
+  const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
+
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
       if (!resizeStateRef.current) {
@@ -80,16 +80,17 @@ function ManifestEditorPage() {
   }
 
   function onContainerTypeChange(newType: ContainerType): void {
-    setContainerType(newType);
-    const containerObj = manifestObj.getContainerObj();
-    containerObj.type = newType; 
+    manifestObj.getContainerObj().setType(newType);
+    updateManifestObj(manifestObj.clone());
   }
 
   function onAddContentResource(): void {
     manifestObj
       .getContainerObj()
       .getAnnotationPage()
-      .addAnnotation(new Annotation())
+      .addAnnotation(new Annotation());
+
+    updateManifestObj(manifestObj.clone());
   }
 
   function handleDownloadManifest(): void {
@@ -123,11 +124,11 @@ function ManifestEditorPage() {
               <select
                 id="container-type"
                 className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
-                value={containerType}
+                value={manifestObj.getContainerObj().getType() as ContainerType}
                 onChange={(e) => onContainerTypeChange(e.target.value as ContainerType)}
               >
-                <option>Canvas</option>
-                <option>Scene</option>
+                <option value="canvas">Canvas</option>
+                <option value="scene">Scene</option>
               </select>
 
               <Button type="button" onClick={onAddContentResource}>
@@ -137,7 +138,7 @@ function ManifestEditorPage() {
           </div>
         </div>
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <JsonEditor data={manifestObj} />
+          <JsonEditor data={manifestPreview} />
         </div>
       </div>
 

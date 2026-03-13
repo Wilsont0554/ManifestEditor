@@ -1,5 +1,6 @@
 import InputWithLanguage from "@components/shared/inputWithLanguage";
-import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import { manifestObjContext } from "@/context/manifest";
+import { type ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import EmptyStateCard from "../shared/empty-state-card";
 import ManifestField from "../shared/manifest-field";
 import ManifestInput from "../shared/manifest-input";
@@ -7,17 +8,18 @@ import ManifestTabBody from "../shared/manifest-tab-body";
 import SoftActionButton from "../shared/soft-action-button";
 
 function DescriptiveTab() {
-  const [labelLanguageCode, setLabelLanguageCode] = useState("en");
-  const [labelValue, setLabelValue] = useState("Blank Manifest");
-  const [summaryLanguageCode, setSummaryLanguageCode] = useState("en");
-  const [summaryValue, setSummaryValue] = useState("");
-  const [rightsValue, setRightsValue] = useState("");
-  const [navDate, setNavDate] = useState("");
+  const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(
     null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const labelLanguageCode = manifestObj.getLabelLanguage();
+  const labelValue = manifestObj.getLabelValue();
+  const summaryLanguageCode = manifestObj.getSummaryLanguage();
+  const summaryValue = manifestObj.getSummaryValue();
+  const rightsValue = manifestObj.getRights();
+  const navDate = manifestObj.getNavDate();
 
   useEffect(() => {
     if (!thumbnailFile) {
@@ -38,22 +40,56 @@ function DescriptiveTab() {
     setThumbnailFile(nextFile);
   }
 
+  function commitManifestChange(): void {
+    updateManifestObj(manifestObj.clone());
+  }
+
+  function handleLabelChange(newValue: string): void {
+    manifestObj.setLabel(newValue);
+    commitManifestChange();
+  }
+
+  function handleLabelLanguageChange(newLanguageCode: string): void {
+    manifestObj.setLabelLanguage(newLanguageCode);
+    commitManifestChange();
+  }
+
+  function handleSummaryChange(newValue: string): void {
+    manifestObj.setSummary(newValue);
+    commitManifestChange();
+  }
+
+  function handleSummaryLanguageChange(newLanguageCode: string): void {
+    manifestObj.setSummaryLanguage(newLanguageCode);
+    commitManifestChange();
+  }
+
+  function handleRightsChange(newValue: string): void {
+    manifestObj.setRights(newValue);
+    commitManifestChange();
+  }
+
+  function handleNavDateChange(newValue: string): void {
+    manifestObj.setNavDate(newValue);
+    commitManifestChange();
+  }
+
   return (
     <ManifestTabBody>
       <InputWithLanguage
         label="Label"
         languageCode={labelLanguageCode}
         value={labelValue}
-        onChange={setLabelValue}
-        onLanguageChange={setLabelLanguageCode}
+        onChange={handleLabelChange}
+        onLanguageChange={handleLabelLanguageChange}
       />
 
       <InputWithLanguage
         label="Summary"
         languageCode={summaryLanguageCode}
         value={summaryValue}
-        onChange={setSummaryValue}
-        onLanguageChange={setSummaryLanguageCode}
+        onChange={handleSummaryChange}
+        onLanguageChange={handleSummaryLanguageChange}
         rows={3}
         textareaClassName="min-h-28"
       />
@@ -92,7 +128,7 @@ function DescriptiveTab() {
         id="manifest-rights"
         type="text"
         value={rightsValue}
-        onChange={setRightsValue}
+        onChange={handleRightsChange}
       />
 
       <ManifestInput
@@ -100,7 +136,7 @@ function DescriptiveTab() {
         id="manifest-nav-date"
         type="datetime-local"
         value={navDate}
-        onChange={setNavDate}
+        onChange={handleNavDateChange}
         appearance="outline"
       />
 
