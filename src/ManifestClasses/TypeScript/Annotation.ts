@@ -1,21 +1,22 @@
 import Label from './Label.ts';
 import ContentResource from './ContentResource.js';
+import Target from './Target.ts';
 
 class Annotation {
     id: string;
     type: string;
     motivation: string[];
     body?: ContentResource;
-    target: string;
+    target?: Target;
     label?: Label;
 
     constructor() {
         this.id = "https://example.org/iiif/3d/anno1";
         this.type = "Annotation";
         this.motivation = ["painting"];
-        this.target = "https://example.org/iiif/scene1/page/p1/1";
         this.label;
         this.createLabel("en");
+        this.setTarget();
     }
 
     setContentResource(contentResource: ContentResource) {
@@ -28,6 +29,10 @@ class Annotation {
 
     setLabel(index: number, value: string) {
         this.label?.changeLabelTest(value);
+    }
+
+    setTarget(){
+        this.target = new Target("https://example.org/iiif/scene1");
     }
 
     createLabel(languageCode: string = 'en') {
