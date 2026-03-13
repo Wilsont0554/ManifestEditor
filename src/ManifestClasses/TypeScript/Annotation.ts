@@ -9,20 +9,20 @@ class Annotation {
     target: string;
     label?: Label;
 
-    constructor() {
-        this.id = "https://example.org/iiif/3d/anno1";
+    constructor(index: number) {
+        this.id = "https://example.org/iiif/3d/anno" + index;
         this.type = "Annotation";
         this.motivation = ["painting"];
-        this.target = "https://example.org/iiif/scene1/page/p1/1";
+        this.target = "https://example.org/iiif/scene1";
         this.label;
-        this.createLabel("en");
+        //this.createLabel("en");
     }
 
     setContentResource(contentResource: ContentResource) {
         this.body = contentResource;
     }
 
-    getContentResource(index?: number) {
+    getContentResource() {
         return this.body;
     }
 
