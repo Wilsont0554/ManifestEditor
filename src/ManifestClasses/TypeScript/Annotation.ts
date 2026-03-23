@@ -1,5 +1,5 @@
 import Label from './Label.ts';
-import ContentResource from './ContentResource.js';
+import ContentResource from './ContentResource.ts';
 
 class Annotation {
     id: string;

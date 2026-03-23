@@ -12,7 +12,7 @@ class Label {
             'it': Italian,
             'ru': Russian,
             'zh': Chinese,
-            'jp': Japanese,
+            'ja': Japanese,
             'pt': Portuguese,
             'ar': Arabic,
             'hi': Hindi,
@@ -57,6 +57,20 @@ class Label {
         return this.currentLanguage;
     }
 
+    getValue() {
+        const currentKey = this.currentLanguage;
+        if (currentKey && this.language?.[currentKey]?.length > 0) {
+            return this.language[currentKey][0];
+        }
+
+        const fallbackKey = Object.keys(this.language ?? {})[0];
+        if (fallbackKey && this.language[fallbackKey]?.length > 0) {
+            return this.language[fallbackKey][0];
+        }
+
+        return '';
+    }
+
     getSupportedLanguages() {
         return Object.keys(this.languageClasses);
     }
@@ -81,14 +95,14 @@ class English {
 }
 
 class Spanish {
-    public sp: string[];
+    public es: string[];
 
     constructor(value: string) {
-        this.sp = value ? [value] : [];
+        this.es = value ? [value] : [];
     }
 
     changeValue(value: string) {
-        this.sp = value ? [value] : [];
+        this.es = value ? [value] : [];
     }
 }
 
@@ -153,14 +167,14 @@ class Chinese {
 }
 
 class Japanese {
-    public jp: string[];
+    public ja: string[];
 
     constructor(value: string) {
-        this.jp = value ? [value] : [];
+        this.ja = value ? [value] : [];
     }
 
     changeValue(value: string) {
-        this.jp = value ? [value] : [];
+        this.ja = value ? [value] : [];
     }
 }
 

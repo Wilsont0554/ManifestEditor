@@ -1,10 +1,11 @@
 import Container from './Container.ts';
-import Annotation from './ContentResource.ts';
+import Metadata from './Metadata.ts';
 
 class ManifestObject {
     id: string;
     type: string;
     items: Container[];
+    metadata?: Metadata;
 
     constructor(containerType: string) {
         this.id = "https://example.org/to13swr5ws-mlwptp83";
@@ -22,6 +23,13 @@ class ManifestObject {
             index = 0;
         }
         return this.items[index];
+    }
+
+    getMetadata(): Metadata {
+        if (!this.metadata) {
+            this.metadata = new Metadata();
+        }
+        return this.metadata;
     }
 }
 

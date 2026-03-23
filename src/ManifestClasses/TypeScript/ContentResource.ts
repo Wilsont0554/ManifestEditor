@@ -1,5 +1,5 @@
 import Label from './Label.ts';
-import Metadata from '../Metadata.js';
+import Metadata from './Metadata.ts';
 
 class ContentResource {
     id: string;
@@ -10,7 +10,7 @@ class ContentResource {
     label: Label;
     duration?: number;
     summary?: string;
-    metadata: any;
+    metadata: Metadata;
 
     constructor(id: string, type: string, format: string) {
         this.id = id;
@@ -99,7 +99,7 @@ class ContentResource {
         return this.summary;
     }
 
-    getMetadata() {
+    getMetadata(): Metadata {
         return this.metadata;
     }
 }
