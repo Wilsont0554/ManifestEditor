@@ -11,6 +11,7 @@ import Light from "./ManifestClasses/TypeScript/Light.ts";
 models for testing exports:
 https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb
 https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb
 */
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -82,6 +83,18 @@ function App() {
     setcount((value) => value + 1);
   }
 
+  function createTextAnnotation(){
+    let index = 0;
+    
+    for (let i = 0; i < manifestObj.getContainerObj().getTextAnnotations().length; i++){
+      index++;
+    }
+
+    manifestObj.getContainerObj().getTextAnnotations()[index - 1].addAnnotation(new Annotation());
+    setcount((value) => value + 1);
+
+  }
+
   const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -138,6 +151,9 @@ function App() {
                 </button>
                 <button type="button" onClick={() => {createAnnotation("Light")}}>
                   Add Light
+                </button>
+                <button type="button" onClick={() => {createTextAnnotation()}}>
+                  Add Text Annotation
                 </button>
               </div>
 
