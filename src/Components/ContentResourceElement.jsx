@@ -4,6 +4,8 @@ import LabelElement from "./LabelElement.jsx";
 function ContentResourceElement(props) {
     const { manifestObj, contentResourceIndex, setcount, count } = props;
 
+    var types;
+
     // Grab the specific resource from the class instance
     const resource = manifestObj
         .getContainerObj()
@@ -11,7 +13,10 @@ function ContentResourceElement(props) {
         .getAnnotation(contentResourceIndex)
         .getContentResource();
 
-    var types;
+    const annotation = manifestObj
+        .getContainerObj()
+        .getAnnotationPage()
+        .getAnnotation(contentResourceIndex);
 
     if (resource.getType().includes("Light")){
         types = {
@@ -128,6 +133,47 @@ function ContentResourceElement(props) {
                     />
                 </div>
             ) : null}
+
+            <div>
+                <h4>Position</h4>
+                <div className="field-group">
+                    <label>X</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getX()} 
+                        onChange={(e) => {
+                            annotation.setX(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Y</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getY()} 
+                        onChange={(e) => {
+                            annotation.setY(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Z</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getZ()} 
+                        onChange={(e) => {
+                            annotation.setZ(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            </div>
+
             <div className="label-section">
                 <h4>Annotation Label</h4>
                 <LabelElement 

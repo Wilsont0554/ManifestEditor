@@ -11,7 +11,7 @@ import Light from "./ManifestClasses/TypeScript/Light.ts";
 models for testing exports:
 https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb
 https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb
-https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb 
 */
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
