@@ -1,5 +1,5 @@
 import Label from './Label.ts';
-import Metadata from '../Metadata.js';
+import Metadata from './Metadata.ts';
 
 class ContentResource {
     id: string;
