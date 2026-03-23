@@ -27,6 +27,14 @@ class Annotation {
         return this.body;
     }
 
+    getType(){
+        return this.type;
+    }
+
+    getMotivation(){
+        return this.motivation;
+    }
+
     setLabel(index: number, value: string) {
         this.label?.changeLabelTest(value);
     }

@@ -1,11 +1,19 @@
 import React from "react";
 import LabelElement from "./LabelElement.jsx";
+import TextAnnotation from "./TextAnnotation.jsx";
 
 function ContentResourceElement(props) {
     const { manifestObj, contentResourceIndex, setcount, count, object} = props;
 
     var types;
 
+    if (object.getMotivation() == "commenting"){
+        return <TextAnnotation
+                    count={count}
+                    setcount={setcount}
+                    object={object}
+                />;
+    }
     // Grab the specific resource from the class instance
     const resource = object.getContentResource();
     
@@ -21,6 +29,9 @@ function ContentResourceElement(props) {
         .getContainerObj()
         .getAnnotationPage()
         .getAnnotation(contentResourceIndex);*/
+
+    if (!resource) 
+        return <p>No Resource</p>
 
     if (resource.getType().includes("Light")){
         types = {
@@ -42,8 +53,6 @@ function ContentResourceElement(props) {
         resource.setFormat(types[e.target.value]);
         setcount(count + 1); // Trigger re-render of App.js
     }
-
-    if (!resource) return <p>No resource found.</p>;
 
     return (
         <div className="sidebar-editor-container">
@@ -129,7 +138,7 @@ function ContentResourceElement(props) {
                     <input
                         placeholder="https://..."
                         type="text"
-                        value={resource.id || ""} 
+                        value={resource.getID() || ""} 
                         onChange={(e) => {
                             resource.setID(e.target.value);
                             setcount(count + 1);

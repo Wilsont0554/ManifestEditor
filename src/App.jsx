@@ -60,7 +60,7 @@ function App() {
     manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .addAnnotation(new Annotation(manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length + 1));
+    .addAnnotation(new Annotation(allResources.length));
 
     if (resourceType == "Default"){
        manifestObj
@@ -83,11 +83,13 @@ function App() {
 
   function createTextAnnotation(){
 
-    manifestObj.getContainerObj().getTextAnnotations().addAnnotation(new TextAnnotation());
+    manifestObj.getContainerObj().getTextAnnotations().addAnnotation(new TextAnnotation(allResources.length));
     
-    let length = manifestObj.getContainerObj().getTextAnnotations().length
+    let length = manifestObj.getContainerObj().getTextAnnotations().getAllAnnotations().length
     allResources.push(manifestObj.getContainerObj().getTextAnnotations().getAnnotation(length - 1))
+
     console.log(allResources);
+
     setcount((value) => value + 1);
   }
 
@@ -95,7 +97,6 @@ function App() {
     .getContainerObj()
     .getAnnotationPage()
     .getAllAnnotations()
-
   
 
   // Helper to get the currently selected resource object

@@ -6,7 +6,7 @@ class TextAnnotation {
     id: string;
     type: string;
     motivation: string[];
-    body?: string;
+    bodyValue?: string;
     target?: Target;
     label?: Label;
 
@@ -19,12 +19,12 @@ class TextAnnotation {
         this.setTarget();
     }
 
-    setContentResource(value: string) {
-        this.body = value;
+    setBodyValue(value: string) {
+        this.bodyValue = value;
     }
 
-    getContentResource() {
-        return this.body;
+    getBodyValue() {
+        return this.bodyValue;
     }
 
     setLabel(index: number, value: string) {
@@ -37,6 +37,14 @@ class TextAnnotation {
 
     getTarget(){
         return this.target;
+    }
+
+    getType(){
+        return this.type;
+    }
+
+    getMotivation(){
+        return this.motivation;
     }
 
     setX(x: number){
@@ -65,7 +73,7 @@ class TextAnnotation {
     }
 
     getAllContentResource() {
-        return this.body;
+        return this.bodyValue;
     }
 
     changeID(value: string) {
