@@ -7,10 +7,10 @@ function ContentResourceMetadataElement(props) {
     const resource = manifestObj
         .getContainerObj()
         .getAnnotationPage()
-        .getAnnotation(0)
-        .getContentResource(contentResourceIndex);
+        .getAnnotation(contentResourceIndex)
+        .getContentResource();
 
-    if (!resource) return <p>No resource found.</p>;
+    if (!resource || !resource.getMetadata) return <p>No resource found or metadata not supported.</p>;
 
     const metadata = resource.getMetadata();
     const metadataEntries = metadata.getAllEntries();
