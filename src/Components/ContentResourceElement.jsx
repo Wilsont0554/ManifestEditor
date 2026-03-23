@@ -2,21 +2,25 @@ import React from "react";
 import LabelElement from "./LabelElement.jsx";
 
 function ContentResourceElement(props) {
-    const { manifestObj, contentResourceIndex, setcount, count } = props;
+    const { manifestObj, contentResourceIndex, setcount, count, object} = props;
 
     var types;
 
     // Grab the specific resource from the class instance
-    const resource = manifestObj
+    const resource = object.getContentResource();
+    
+    /*manifestObj
         .getContainerObj()
         .getAnnotationPage()
         .getAnnotation(contentResourceIndex)
-        .getContentResource();
+        .getContentResource();*/
 
-    const annotation = manifestObj
+    const annotation = object 
+    
+    /*manifestObj
         .getContainerObj()
         .getAnnotationPage()
-        .getAnnotation(contentResourceIndex);
+        .getAnnotation(contentResourceIndex);*/
 
     if (resource.getType().includes("Light")){
         types = {

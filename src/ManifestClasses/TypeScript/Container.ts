@@ -9,7 +9,7 @@ class Container {
     duration?: number;
     height?: number;
     width?: number;
-    annotations?: AnnotationPage[];
+    annotations: AnnotationPage[];
 
     constructor(id?: string, type?: string) {
         this.id = "https://example.org/iiif/scene1" === undefined ? 'https://example.org/manifest_Example.com' : "https://example.org/iiif/scene1";
@@ -82,7 +82,7 @@ class Container {
     }
     
     getTextAnnotations(){
-        return this.annotations;
+        return this.annotations[0];
     }
 
 }
