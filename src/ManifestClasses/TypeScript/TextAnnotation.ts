@@ -2,37 +2,29 @@ import Label from './Label.ts';
 import ContentResource from './ContentResource.js';
 import Target from './Target.ts';
 
-class Annotation {
+class TextAnnotation {
     id: string;
     type: string;
     motivation: string[];
-    body?: ContentResource;
+    bodyValue?: string;
     target?: Target;
     label?: Label;
 
     constructor(index: number) {
         this.id = "https://example.org/iiif/3d/anno" + index;
         this.type = "Annotation";
-        this.motivation = ["painting"];
+        this.motivation = ["commenting"];
         this.label;
         this.createLabel("en");
         this.setTarget();
     }
 
-    setContentResource(contentResource: ContentResource) {
-        this.body = contentResource;
+    setBodyValue(value: string) {
+        this.bodyValue = value;
     }
 
-    getContentResource() {
-        return this.body;
-    }
-
-    getType(){
-        return this.type;
-    }
-
-    getMotivation(){
-        return this.motivation;
+    getBodyValue() {
+        return this.bodyValue;
     }
 
     setLabel(index: number, value: string) {
@@ -45,6 +37,14 @@ class Annotation {
 
     getTarget(){
         return this.target;
+    }
+
+    getType(){
+        return this.type;
+    }
+
+    getMotivation(){
+        return this.motivation;
     }
 
     setX(x: number){
@@ -73,7 +73,7 @@ class Annotation {
     }
 
     getAllContentResource() {
-        return this.body;
+        return this.bodyValue;
     }
 
     changeID(value: string) {
@@ -89,4 +89,4 @@ class Annotation {
     }
 }
 
-export default Annotation;
+export default TextAnnotation;
