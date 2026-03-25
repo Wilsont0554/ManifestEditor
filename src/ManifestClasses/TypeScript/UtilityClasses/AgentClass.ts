@@ -3,10 +3,10 @@ import Label from './TypeScript/Label.ts';
 class AgentClass{
 	let type: string = "Agent Super Man";
 	let label: Label;
-	let logo?: Logo;
-	let homePage?: HomePage; // HomePage type might need to be updated for syntax
+	// let logo?: Logo;
+	// let homePage?: HomePage; // HomePage type might need to be updated for syntax
 	let ID?: string;
-	let seeAlso?: SeeAlso;
+	// let seeAlso?: SeeAlso;
 	let summary?: string;
 
 	public constructor(type: string){
