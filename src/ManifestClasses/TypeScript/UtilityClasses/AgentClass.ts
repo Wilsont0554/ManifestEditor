@@ -25,13 +25,13 @@ class AgentClass{
 		delete this.ID;
 	}
 
-	deleteLogo(){
-		delete this.logo;
-	}
+	// deleteLogo(){
+	// 	delete this.logo;
+	// }
 
-	deleteSeeAlso(){
-		delete this.seeAlso;
-	}
+	// deleteSeeAlso(){
+	// 	delete this.seeAlso;
+	// }
 
 	deleteSummary(){
 		delete this.summary;
@@ -48,17 +48,17 @@ class AgentClass{
 		return this.label;
 	}
 
-	getHomePage(): HomePage{
-		return this.homePage;
-	}
+	// getHomePage(): HomePage{
+	// 	return this.homePage;
+	// }
 
-	getLogo(): Logo{
-		return this.logo;
-	}
+	// getLogo(): Logo{
+	// 	return this.logo;
+	// }
 
-	getSeeAlso(): SeeAlso{
-		return this.seeAlso;
-	}
+	// getSeeAlso(): SeeAlso{
+	// 	return this.seeAlso;
+	// }
 
 	getSummaryFields(): string{
 		return this.summary;
