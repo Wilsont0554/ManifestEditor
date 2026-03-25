@@ -6,6 +6,8 @@ import ContentResourceElement from "./Components/ContentResourceElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
+import Camera from "./ManifestClasses/TypeScript/SceneComponets/Camera.ts";
+import CameraElement from "./Components/CameraElement.tsx";
 import Light from "./ManifestClasses/TypeScript/Light.ts";
 /*
 models for testing exports:
