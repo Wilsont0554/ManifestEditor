@@ -1,4 +1,4 @@
-import Label from './TypeScript/Label.ts';
+import Label from '../Label';
 
 class AgentClass{
 	type: string = "Agent Super Man";
