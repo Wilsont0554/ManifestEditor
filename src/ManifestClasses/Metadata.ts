@@ -1,26 +1,37 @@
-import Label from './Label.ts';
+import Label from "./Label.ts";
 
 class MetadataEntry {
     label: Label;
     value: Label;
 
-    constructor(labelText: string = '', valueText: string = '', languageCode: string = 'en') {
+    constructor(
+        labelText: string = "",
+        valueText: string = "",
+        languageCode: string = "en",
+    ) {
         this.label = new Label(labelText, languageCode);
         this.value = new Label(valueText, languageCode);
     }
 
-    setLabel(text: string, languageCode: string = 'en'): void {
+    setLabel(text: string, languageCode?: string): void {
         this.label.changeLabelTest(text);
+
         if (languageCode) {
             this.label.setLanguage(languageCode);
         }
     }
 
-    setValue(text: string, languageCode: string = 'en'): void {
+    setValue(text: string, languageCode?: string): void {
         this.value.changeLabelTest(text);
+
         if (languageCode) {
             this.value.setLanguage(languageCode);
         }
+    }
+
+    setLanguage(languageCode: string): void {
+        this.label.setLanguage(languageCode);
+        this.value.setLanguage(languageCode);
     }
 
     getLabelText(): string {
@@ -31,10 +42,18 @@ class MetadataEntry {
         return this.value.getValue();
     }
 
+    getLabelLanguage(): string {
+        return this.label.getLanguage() ?? "en";
+    }
+
+    getValueLanguage(): string {
+        return this.value.getLanguage() ?? "en";
+    }
+
     toJSON() {
         return {
             label: this.label,
-            value: this.value
+            value: this.value,
         };
     }
 }
@@ -46,7 +65,11 @@ class Metadata {
         this.entries = [];
     }
 
-    addEntry(labelText: string = '', valueText: string = '', languageCode: string = 'en'): MetadataEntry {
+    addEntry(
+        labelText: string = "",
+        valueText: string = "",
+        languageCode: string = "en",
+    ): MetadataEntry {
         const entry = new MetadataEntry(labelText, valueText, languageCode);
         this.entries.push(entry);
         return entry;
@@ -56,6 +79,7 @@ class Metadata {
         if (index === undefined || index < 0 || index >= this.entries.length) {
             return null;
         }
+
         return this.entries[index];
     }
 
@@ -63,7 +87,12 @@ class Metadata {
         return this.entries;
     }
 
-    updateEntry(index: number, labelText: string, valueText: string, languageCode: string = 'en'): void {
+    updateEntry(
+        index: number,
+        labelText: string,
+        valueText: string,
+        languageCode?: string,
+    ): void {
         if (index >= 0 && index < this.entries.length) {
             this.entries[index].setLabel(labelText, languageCode);
             this.entries[index].setValue(valueText, languageCode);

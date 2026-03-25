@@ -14,7 +14,6 @@ class Annotation {
         this.type = "Annotation";
         this.motivation = ["painting"];
         this.target = "https://example.org/iiif/scene1/page/p1/1";
-        this.label;
         this.createLabel("en");
     }
 
@@ -22,7 +21,7 @@ class Annotation {
         this.body = contentResource;
     }
 
-    getContentResource(index?: number) {
+    getContentResource(_index?: number) {
         return this.body;
     }
 
