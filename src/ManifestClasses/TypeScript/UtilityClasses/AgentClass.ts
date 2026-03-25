@@ -60,7 +60,7 @@ class AgentClass{
 	// 	return this.seeAlso;
 	// }
 
-	getSummaryFields(): string{
+	getSummaryFields(){
 		return this.summary;
 	}
 
@@ -69,7 +69,7 @@ class AgentClass{
 --------------------------------------------------------------*/
 	// Also creates ID in this context
 	setID(inputID: string){
-		if(this.ID == undefined) let id: string = inputID;
+		if(this.ID == undefined) this.ID = inputID;
 		else this.ID = inputID;
 	}
 

@@ -20,9 +20,9 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerObj] = useState(() => new Container("PlaceHolder", "Scene"));
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
-  
+  const [containerType, setContainerType] = useState("Scene");
+
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
 
@@ -81,11 +81,6 @@ function App() {
       .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
     }
     setcount((value) => value + 1);
-  }
-
-  function createContainer() {
-    containerObj
-      .getType();
   }
 
   const annotationResource = manifestObj
