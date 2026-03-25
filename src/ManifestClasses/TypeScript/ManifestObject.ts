@@ -7,7 +7,7 @@ class ManifestObject {
     items: Container[];
 
     constructor(containerType: string) {
-        this.id = "https://example.org/to13swr5ws-mlwptp83";
+        this.id = "https://example.org/iiif/3d/model_origin.json";
         this.type = "Manifest";
         this.items = [];
         this.addContainer(new Container(this.id, containerType));

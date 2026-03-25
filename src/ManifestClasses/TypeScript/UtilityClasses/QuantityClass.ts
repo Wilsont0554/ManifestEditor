@@ -1,10 +1,14 @@
+import Label from '../Label'
+
 class Quantity{
-	let type: string = "Quantity";
-	let quantityValue: number;
-	let unit: string;
+	type: string = "Quantity";
+	quantityValue: number;
+	unit: string;
+	ID?: string;
+	quantityLabel?: Label;
 
 	public constructor(value: number, unit: string){
-		this.value = value;
+		this.quantityValue = value;
 		this.unit = unit;
 	}
 
@@ -14,7 +18,7 @@ class Quantity{
 
 	public deleteID(){ delete this.ID; }	
 
-	public deleteLabel(){ delete this.label; }
+	public deleteLabel(){ delete this.quantityLabel; }
 
 /*------------------------------------------------------------
     					GETTERS
@@ -32,12 +36,12 @@ class Quantity{
 		return this.unit;
 	}
 
-	public getID(): string{
+	public getID(){
 		return this.ID;
 	}
 
-	public getLabel(): Label{
-		return this.Label;
+	public getLabel(){
+		return this.quantityLabel;
 	}
 
 /*------------------------------------------------------------
@@ -60,7 +64,7 @@ class Quantity{
 	}
 
 	public setID(ID: string){
-		this.ID = ID:
+		this.ID = ID;
 	}
 
 /*------------------------------------------------------------

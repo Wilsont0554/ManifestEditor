@@ -1,13 +1,13 @@
-import Label from './TypeScript/Label.ts';
+import Label from '../Label';
 
 class AgentClass{
-	let type: string = "Agent Super Man";
-	let label: Label;
-	let logo?: Logo;
-	let homePage?: HomePage; // HomePage type might need to be updated for syntax
-	let ID?: string;
-	let seeAlso?: SeeAlso;
-	let summary?: string;
+	type: string = "Agent Super Man";
+	label: Label;
+	// let logo?: Logo;
+	// let homePage?: HomePage; // HomePage type might need to be updated for syntax
+	ID?: string;
+	// let seeAlso?: SeeAlso;
+	summary?: string;
 
 	public constructor(type: string){
 		this.type = type;
@@ -25,13 +25,13 @@ class AgentClass{
 		delete this.ID;
 	}
 
-	deleteLogo(){
-		delete this.logo;
-	}
+	// deleteLogo(){
+	// 	delete this.logo;
+	// }
 
-	deleteSeeAlso(){
-		delete this.seeAlso;
-	}
+	// deleteSeeAlso(){
+	// 	delete this.seeAlso;
+	// }
 
 	deleteSummary(){
 		delete this.summary;
@@ -48,19 +48,19 @@ class AgentClass{
 		return this.label;
 	}
 
-	getHomePage(): HomePage{
-		return this.homePage;
-	}
+	// getHomePage(): HomePage{
+	// 	return this.homePage;
+	// }
 
-	getLogo(): Logo{
-		return this.logo;
-	}
+	// getLogo(): Logo{
+	// 	return this.logo;
+	// }
 
-	getSeeAlso(): SeeAlso{
-		return this.seeAlso;
-	}
+	// getSeeAlso(): SeeAlso{
+	// 	return this.seeAlso;
+	// }
 
-	getSummaryFields(): string{
+	getSummaryFields(){
 		return this.summary;
 	}
 
@@ -69,7 +69,7 @@ class AgentClass{
 --------------------------------------------------------------*/
 	// Also creates ID in this context
 	setID(inputID: string){
-		if(this.ID == undefined) let id: string = inputID;
+		if(this.ID == undefined) this.ID = inputID;
 		else this.ID = inputID;
 	}
 
