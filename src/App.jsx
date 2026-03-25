@@ -24,9 +24,9 @@ function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
-  const [containerType, setContainerType] = useState("Scene");
-
   const [allResources] = useState([]);
+
+  const [containerType, setContainerType] = useState("Scene");
 
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
