@@ -7,6 +7,7 @@ type ManifestEditableField =
   | "summary"
   | "rights"
   | "navDate"
+  | "contentResources"
   | "viewingDirection"
   | "manifestOrderingBehavior"
   | "repeatBehavior"

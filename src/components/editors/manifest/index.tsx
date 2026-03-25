@@ -20,8 +20,6 @@ interface ManifestComponentProps {
   activeTab: ManifestTabId;
   onActiveTabChange: (tab: ManifestTabId) => void;
   selectedMetadataAnnotationIndex: number;
-  isMetadataEditorOpen: boolean;
-  onMetadataEditorOpenChange: (isOpen: boolean) => void;
   onSelectedMetadataAnnotationIndexChange: (index: number) => void;
   onClose: () => void;
   onReset: () => void;
@@ -33,8 +31,6 @@ function ManifestComponent({
   activeTab,
   onActiveTabChange,
   selectedMetadataAnnotationIndex,
-  isMetadataEditorOpen,
-  onMetadataEditorOpenChange,
   onSelectedMetadataAnnotationIndexChange,
   onClose,
   onReset,
@@ -54,8 +50,6 @@ function ManifestComponent({
     tabContent = (
       <MetadataTab
         selectedAnnotationIndex={selectedMetadataAnnotationIndex}
-        isEditingMetadata={isMetadataEditorOpen}
-        onEditingMetadataChange={onMetadataEditorOpenChange}
         onSelectedAnnotationIndexChange={onSelectedMetadataAnnotationIndexChange}
       />
     );

@@ -6,6 +6,9 @@ import {
   useContext,
 } from "react";
 import { JsonEditor } from "json-edit-react";
+import ContentResourceModal, {
+  type ContentResourceModalView,
+} from "@components/editors/manifest/content-resource-modal";
 import ManifestComponent from "@components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
@@ -14,7 +17,7 @@ import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import {
   createDefaultContentResource,
-  ensureAnnotationHasContentResource,
+  type EditableContentResourceType,
 } from "@/utils/content-resource";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
@@ -29,11 +32,14 @@ interface ResizeState {
 }
 
 function ManifestEditorPage() {
+  const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
+    useState(false);
+  const [contentResourceModalView, setContentResourceModalView] =
+    useState<ContentResourceModalView>("picker");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
-  const [isMetadataEditorOpen, setIsMetadataEditorOpen] = useState(false);
   const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
     useState(0);
   const resizeStateRef = useRef<ResizeState | null>(null);
@@ -94,22 +100,28 @@ function ManifestEditorPage() {
     updateManifestObj(manifestObj.clone());
   }
 
-  function onAddContentResource(): void {
-    const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
+  function handleOpenContentResourceModal(): void {
+    setContentResourceModalView("picker");
+    setIsContentResourceModalOpen(true);
+  }
 
-    annotationPage.getAllAnnotations().forEach((annotation) => {
-      ensureAnnotationHasContentResource(annotation);
-    });
+  function handleCloseContentResourceModal(): void {
+    setIsContentResourceModalOpen(false);
+    setContentResourceModalView("picker");
+  }
+
+  function handleCreateContentResource(
+    type: EditableContentResourceType,
+  ): void {
+    const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
 
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation();
-    annotation.setContentResource(createDefaultContentResource());
+    annotation.setContentResource(createDefaultContentResource(type));
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
-    setIsMetadataEditorOpen(false);
-    setActiveManifestTab("metadata");
-    setIsInspectorOpen(true);
+    setContentResourceModalView("editor");
     updateManifestObj(manifestObj.clone());
   }
 
@@ -119,6 +131,14 @@ function ManifestEditorPage() {
 
   return (
     <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-slate-100">
+      <ContentResourceModal
+        isOpen={isContentResourceModalOpen}
+        view={contentResourceModalView}
+        selectedAnnotationIndex={selectedMetadataAnnotationIndex}
+        onClose={handleCloseContentResourceModal}
+        onSelectType={handleCreateContentResource}
+      />
+
       <div
         className="h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
         style={{
@@ -152,7 +172,10 @@ function ManifestEditorPage() {
                 <option value="timeline">Timeline</option>
               </select>
 
-              <Button type="button" onClick={onAddContentResource}>
+              <Button
+                type="button"
+                onClick={handleOpenContentResourceModal}
+              >
                 Add Content Resource
               </Button>
             </div>
@@ -169,8 +192,6 @@ function ManifestEditorPage() {
           activeTab={activeManifestTab}
           onActiveTabChange={setActiveManifestTab}
           selectedMetadataAnnotationIndex={selectedMetadataAnnotationIndex}
-          isMetadataEditorOpen={isMetadataEditorOpen}
-          onMetadataEditorOpenChange={setIsMetadataEditorOpen}
           onSelectedMetadataAnnotationIndexChange={
             setSelectedMetadataAnnotationIndex
           }

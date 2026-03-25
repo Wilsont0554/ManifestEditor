@@ -1,6 +1,10 @@
 import { useState } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
+import {
+  createContentResourceSnapshot,
+  type ContentResourceSnapshot,
+} from "@/utils/content-resource";
 
 type ManifestEditableField =
   | "id"
@@ -8,6 +12,7 @@ type ManifestEditableField =
   | "summary"
   | "rights"
   | "navDate"
+  | "contentResources"
   | "viewingDirection"
   | "manifestOrderingBehavior"
   | "repeatBehavior"
@@ -26,6 +31,7 @@ interface ManifestEditableSnapshot {
   summary: LocalizedManifestFieldSnapshot;
   rights: string;
   navDate: string;
+  contentResources: ContentResourceSnapshot[];
   viewingDirection: string;
   manifestOrderingBehavior: string;
   repeatBehavior: string;
@@ -90,6 +96,7 @@ function createManifestEditableSnapshot(
     },
     rights: manifestObj.getRights(),
     navDate: manifestObj.getNavDate(),
+    contentResources: createContentResourceSnapshot(manifestObj),
     viewingDirection: manifestObj.getViewingDirection(),
     manifestOrderingBehavior: manifestObj.getManifestOrderingBehavior(),
     repeatBehavior: manifestObj.getRepeatBehavior(),
@@ -157,6 +164,33 @@ function isMetadataFieldEdited(
   });
 }
 
+function isContentResourceFieldEdited(
+  currentField: ContentResourceSnapshot[],
+  initialField: ContentResourceSnapshot[],
+): boolean {
+  if (currentField.length !== initialField.length) {
+    return true;
+  }
+
+  return currentField.some((currentResource, resourceIndex) => {
+    const initialResource = initialField[resourceIndex];
+
+    return (
+      currentResource.annotationIndex !== initialResource.annotationIndex ||
+      currentResource.url !== initialResource.url ||
+      currentResource.type !== initialResource.type ||
+      currentResource.format !== initialResource.format ||
+      currentResource.annotationLabel.value !==
+        initialResource.annotationLabel.value ||
+      currentResource.annotationLabel.languageCode !==
+        initialResource.annotationLabel.languageCode ||
+      currentResource.resourceLabel.value !== initialResource.resourceLabel.value ||
+      currentResource.resourceLabel.languageCode !==
+        initialResource.resourceLabel.languageCode
+    );
+  });
+}
+
 const defaultManifestSnapshot = createManifestEditableSnapshot(
   new ManifestObject("scene"),
 );
@@ -179,6 +213,13 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
       return isStringArrayFieldEdited(
         currentSnapshot.customBehaviors,
         initialSnapshot.customBehaviors,
+      );
+    }
+
+    if (field === "contentResources") {
+      return isContentResourceFieldEdited(
+        currentSnapshot.contentResources,
+        initialSnapshot.contentResources,
       );
     }
 

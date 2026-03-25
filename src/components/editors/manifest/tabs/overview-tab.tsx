@@ -1,6 +1,7 @@
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import { manifestObjContext } from "@/context/manifest-context";
 import type ContentResource from "@/ManifestClasses/ContentResource";
+import { getDisplayableContentResourceItems } from "@/utils/content-resource";
 import {
   builtInManifestBehaviors,
   manifestAutoAdvanceBehaviors,
@@ -14,6 +15,7 @@ import {
 } from "@/types/iiif";
 import { useContext, useState } from "react";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
+import ContentResourceMediaList from "../shared/content-resource-media-list";
 import ManifestInput from "../shared/manifest-input";
 import ManifestTabBody from "../shared/manifest-tab-body";
 import TechnicalOptionGroup from "../shared/technical-option-group";
@@ -133,6 +135,7 @@ function OverviewTab() {
   const hasEditedSummary = isFieldEdited("summary");
   const hasEditedRights = isFieldEdited("rights");
   const hasEditedNavDate = isFieldEdited("navDate");
+  const hasEditedContentResources = isFieldEdited("contentResources");
   const hasEditedViewingDirection = isFieldEdited("viewingDirection");
   const hasEditedManifestOrderingBehavior = isFieldEdited(
     "manifestOrderingBehavior",
@@ -169,6 +172,8 @@ function OverviewTab() {
         !!item.resource &&
         item.resource.getMetadata().getEntryCount() > 0,
     );
+  const contentResourceMediaItems =
+    getDisplayableContentResourceItems(manifestObj);
 
   if (hasEditedManifestOrderingBehavior) {
     behaviorSummaryItems.push({
@@ -332,10 +337,25 @@ function OverviewTab() {
         </section>
       ) : null}
 
-      {hasEditedMetadata ? (
+      {hasEditedContentResources && contentResourceMediaItems.length > 0 ? (
         <section
           className={`space-y-4 ${
             hasEditedDescriptiveFields ? "border-t border-slate-200 pt-8" : ""
+          }`}
+        >
+          <p className="text-lg font-medium text-slate-950">Media</p>
+
+          <ContentResourceMediaList items={contentResourceMediaItems} />
+        </section>
+      ) : null}
+
+      {hasEditedMetadata ? (
+        <section
+          className={`space-y-4 ${
+            hasEditedDescriptiveFields ||
+            (hasEditedContentResources && contentResourceMediaItems.length > 0)
+              ? "border-t border-slate-200 pt-8"
+              : ""
           }`}
         >
           <div className="space-y-1">
@@ -393,6 +413,7 @@ function OverviewTab() {
         <section
           className={`space-y-6 ${
             hasEditedDescriptiveFields || hasEditedMetadata
+            || (hasEditedContentResources && contentResourceMediaItems.length > 0)
               ? "border-t border-slate-200 pt-8"
               : ""
           }`}
