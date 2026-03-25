@@ -1,13 +1,13 @@
 import Label from './TypeScript/Label.ts';
 
 class AgentClass{
-	let type: string = "Agent Super Man";
-	let label: Label;
+	type: string = "Agent Super Man";
+	label: Label;
 	// let logo?: Logo;
 	// let homePage?: HomePage; // HomePage type might need to be updated for syntax
-	let ID?: string;
+	ID?: string;
 	// let seeAlso?: SeeAlso;
-	let summary?: string;
+	summary?: string;
 
 	public constructor(type: string){
 		this.type = type;
