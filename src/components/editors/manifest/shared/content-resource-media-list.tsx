@@ -1,6 +1,10 @@
 import { useState } from "react";
 import type { ContentResourceItem } from "@/utils/content-resource";
-import { getContentResourceDisplayTitle } from "@/utils/content-resource";
+import {
+  getContentResourceDisplayTitle,
+  getLightContentResourceTypeLabel,
+  isLightContentResourceType,
+} from "@/utils/content-resource";
 
 interface ContentResourceMediaListProps {
   items: ContentResourceItem[];
@@ -69,10 +73,36 @@ function ModelPreviewIcon() {
   );
 }
 
+function LightPreviewIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-7 w-7 text-slate-500"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3.5a5.75 5.75 0 0 0-3 10.66c.8.48 1.3 1.31 1.3 2.23V17h3.4v-.61c0-.92.5-1.75 1.3-2.23A5.75 5.75 0 0 0 12 3.5Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 20h5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function MediaPreview({ item }: { item: ContentResourceItem }) {
   const [hasImageError, setHasImageError] = useState(false);
   const previewUrl = item.resource.id.trim();
   const isImage = item.resource.getType() === "Image" && previewUrl.length > 0;
+  const isLight = isLightContentResourceType(item.resource.getType());
 
   if (isImage && !hasImageError) {
     return (
@@ -91,7 +121,9 @@ function MediaPreview({ item }: { item: ContentResourceItem }) {
 
   return (
     <div className="flex h-full w-full items-center justify-center bg-slate-100">
-      {item.resource.getType() === "Model" ? (
+      {isLight ? (
+        <LightPreviewIcon />
+      ) : item.resource.getType() === "Model" ? (
         <ModelPreviewIcon />
       ) : (
         <ImagePreviewIcon />
@@ -107,12 +139,15 @@ function ContentResourceMediaList({
   return (
     <div className={`space-y-3 ${className}`}>
       {items.map((item) => {
+        const resourceType = item.resource.getType();
         const title = getContentResourceDisplayTitle(
           item.annotation,
           item.resource,
           item.resourceNumber,
         );
-        const detail = item.resource.getFormat() || item.resource.getType();
+        const detail = isLightContentResourceType(resourceType)
+          ? getLightContentResourceTypeLabel(resourceType)
+          : item.resource.getFormat() || resourceType;
 
         return (
           <article

@@ -95,6 +95,38 @@ function ModelIcon() {
   );
 }
 
+function LightIcon() {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className="h-14 w-14 text-slate-950"
+      aria-hidden="true"
+    >
+      <path
+        d="M24 8c-6.9 0-12.5 5.6-12.5 12.5 0 4.6 2.4 8.8 6.3 11.1 1.5.9 2.4 2.4 2.4 4v1.4h7.6V35.6c0-1.6.9-3.1 2.4-4 3.9-2.3 6.3-6.5 6.3-11.1C36.5 13.6 30.9 8 24 8Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18.5 40h11"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M20 44h8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 const contentResourceOptions: ContentResourceOption[] = [
   {
     value: "Image",
@@ -107,6 +139,12 @@ const contentResourceOptions: ContentResourceOption[] = [
     title: "Model",
     description: "Add a 3D model content resource.",
     icon: <ModelIcon />,
+  },
+  {
+    value: "Light",
+    title: "Light",
+    description: "Add a light content resource.",
+    icon: <LightIcon />,
   },
 ];
 
@@ -274,7 +312,7 @@ function ContentResourceModal({
 
           <div className="px-6 py-6 sm:px-7 sm:py-7">
             {view === "picker" ? (
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {contentResourceOptions.map((option) => (
                   <button
                     key={option.value}

@@ -116,8 +116,13 @@ function ManifestEditorPage() {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
 
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
-    const annotation = new Annotation();
+    const annotation = new Annotation(nextAnnotationIndex + 1);
     annotation.setContentResource(createDefaultContentResource(type));
+
+    if (type === "Light") {
+      annotation.ensureSpatialTarget();
+    }
+
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);

@@ -4,7 +4,7 @@ import Metadata from "./Metadata.ts";
 class ContentResource {
     id: string;
     type: string;
-    format: string;
+    format?: string;
     height?: number;
     width?: number;
     label: Label;
@@ -12,7 +12,7 @@ class ContentResource {
     summary?: string;
     metadata: Metadata;
 
-    constructor(id: string, type: string, format: string) {
+    constructor(id: string, type: string, format?: string) {
         this.id = id;
         this.type = type;
         this.format = format;
@@ -31,7 +31,7 @@ class ContentResource {
         this.type = type;
     }
 
-    setFormat(format: string): void {
+    setFormat(format?: string): void {
         this.format = format;
     }
 
@@ -87,7 +87,7 @@ class ContentResource {
         return this.type;
     }
 
-    getFormat(): string {
+    getFormat(): string | undefined {
         return this.format;
     }
 

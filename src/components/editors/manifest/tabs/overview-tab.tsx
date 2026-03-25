@@ -1,7 +1,12 @@
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import { manifestObjContext } from "@/context/manifest-context";
 import type ContentResource from "@/ManifestClasses/ContentResource";
-import { getDisplayableContentResourceItems } from "@/utils/content-resource";
+import {
+  getContentResourceDisplayTitle,
+  getDisplayableContentResourceItems,
+  getLightContentResourceItems,
+  hasLightTechnicalChanges,
+} from "@/utils/content-resource";
 import {
   builtInManifestBehaviors,
   manifestAutoAdvanceBehaviors,
@@ -14,6 +19,7 @@ import {
   type ManifestViewingDirection,
 } from "@/types/iiif";
 import { useContext, useState } from "react";
+import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
 import ContentResourceMediaList from "../shared/content-resource-media-list";
 import ManifestInput from "../shared/manifest-input";
@@ -143,6 +149,7 @@ function OverviewTab() {
   const hasEditedRepeatBehavior = isFieldEdited("repeatBehavior");
   const hasEditedAutoAdvanceBehavior = isFieldEdited("autoAdvanceBehavior");
   const hasEditedCustomBehaviors = isFieldEdited("customBehaviors");
+  const hasEditedLightTechnical = isFieldEdited("lightTechnical");
   const hasEditedMetadata = isFieldEdited("metadata");
   const hasEditedDescriptiveFields =
     hasEditedLabel ||
@@ -155,6 +162,7 @@ function OverviewTab() {
     hasEditedAutoAdvanceBehavior;
   const hasEditedTechnicalFields =
     hasEditedId ||
+    hasEditedLightTechnical ||
     hasEditedViewingDirection ||
     hasEditedBuiltInBehaviorFields ||
     hasEditedCustomBehaviors;
@@ -174,6 +182,9 @@ function OverviewTab() {
     );
   const contentResourceMediaItems =
     getDisplayableContentResourceItems(manifestObj);
+  const editedLightResourceItems = getLightContentResourceItems(manifestObj).filter(
+    ({ annotation, resource }) => hasLightTechnicalChanges(annotation, resource),
+  );
 
   if (hasEditedManifestOrderingBehavior) {
     behaviorSummaryItems.push({
@@ -426,6 +437,51 @@ function OverviewTab() {
               value={manifestObj.getId()}
               onChange={handleIdentifierChange}
             />
+          ) : null}
+
+          {hasEditedLightTechnical && editedLightResourceItems.length > 0 ? (
+            <section className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-lg font-medium text-slate-950">Lights</p>
+                <p className="text-sm leading-6 text-slate-500">
+                  Light configuration changes from the Technical tab appear here.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {editedLightResourceItems.map(
+                  ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                    <section
+                      key={`overview-light-resource-${annotationIndex}`}
+                      className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                    >
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                        >
+                          Content Resource {resourceNumber}
+                        </button>
+                        <p className="text-sm text-slate-500">
+                          {getContentResourceDisplayTitle(
+                            annotation,
+                            resource,
+                            resourceNumber,
+                          )}
+                        </p>
+                      </div>
+
+                      <LightResourceTechnicalEditor
+                        annotation={annotation}
+                        resource={resource}
+                        idPrefix={`overview-light-${annotationIndex}`}
+                        onCommit={commitManifestChange}
+                      />
+                    </section>
+                  ),
+                )}
+              </div>
+            </section>
           ) : null}
 
           {hasEditedViewingDirection ? (

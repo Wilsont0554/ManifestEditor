@@ -13,6 +13,7 @@ type ManifestEditableField =
   | "repeatBehavior"
   | "autoAdvanceBehavior"
   | "customBehaviors"
+  | "lightTechnical"
   | "metadata";
 
 export type ManifestObjContext = {

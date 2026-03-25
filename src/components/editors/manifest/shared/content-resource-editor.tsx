@@ -3,7 +3,6 @@ import type Annotation from "@/ManifestClasses/Annotation";
 import type ContentResource from "@/ManifestClasses/ContentResource";
 import {
   contentResourceTypeToFormat,
-  type EditableContentResourceType,
 } from "@/utils/content-resource";
 import ManifestField from "./manifest-field";
 import ManifestInput from "./manifest-input";
@@ -64,7 +63,11 @@ function ContentResourceEditor({
   }
 
   function handleContentResourceTypeChange(nextType: string): void {
-    const editableType = nextType as EditableContentResourceType;
+    if (!(nextType in contentResourceTypeToFormat)) {
+      return;
+    }
+
+    const editableType = nextType as keyof typeof contentResourceTypeToFormat;
     resource.setType(editableType);
     resource.setFormat(contentResourceTypeToFormat[editableType]);
     onCommit();

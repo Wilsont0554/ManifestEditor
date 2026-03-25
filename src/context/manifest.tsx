@@ -3,7 +3,9 @@ import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
 import {
   createContentResourceSnapshot,
+  createLightTechnicalSnapshot,
   type ContentResourceSnapshot,
+  type LightTechnicalSnapshot,
 } from "@/utils/content-resource";
 
 type ManifestEditableField =
@@ -18,6 +20,7 @@ type ManifestEditableField =
   | "repeatBehavior"
   | "autoAdvanceBehavior"
   | "customBehaviors"
+  | "lightTechnical"
   | "metadata";
 
 interface LocalizedManifestFieldSnapshot {
@@ -37,6 +40,7 @@ interface ManifestEditableSnapshot {
   repeatBehavior: string;
   autoAdvanceBehavior: string;
   customBehaviors: string[];
+  lightTechnical: LightTechnicalSnapshot[];
   metadata: ContentResourceMetadataSnapshot[];
 }
 
@@ -102,6 +106,7 @@ function createManifestEditableSnapshot(
     repeatBehavior: manifestObj.getRepeatBehavior(),
     autoAdvanceBehavior: manifestObj.getAutoAdvanceBehavior(),
     customBehaviors: manifestObj.getCustomBehaviors(),
+    lightTechnical: createLightTechnicalSnapshot(manifestObj),
     metadata: createMetadataSnapshot(manifestObj),
   };
 }
@@ -161,6 +166,35 @@ function isMetadataFieldEdited(
         currentEntry.value.languageCode !== initialEntry.value.languageCode
       );
     });
+  });
+}
+
+function isLightTechnicalFieldEdited(
+  currentField: LightTechnicalSnapshot[],
+  initialField: LightTechnicalSnapshot[],
+): boolean {
+  if (currentField.length !== initialField.length) {
+    return true;
+  }
+
+  return currentField.some((currentLight, lightIndex) => {
+    const initialLight = initialField[lightIndex];
+    const currentIntensity = currentLight.intensity;
+    const initialIntensity = initialLight.intensity;
+
+    return (
+      currentLight.annotationIndex !== initialLight.annotationIndex ||
+      currentLight.type !== initialLight.type ||
+      currentLight.color !== initialLight.color ||
+      currentLight.lookAtId !== initialLight.lookAtId ||
+      currentLight.angle !== initialLight.angle ||
+      currentLight.coordinates.x !== initialLight.coordinates.x ||
+      currentLight.coordinates.y !== initialLight.coordinates.y ||
+      currentLight.coordinates.z !== initialLight.coordinates.z ||
+      currentIntensity?.type !== initialIntensity?.type ||
+      currentIntensity?.quantityValue !== initialIntensity?.quantityValue ||
+      currentIntensity?.unit !== initialIntensity?.unit
+    );
   });
 }
 
@@ -225,6 +259,13 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
 
     if (field === "metadata") {
       return isMetadataFieldEdited(currentSnapshot.metadata, initialSnapshot.metadata);
+    }
+
+    if (field === "lightTechnical") {
+      return isLightTechnicalFieldEdited(
+        currentSnapshot.lightTechnical,
+        initialSnapshot.lightTechnical,
+      );
     }
 
     return currentSnapshot[field] !== initialSnapshot[field];

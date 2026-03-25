@@ -1,4 +1,5 @@
 import { manifestObjContext } from "@/context/manifest-context";
+import { getContentResourceDisplayTitle, getLightContentResourceItems } from "@/utils/content-resource";
 import {
   builtInManifestBehaviors,
   manifestAutoAdvanceBehaviors,
@@ -11,6 +12,7 @@ import {
   type ManifestViewingDirection,
 } from "@/types/iiif";
 import { type ReactNode, useContext, useState } from "react";
+import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
 import ManifestInput from "../shared/manifest-input";
 import ManifestTabBody from "../shared/manifest-tab-body";
@@ -107,6 +109,7 @@ function TechnicalOptionGroupContent({ children }: { children: ReactNode }) {
 
 function TechnicalTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
+  const lightResourceItems = getLightContentResourceItems(manifestObj);
   const [openSections, setOpenSections] = useState<
     Record<TechnicalSectionId, boolean>
   >({
@@ -180,6 +183,52 @@ function TechnicalTab() {
         value={manifestObj.getId()}
         onChange={handleIdentifierChange}
       />
+
+      {lightResourceItems.length > 0 ? (
+        <section className="space-y-4">
+          <div className="space-y-1">
+            <p className="text-lg font-medium text-slate-950">Lights</p>
+            <p className="text-sm leading-6 text-slate-500">
+              Edit light type, color, intensity, and 3D coordinates for each light
+              content resource.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {lightResourceItems.map(
+              ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                <section
+                  key={`technical-light-resource-${annotationIndex}`}
+                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                >
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                    >
+                      Content Resource {resourceNumber}
+                    </button>
+                    <p className="text-sm text-slate-500">
+                      {getContentResourceDisplayTitle(
+                        annotation,
+                        resource,
+                        resourceNumber,
+                      )}
+                    </p>
+                  </div>
+
+                  <LightResourceTechnicalEditor
+                    annotation={annotation}
+                    resource={resource}
+                    idPrefix={`technical-light-${annotationIndex}`}
+                    onCommit={commitManifestChange}
+                  />
+                </section>
+              ),
+            )}
+          </div>
+        </section>
+      ) : null}
 
       <section className="space-y-3">
         <p className="text-lg font-medium text-slate-950">Viewing direction</p>

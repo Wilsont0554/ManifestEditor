@@ -1,5 +1,6 @@
 import Annotation from "@/ManifestClasses/Annotation";
 import ContentResource from "@/ManifestClasses/ContentResource";
+import Light, { type LightIntensity } from "@/ManifestClasses/Light";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
 export const contentResourceTypeToFormat = {
@@ -7,7 +8,17 @@ export const contentResourceTypeToFormat = {
   Model: "model/gltf-binary",
 } as const;
 
-export type EditableContentResourceType = keyof typeof contentResourceTypeToFormat;
+export const lightContentResourceTypes = [
+  "AmbientLight",
+  "DirectionalLight",
+  "PointLight",
+  "SpotLight",
+] as const;
+
+export type LightContentResourceType = (typeof lightContentResourceTypes)[number];
+export type EditableContentResourceType =
+  | keyof typeof contentResourceTypeToFormat
+  | "Light";
 
 interface LocalizedContentResourceFieldSnapshot {
   value: string;
@@ -18,9 +29,25 @@ export interface ContentResourceSnapshot {
   annotationIndex: number;
   url: string;
   type: string;
-  format: string;
+  format?: string;
   annotationLabel: LocalizedContentResourceFieldSnapshot;
   resourceLabel: LocalizedContentResourceFieldSnapshot;
+}
+
+interface LightCoordinatesSnapshot {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface LightTechnicalSnapshot {
+  annotationIndex: number;
+  type: LightContentResourceType;
+  color: string;
+  intensity?: LightIntensity;
+  lookAtId: string;
+  angle?: number;
+  coordinates: LightCoordinatesSnapshot;
 }
 
 export interface ContentResourceItem {
@@ -30,9 +57,17 @@ export interface ContentResourceItem {
   resourceNumber: number;
 }
 
+export interface LightContentResourceItem extends Omit<ContentResourceItem, "resource"> {
+  resource: Light;
+}
+
 export function createDefaultContentResource(
   type: EditableContentResourceType = "Model",
 ): ContentResource {
+  if (type === "Light") {
+    return new Light("", "AmbientLight");
+  }
+
   return new ContentResource("", type, contentResourceTypeToFormat[type]);
 }
 
@@ -79,6 +114,52 @@ export function getContentResourceItems(
     });
 }
 
+export function getLightContentResourceTypeLabel(
+  value: LightContentResourceType,
+): string {
+  return value.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+export function isLightContentResourceType(
+  value: string,
+): value is LightContentResourceType {
+  return lightContentResourceTypes.includes(value as LightContentResourceType);
+}
+
+export function getLightContentResourceItems(
+  manifestObj: ManifestObject,
+): LightContentResourceItem[] {
+  return getContentResourceItems(manifestObj).flatMap((item) =>
+    item.resource instanceof Light
+      ? [
+          {
+            ...item,
+            resource: item.resource,
+          },
+        ]
+      : [],
+  );
+}
+
+export function hasLightTechnicalChanges(
+  annotation: Annotation,
+  resource: Light,
+): boolean {
+  const target = annotation.getTarget();
+  const hasCoordinateChange =
+    !!target &&
+    (target.getX() !== 0 || target.getY() !== 0 || target.getZ() !== 0);
+
+  return (
+    resource.getType() !== "AmbientLight" ||
+    resource.getColor() !== undefined ||
+    resource.getIntensity() !== undefined ||
+    resource.getLookAtId().trim().length > 0 ||
+    resource.getAngle() !== undefined ||
+    hasCoordinateChange
+  );
+}
+
 export function hasContentResourceUrl(resource: ContentResource): boolean {
   return resource.id.trim().length > 0;
 }
@@ -121,4 +202,30 @@ export function createContentResourceSnapshot(
       },
     }),
   );
+}
+
+export function createLightTechnicalSnapshot(
+  manifestObj: ManifestObject,
+): LightTechnicalSnapshot[] {
+  return getLightContentResourceItems(manifestObj)
+    .filter(({ annotation, resource }) =>
+      hasLightTechnicalChanges(annotation, resource),
+    )
+    .map(({ annotation, resource, annotationIndex }) => {
+      const target = annotation.getTarget();
+
+      return {
+        annotationIndex,
+        type: resource.getType() as LightContentResourceType,
+        color: resource.getColor() ?? "",
+        intensity: resource.getIntensity(),
+        lookAtId: resource.getLookAtId(),
+        angle: resource.getAngle(),
+        coordinates: {
+          x: target?.getX() ?? 0,
+          y: target?.getY() ?? 0,
+          z: target?.getZ() ?? 0,
+        },
+      };
+    });
 }
