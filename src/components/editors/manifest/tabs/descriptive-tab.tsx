@@ -1,0 +1,135 @@
+import InputWithLanguage from "@components/shared/inputWithLanguage";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import EmptyStateCard from "../shared/empty-state-card";
+import ManifestField from "../shared/manifest-field";
+import ManifestInput from "../shared/manifest-input";
+import ManifestTabBody from "../shared/manifest-tab-body";
+import SoftActionButton from "../shared/soft-action-button";
+
+function DescriptiveTab() {
+  const [labelLanguageCode, setLabelLanguageCode] = useState("en");
+  const [labelValue, setLabelValue] = useState("Blank Manifest");
+  const [summaryLanguageCode, setSummaryLanguageCode] = useState("en");
+  const [summaryValue, setSummaryValue] = useState("");
+  const [rightsValue, setRightsValue] = useState("");
+  const [navDate, setNavDate] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(
+    null,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!thumbnailFile) {
+      setThumbnailPreviewUrl(null);
+      return;
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(thumbnailFile);
+    setThumbnailPreviewUrl(nextPreviewUrl);
+
+    return () => {
+      URL.revokeObjectURL(nextPreviewUrl);
+    };
+  }, [thumbnailFile]);
+
+  function handleThumbnailChange(event: ChangeEvent<HTMLInputElement>): void {
+    const nextFile = event.target.files?.[0] ?? null;
+    setThumbnailFile(nextFile);
+  }
+
+  return (
+    <ManifestTabBody>
+      <InputWithLanguage
+        label="Label"
+        languageCode={labelLanguageCode}
+        value={labelValue}
+        onChange={setLabelValue}
+        onLanguageChange={setLabelLanguageCode}
+      />
+
+      <InputWithLanguage
+        label="Summary"
+        languageCode={summaryLanguageCode}
+        value={summaryValue}
+        onChange={setSummaryValue}
+        onLanguageChange={setSummaryLanguageCode}
+        rows={3}
+        textareaClassName="min-h-28"
+      />
+
+      <ManifestField label="Thumbnail" className="space-y-3">
+        <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50">
+          {thumbnailPreviewUrl ? (
+            <img
+              src={thumbnailPreviewUrl}
+              alt="Manifest thumbnail preview"
+              className="h-48 w-full object-cover"
+            />
+          ) : (
+            <EmptyStateCard
+              title="No thumbnail"
+              className="bg-slate-50"
+              titleClassName="text-slate-400"
+            />
+          )}
+        </div>
+        <SoftActionButton onClick={() => fileInputRef.current?.click()}>
+          <span className="text-2xl leading-none">+</span>
+          <span className="text-base">Add Thumbnail</span>
+        </SoftActionButton>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleThumbnailChange}
+        />
+      </ManifestField>
+
+      <ManifestInput
+        label="Rights"
+        id="manifest-rights"
+        type="text"
+        value={rightsValue}
+        onChange={setRightsValue}
+      />
+
+      <ManifestInput
+        label="Nav Date"
+        id="manifest-nav-date"
+        type="datetime-local"
+        value={navDate}
+        onChange={setNavDate}
+        appearance="outline"
+      />
+
+      <ManifestField label="Required statement" className="space-y-3">
+        <EmptyStateCard
+          title="No required statement"
+          className="bg-slate-200"
+          contentClassName="min-h-36 gap-6"
+          action={
+            <SoftActionButton className="bg-white px-6 py-3 text-xl hover:bg-rose-50">
+              Add new
+            </SoftActionButton>
+          }
+        />
+      </ManifestField>
+
+      <ManifestField label="Provider" className="space-y-3">
+        <EmptyStateCard
+          description="Add a provider to attach your institution name and logo to this Manifest."
+          align="left"
+          className="border border-slate-200 bg-slate-50"
+        />
+        <SoftActionButton>
+          <span className="text-2xl leading-none">+</span>
+          <span className="text-base">Add Provider</span>
+        </SoftActionButton>
+      </ManifestField>
+    </ManifestTabBody>
+  );
+}
+
+export default DescriptiveTab;
