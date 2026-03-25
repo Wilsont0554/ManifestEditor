@@ -15,6 +15,14 @@ class AnnotationPage {
         this.items.push(annotation);
     }
 
+    removeAnnotation(index: number): void {
+        if (index < 0 || index >= this.items.length) {
+            return;
+        }
+
+        this.items.splice(index, 1);
+    }
+
     getAnnotation(index?: number): Annotation {
         if (index === undefined) {
             index = 0;

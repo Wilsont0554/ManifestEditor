@@ -61,6 +61,42 @@ interface OverviewMetadataSummaryItem {
   resource: ContentResource;
 }
 
+function OverviewMetadataField({
+  label,
+  value,
+  languageCode,
+  multiline = false,
+}: {
+  label: string;
+  value: string;
+  languageCode?: string;
+  multiline?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+
+      <div className="relative overflow-hidden border-b-2 border-pink-500 bg-slate-100">
+        <p
+          className={`px-4 py-3 text-base text-slate-900 ${
+            languageCode ? "pr-16" : ""
+          } ${multiline ? "whitespace-pre-wrap leading-6" : ""}`}
+        >
+          {value}
+        </p>
+
+        {languageCode ? (
+          <span className="absolute right-2 top-2 rounded-md bg-slate-200 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            {languageCode}
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function ChevronIcon({ isOpen }: { isOpen: boolean }) {
   return (
     <svg
@@ -331,30 +367,19 @@ function OverviewTab() {
                     .map((entry, entryIndex) => (
                       <div
                         key={`overview-metadata-entry-${resourceIndex}-${entryIndex}`}
-                        className="space-y-3 bg-slate-50 px-4 py-4"
+                        className="space-y-4 bg-white px-4 py-4"
                       >
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="space-y-1">
-                            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-                              Label
-                            </p>
-                            <p className="text-base text-slate-900">
-                              {entry.getLabelText() || "Untitled metadata"}
-                            </p>
-                          </div>
-                          <span className="rounded bg-white px-2 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-                            {entry.getLabelLanguage()}
-                          </span>
-                        </div>
+                        <OverviewMetadataField
+                          label="Label"
+                          value={entry.getLabelText() || "Untitled metadata"}
+                          languageCode={entry.getLabelLanguage()}
+                        />
 
-                        <div className="space-y-1">
-                          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-                            Value
-                          </p>
-                          <p className="whitespace-pre-wrap text-base leading-6 text-slate-700">
-                            {entry.getValueText() || "No value"}
-                          </p>
-                        </div>
+                        <OverviewMetadataField
+                          label="Value"
+                          value={entry.getValueText() || "No value"}
+                          multiline
+                        />
                       </div>
                     ))}
                 </div>

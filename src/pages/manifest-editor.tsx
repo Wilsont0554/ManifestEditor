@@ -7,6 +7,7 @@ import {
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ManifestComponent from "@components/editors/manifest";
+import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
 import { downloadJsonFile } from "@/utils/file";
@@ -30,6 +31,11 @@ interface ResizeState {
 function ManifestEditorPage() {
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
+  const [activeManifestTab, setActiveManifestTab] =
+    useState<ManifestTabId>("overview");
+  const [isMetadataEditorOpen, setIsMetadataEditorOpen] = useState(false);
+  const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
+    useState(0);
   const resizeStateRef = useRef<ResizeState | null>(null);
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
@@ -95,10 +101,15 @@ function ManifestEditorPage() {
       ensureAnnotationHasContentResource(annotation);
     });
 
+    const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation();
     annotation.setContentResource(createDefaultContentResource());
     annotationPage.addAnnotation(annotation);
 
+    setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
+    setIsMetadataEditorOpen(false);
+    setActiveManifestTab("metadata");
+    setIsInspectorOpen(true);
     updateManifestObj(manifestObj.clone());
   }
 
@@ -155,6 +166,14 @@ function ManifestEditorPage() {
       {isInspectorOpen ? (
         <ManifestComponent
           width={inspectorWidth}
+          activeTab={activeManifestTab}
+          onActiveTabChange={setActiveManifestTab}
+          selectedMetadataAnnotationIndex={selectedMetadataAnnotationIndex}
+          isMetadataEditorOpen={isMetadataEditorOpen}
+          onMetadataEditorOpenChange={setIsMetadataEditorOpen}
+          onSelectedMetadataAnnotationIndexChange={
+            setSelectedMetadataAnnotationIndex
+          }
           onClose={() => setIsInspectorOpen(false)}
           onReset={handleResetInspector}
           onResizeStart={handleResizeStart}

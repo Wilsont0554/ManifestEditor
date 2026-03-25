@@ -17,6 +17,12 @@ import TechnicalTab from "./tabs/technical-tab";
 
 interface ManifestComponentProps {
   width: number;
+  activeTab: ManifestTabId;
+  onActiveTabChange: (tab: ManifestTabId) => void;
+  selectedMetadataAnnotationIndex: number;
+  isMetadataEditorOpen: boolean;
+  onMetadataEditorOpenChange: (isOpen: boolean) => void;
+  onSelectedMetadataAnnotationIndexChange: (index: number) => void;
   onClose: () => void;
   onReset: () => void;
   onResizeStart: (event: ReactMouseEvent<HTMLButtonElement>) => void;
@@ -24,11 +30,16 @@ interface ManifestComponentProps {
 
 function ManifestComponent({
   width,
+  activeTab,
+  onActiveTabChange,
+  selectedMetadataAnnotationIndex,
+  isMetadataEditorOpen,
+  onMetadataEditorOpenChange,
+  onSelectedMetadataAnnotationIndexChange,
   onClose,
   onReset,
   onResizeStart,
 }: ManifestComponentProps) {
-  const [activeTab, setActiveTab] = useState<ManifestTabId>("overview");
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
@@ -40,7 +51,14 @@ function ManifestComponent({
   }
 
   if (activeTab === "metadata") {
-    tabContent = <MetadataTab />;
+    tabContent = (
+      <MetadataTab
+        selectedAnnotationIndex={selectedMetadataAnnotationIndex}
+        isEditingMetadata={isMetadataEditorOpen}
+        onEditingMetadataChange={onMetadataEditorOpenChange}
+        onSelectedAnnotationIndexChange={onSelectedMetadataAnnotationIndexChange}
+      />
+    );
   }
 
   if (activeTab === "technical") {
@@ -166,7 +184,7 @@ function ManifestComponent({
                       ? "shrink-0 whitespace-nowrap border-b-2 border-pink-500 px-3 py-2 text-center text-sm font-medium text-slate-950"
                       : "shrink-0 whitespace-nowrap border-b-2 border-transparent px-3 py-2 text-center text-sm font-medium text-slate-400 transition hover:text-slate-700"
                   }
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => onActiveTabChange(tab.id)}
                 >
                   {tab.label}
                 </button>

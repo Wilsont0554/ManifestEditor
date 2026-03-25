@@ -10,6 +10,7 @@ interface InputWithLanguageProps {
   onLanguageChange: (newLanguageCode: string) => void;
   placeholder?: string;
   rows?: number;
+  appearance?: "underline" | "outline";
   textareaClassName?: string;
 }
 
@@ -21,6 +22,7 @@ export default function InputWithLanguage({
   label,
   placeholder = "",
   rows = 1,
+  appearance = "underline",
   textareaClassName = "",
 }: InputWithLanguageProps) {
   const [isLanguageSelecting, setLanguageSelecting] = useState(false);
@@ -42,6 +44,14 @@ export default function InputWithLanguage({
     tr: "Turkish",
     vi: "Vietnamese",
   };
+  const fieldSurfaceClassName =
+    appearance === "outline"
+      ? "rounded-xl border border-slate-300 bg-white shadow-sm"
+      : "border-b-2 border-pink-500 bg-slate-100";
+  const languageButtonClassName =
+    appearance === "outline"
+      ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
+      : "bg-slate-200 text-slate-500 hover:bg-slate-300";
   
   return (
     <ManifestField label={label} className="flex w-full flex-col gap-2">
@@ -64,7 +74,7 @@ export default function InputWithLanguage({
         </select>
       </div>
 
-      <div className="relative w-full border-b-2 border-pink-500 bg-slate-100">
+      <div className={`relative w-full overflow-hidden ${fieldSurfaceClassName}`}>
         <textarea
           className={`w-full resize-none bg-transparent px-4 py-3 pr-16 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none ${textareaClassName}`}
           value={value}
@@ -75,7 +85,7 @@ export default function InputWithLanguage({
 
         <button
           onClick={() => setLanguageSelecting(!isLanguageSelecting)}
-          className="absolute right-2 top-2 rounded-sm bg-slate-200 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500 transition hover:bg-slate-300"
+          className={`absolute right-2 top-2 rounded-md px-2.5 py-1 text-xs font-semibold uppercase tracking-wide transition ${languageButtonClassName}`}
           type="button"
           aria-label={`Select language for ${label}`}
         >
