@@ -23,8 +23,9 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerType, setContainerType] = useState("Scene");
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
+  const [containerType, setContainerType] = useState("Scene");
+
   const [allResources] = useState([]);
 
   // NEW: State to track which resource is currently being edited in the sidebar
