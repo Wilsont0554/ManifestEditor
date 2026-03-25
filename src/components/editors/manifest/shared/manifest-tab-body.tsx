@@ -5,7 +5,7 @@ type ManifestTabBodyProps = PropsWithChildren<{
 }>;
 
 function ManifestTabBody({
-  className = "",
+  className,
   children,
 }: ManifestTabBodyProps) {
   return <div className={`min-h-40 space-y-8 ${className}`}>{children}</div>;

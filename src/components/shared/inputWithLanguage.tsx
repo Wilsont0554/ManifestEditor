@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supportedLanguageCodes } from "@/types/iiif";
 import ManifestField from "@/components/editors/manifest/shared/manifest-field";
+import Label from "@/ManifestClasses/Label";
 
 interface InputWithLanguageProps {
   label: string;
@@ -24,25 +25,7 @@ export default function InputWithLanguage({
   textareaClassName = "",
 }: InputWithLanguageProps) {
   const [isLanguageSelecting, setLanguageSelecting] = useState(false);
-  const languageLabels: Record<string, string> = {
-    en: "English",
-    es: "Spanish",
-    fr: "French",
-    de: "German",
-    it: "Italian",
-    ru: "Russian",
-    zh: "Chinese",
-    jp: "Japanese",
-    pt: "Portuguese",
-    ar: "Arabic",
-    hi: "Hindi",
-    sv: "Swedish",
-    nl: "Dutch",
-    ko: "Korean",
-    tr: "Turkish",
-    vi: "Vietnamese",
-    none: "None",
-  };
+  const languageLabels: Record<string, string> = Label.getSupportedLanguages();
   
   return (
     <ManifestField label={label} className="flex w-full flex-col gap-2">

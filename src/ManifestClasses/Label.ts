@@ -1,5 +1,5 @@
 class Label {
-    private languageClasses: { [key: string]: any };
+    private languageClasses: Record<string, any>;
     private currentLanguage?: string;
     public language: any;
 
@@ -59,6 +59,28 @@ class Label {
 
     getSupportedLanguages() {
         return Object.keys(this.languageClasses);
+    }
+
+    static getSupportedLanguages(): Record<string, string> {
+        return {
+            en: "English",
+            es: "Spanish",
+            fr: "French",
+            de: "German",
+            it: "Italian",
+            ru: "Russian",
+            zh: "Chinese",
+            jp: "Japanese",
+            pt: "Portuguese",
+            ar: "Arabic",
+            hi: "Hindi",
+            sv: "Swedish",
+            nl: "Dutch",
+            ko: "Korean",
+            tr: "Turkish",
+            vi: "Vietnamese",
+            none: "None"
+        };
     }
 
     toJSON() {

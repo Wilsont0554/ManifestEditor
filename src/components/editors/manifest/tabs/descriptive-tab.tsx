@@ -64,7 +64,7 @@ function DescriptiveTab() {
             <img
               src={thumbnailPreviewUrl}
               alt="Manifest thumbnail preview"
-              className="h-48 w-full object-cover"
+              className="h-48 w-full object-contain"
             />
           ) : (
             <EmptyStateCard
