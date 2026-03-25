@@ -2,12 +2,13 @@ import Label from '../Label'
 
 
 abstract class Camera{
-	type: string = "Default_Value";
+	type: string = "DefaultCamera"; // camera type ortho or perspective
 	id?: string;
 	label?: Label;
-	// lookAt?: LookAt;
-	near?: number;
-	far?: number;
+	// lookAt?: LookAt; // needs to be created
+	near?: number; // floating point number // see bottom of file
+	far?: number; // floating point number // see bottom of file
+	// interactionMode?: InteractionMode // needs to be created
 
 /*------------------------------------------------------------
     						ADD/CREATE
@@ -24,6 +25,26 @@ abstract class Camera{
 	deleteLabel(): void{
 		delete this.label;
 	}
+
+	deleteID(){
+		delete this.id;
+	}
+
+	deleteNear(){
+		delete this.near;
+	}
+
+	deleteFar(){
+		delete this.far;
+	}
+
+	// deleteLookAt(){
+	// 	delete this.lookAt;
+	// }
+
+	// deleteInteractionMode(){
+	// 	delete this.interactionMode;
+	// }
 /*------------------------------------------------------------
     						SETTERS
 --------------------------------------------------------------*/
@@ -46,6 +67,14 @@ abstract class Camera{
 	setFar(far: number){
 		this.far = far;
 	}
+
+	// setLookAt(lookAt: LookAt){
+	// 	this.lookAt = lookAt;
+	// }
+
+	// setInteractionMode(interactionMode: InteractionMode){
+	// 	this.interactionMode = interactionMode;
+	// }
 /*------------------------------------------------------------
     						GETTERS
 --------------------------------------------------------------*/
@@ -68,6 +97,14 @@ abstract class Camera{
 	getFar(){
 		return this.far;
 	}
+
+	// getLookAt(){
+	// 	return this.lookAt;
+	// }
+
+	// getInteractionMode(){
+	// 	return this.interactionMode;
+	// }
 }
 
 class OrthographicCamera extends Camera{
