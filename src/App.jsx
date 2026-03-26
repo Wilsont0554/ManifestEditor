@@ -105,8 +105,19 @@ function App() {
     ? allResources[selectedResourceIndex]
     : null;
 
+  useEffect(() => {
+    const scriptTag = document.createElement('script');
+    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js" //"https://3d-api.si.edu/resources/js/voyager-explorer.min.js";
+    scriptTag.addEventListener('load', () => setcount(count + 1));
+    document.body.appendChild(scriptTag);
+  }, []);
+
+
   return (
     <div className="app-shell">
+      {/*<voyager-explorer root='https://3d-api.si.edu/content/document/341c96cd-f967-4540-8ed1-d3fc56d31f12/' document='document.json'></voyager-explorer>*/}
+        <voyager-explorer document="ManifestEditor/src/TextAnnotationExport.json" id="voyager"></voyager-explorer>
+      
       <header className="app-nav">
         <p className="app-nav__brand">Manifest Editor</p>
         <nav className="app-nav__links">
@@ -132,6 +143,8 @@ function App() {
               Download JSON
             </p>
             
+            {/*<iframe name="Smithsonian Voyager" src="https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document=https://wilsont0554.github.io/Manifest-Hosting/TextAnnotationExport.json" width="800" height="450" allow="xr; xr-spatial-tracking; fullscreen"></iframe>*/}
+
             <div className="manifest-creator__controls">
               <select
                 value={containerType}
