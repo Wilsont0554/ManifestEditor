@@ -5,14 +5,18 @@ import Container from "../ManifestClasses/TypeScript/Container.ts";
 
 function CameraElement(props: any){
     const { container, camera, setcount, count } = props;
-    const [type, setType] = useState("DEFAULT CAMERA");
+    const [type, setType] = useState("OrthographicCamera");
 
+    // here we get the container items index for an object with a camera type
     var containerItems = container.getItems();
     var cameraIndex: number;
-    for(let i = 0; i < containerItems.size(); i++){
-        if(containerItems[i].instanceof(Camera)) cameraIndex = i; break;
+    for(let i = 0; i < containerItems.length(); i++){
+        if(containerItems[i] instanceof Camera){ cameraIndex = i; break; }
     }
-    
+
+    // Creates new camera object when called
+    // updates the items array in container with the new object
+    // this is used when the drop down changes options in the UI  
     function handleCameraChange(e: any){
         const newType = e.target.value;
 
@@ -35,17 +39,10 @@ function CameraElement(props: any){
 
         container.setItems(cameraIndex, newCamera);
 
+        setcount(count + 1);
     }
 
     if(!camera) return <p>No Camera Found</p>;
-
-    const isOrthoGraphic = camera instanceof OrthographicCamera;
-    // const isPerspective = camera instanceof PerspectiveCamera;
-
-
-    if(!isOrthoGraphic /** && !isPerspective */) return <p>Camera is default Camera</p>
-    
-    
 
     return (
         <div className="sidebar-editor-container">
@@ -64,7 +61,7 @@ function CameraElement(props: any){
             </div>
 
         {/* Shared componets of camera UI */}
-            <div className="field-group">
+            {/* <div className="field-group">
                 <label>ID</label>
                 <input
                     placeholder="https://..."
@@ -72,7 +69,7 @@ function CameraElement(props: any){
                     value={camera}
                 <label></label>
 
-            </div>
+            </div> */}
         
 
         {/* Ternary operator to choose whats displayed based on camera type */}
@@ -80,4 +77,4 @@ function CameraElement(props: any){
 
         </div>
     );
-} 
+} export default CameraElement

@@ -7,6 +7,7 @@ import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
 import Camera from "./ManifestClasses/TypeScript/SceneComponets/Camera.ts";
+import OrthographicCamera from "./ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
 import CameraElement from "./Components/CameraElement.tsx";
 import Light from "./ManifestClasses/TypeScript/Light.ts";
 /*
@@ -95,6 +96,24 @@ function App() {
     ? annotationResource[selectedResourceIndex].getContentResource()
     : null;
 
+
+    
+  const container = manifestObj.getContainerObj();
+  const camera = container.getItems().find(item => item instanceof Camera);
+
+  function createCamera(){
+    const newCamera = new OrthographicCamera(
+      0.0,
+      undefined,
+      "OrthographicCamera",
+      0.0,
+      0.0
+    );
+
+    manifestObj.getContainerObj().addCamera(newCamera);
+    setcount((value) => value + 1);
+  }
+
   return (
     <div className="app-shell">
       <header className="app-nav">
@@ -141,6 +160,9 @@ function App() {
                 </button>
                 <button type="button" onClick={() => {createAnnotation("Light")}}>
                   Add Light
+                </button>
+                <button type="button" onClick={() => {createCamera()}}>
+                  Add Camera
                 </button>
               </div>
 
