@@ -1,11 +1,12 @@
 import AnnotationPage from './AnnotationPage.ts';
+import OrthographicCamera from './SceneComponets/OrthographicCamera.ts';
 
 class Container {
     static VALID_TYPES: Set<string> = new Set(['Timeline', 'Canvas', 'Scene']);
 
     id: string;
     type: string;
-    items: AnnotationPage[];
+    items: ( AnnotationPage | OrthographicCamera)[];
     duration?: number;
     height?: number;
     width?: number;
@@ -17,6 +18,10 @@ class Container {
         this.addAnnotationPage(new AnnotationPage());
     }
 
+    /*---------------------------------------------------
+                        DELETE
+    ---------------------------------------------------*/
+
     deleteDimensions() {
         delete this.height;
         delete this.width;
@@ -26,7 +31,11 @@ class Container {
         delete this.duration;
     }
 
-    getItems(): AnnotationPage[] {
+    /*---------------------------------------------------
+                        Getters
+    ---------------------------------------------------*/
+
+    getItems(){
         return this.items;
     }
 
@@ -46,10 +55,14 @@ class Container {
         return [this.height, this.width];
     }
 
-    getAnnotationPage(index?: number): AnnotationPage {
+    getAnnotationPage(index?: number){
         if (index === undefined) index = 0;
         return this.items[index];
     }
+
+    /*---------------------------------------------------
+                        SETTERS
+    ---------------------------------------------------*/
 
     setDuration(duration: number) {
         this.duration = duration;
