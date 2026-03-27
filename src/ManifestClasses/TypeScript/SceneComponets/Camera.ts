@@ -10,13 +10,22 @@ abstract class Camera{
 	far?: number; // floating point number // see bottom of file
 	// interactionMode?: InteractionMode // needs to be created
 
+	public constructor(){};
+
 /*------------------------------------------------------------
-    						ADD/CREATE
+    						LABEL
 --------------------------------------------------------------*/
 
 	addLabel(value: string, languageCode: string = 'en'): void{
 		this.label = new Label(value, languageCode);
 	}
+
+	changeLabel(index: number, value: string, languageCode?: string) {
+        this.label?.changeLabelTest(value);
+        if (languageCode) {
+            this.label?.setLanguage(languageCode);
+        }
+    }
 
 /*------------------------------------------------------------
     						DELETE
@@ -105,4 +114,5 @@ abstract class Camera{
 	// getInteractionMode(){
 	// 	return this.interactionMode;
 	// }
+
 } export default Camera
