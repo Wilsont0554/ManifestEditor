@@ -87,9 +87,18 @@ class Container {
         }
     }
 
+    setItems(index: number, input: any ){
+        this.items[index] = input;
+    }
+    
     addAnnotationPage(annotation: AnnotationPage) {
         this.items.push(annotation);
     }
+
+    addCamera(camera: OrthographicCamera /* || PerspectiveCamera */){
+        this.items.push(camera);
+    }
+
 
 }
 
