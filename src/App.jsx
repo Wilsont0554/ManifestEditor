@@ -172,13 +172,13 @@ function App() {
                       className={selectedResourceIndex === index ? 'active' : ''}>
                       Content Resource {index + 1}
                     </button>
-                    
-                    {/* Add/Edit Metadata button appears next to each content resource */}
-                    <button 
+
+                    {allResources[index].getMotivation() != ("commenting") ? (
+                      <button 
                       type="button" 
                       onClick={() => {
                         setSelectedResourceIndex(index);
-                        const resource = contentResources[index];
+                        const resource = allResources[index];
                         if (!resource || !resource.getMetadata) {
                           // nothing to edit yet
                           setIsEditingMetadata(false);
@@ -208,50 +208,12 @@ function App() {
                         cursor: 'pointer'
                       }}
                     >
-                      {metadataInitialized.has(index) || (contentResources[index] && contentResources[index].getMetadata && contentResources[index].getMetadata().getAllEntries().length > 0) 
+                      {metadataInitialized.has(index) || (allResources[index] && allResources[index].getMetadata && allResources[index].getMetadata().getAllEntries().length > 0) 
                         ? 'Edit Metadata' 
                         : 'Add Metadata'}
                     </button>
-                    
+                    ) : null}          
                     {/* Add/Edit Metadata button appears next to each content resource */}
-                    <button 
-                      type="button" 
-                      onClick={() => {
-                        setSelectedResourceIndex(index);
-                        const resource = contentResources[index];
-                        if (!resource || !resource.getMetadata) {
-                          // nothing to edit yet
-                          setIsEditingMetadata(false);
-                          return;
-                        }
-
-                        const metadata = resource.getMetadata();
-                        const hasMetadata = metadataInitialized.has(index) || metadata.getAllEntries().length > 0;
-
-                        if (!hasMetadata) {
-                          // First time clicking - add an empty metadata entry
-                          metadata.addEntry('', '', 'en');
-                          setMetadataInitialized(prev => new Set([...prev, index]));
-                        }
-
-                        setIsEditingMetadata(true);
-                        setcount((value) => value + 1);
-                      }}
-                      style={{
-                        marginLeft: '10px',
-                        padding: '4px 8px',
-                        fontSize: '0.8em',
-                        backgroundColor: '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '3px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {metadataInitialized.has(index) || (contentResources[index] && contentResources[index].getMetadata && contentResources[index].getMetadata().getAllEntries().length > 0) 
-                        ? 'Edit Metadata' 
-                        : 'Add Metadata'}
-                    </button>
                   </li>
                 ))}
               </ol>
@@ -273,7 +235,7 @@ function App() {
                         setcount={setcount}
                         index={selectedResourceIndex}
                         contentResourceIndex={selectedResourceIndex}
-                    object={selectedResource}
+                        object={selectedResource}
                         manifestObj={manifestObj}
                         setIsEditingMetadata={setIsEditingMetadata}
                       />
@@ -285,6 +247,7 @@ function App() {
                         setcount={setcount}
                         index={selectedResourceIndex}
                         contentResourceIndex={selectedResourceIndex}
+                        object={selectedResource}
                         manifestObj={manifestObj}
                         setIsEditingMetadata={setIsEditingMetadata}
                       />
