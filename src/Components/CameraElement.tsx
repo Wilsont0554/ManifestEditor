@@ -5,26 +5,14 @@ import OrthographicCamera from "../ManifestClasses/TypeScript/SceneComponets/Ort
 function CameraElement(props: any){
     const { camera, setcount, count } = props;
     const [type, setType] = useState("DEFAULT CAMERA");
-
-    var cameraTypes; // used just for logic should always be <cameraType>.getType();
     
     function handleCameraChange(e: any){
-        setCameraType();
-        if(e = "OrthographicCamera"){
-            var orthoCamera = new OrthographicCamera(0.0 , "", "OrthographicCamera", 0.0, 0.0);
-            // if(!perspectiveCamera) delete perspectiveCamera;
-        }
-    }
+        const newType = e.target.value;
 
-    function setCameraType(){
-        if(camera.getType().includes("Ortho")){
-            cameraTypes = "OrthographicCamera";;
-        }
-        else if(camera.getType().includes("Persp")){
-            cameraTypes = "PerspectiveCamera";
-        }
-        else{
-            cameraTypes = "Default Camera";
+        let newCamera;
+
+        if(newType === "OrthographicCamera") {
+            newCamera = new OrthographicCamera(0.0, camera.getID() || undefined, "OrthographicCamera", camera.getNear() || undefined, camera.getFar() || undefined, camera.getLabel() || undefined);
         }
     }
 
