@@ -8,6 +8,7 @@ import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
 import Light from "./ManifestClasses/TypeScript/Light.ts";
 import TextAnnotation from "./ManifestClasses/TypeScript/TextAnnotation.ts";
+import '@google/model-viewer';
 
 /*
 models for testing exports:
@@ -105,18 +106,10 @@ function App() {
     ? allResources[selectedResourceIndex]
     : null;
 
-  useEffect(() => {
-    const scriptTag = document.createElement('script');
-    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js" //"https://3d-api.si.edu/resources/js/voyager-explorer.min.js";
-    scriptTag.addEventListener('load', () => setcount(count + 1));
-    document.body.appendChild(scriptTag);
-  }, []);
-
 
   return (
     <div className="app-shell">
-      {/*<voyager-explorer root='https://3d-api.si.edu/content/document/341c96cd-f967-4540-8ed1-d3fc56d31f12/' document='document.json'></voyager-explorer>*/}
-        <voyager-explorer document="ManifestEditor/src/TextAnnotationExport.json" id="voyager"></voyager-explorer>
+      {/*<voyager-explorer document="ManifestEditor/src/TextAnnotationExport.json" id="voyager"></voyager-explorer><voyager-explorer root='https://3d-api.si.edu/content/document/341c96cd-f967-4540-8ed1-d3fc56d31f12/' document='document.json'></voyager-explorer>*/}
       
       <header className="app-nav">
         <p className="app-nav__brand">Manifest Editor</p>
@@ -184,7 +177,18 @@ function App() {
               </ol>
 
               <JsonEditor data={manifestObj} />
-          </div>
+
+              <model-viewer
+                alt="Neil Armstrong's Spacesuit from the Smithsonian"
+                src="https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb"
+        ar
+        environment-image="neutral"
+        shadow-intensity="1"
+        camera-controls
+        touch-action="pan-y"
+                >
+              </model-viewer>          
+            </div>
 
             {/* NEW: Sidebar for editing */}
             <aside className="manifest-sidebar">
