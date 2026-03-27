@@ -4,13 +4,13 @@ import Camera from './Camera'
 class OrthographicCamera extends Camera{
 	viewHeight: number;
 
-	public constructor(id: string, type: string, near: number, far: number, viewHeight: number, label: Label){
+	public constructor(viewHeight: number, id?: string, type?: string, near?: number, far?: number, label?: Label){
 		super()
-		if(type != undefined) this.setType(type);
-		if(id != undefined) this.setID(id);
-		if(near != undefined) this.setNear(near);
-		if(far != undefined) this.setFar(far);
-		if(label != undefined) this.setLabel(label);
+		type != undefined ? this.setType(type) : undefined;
+		id != undefined ? this.setID(id) : undefined;
+		near != undefined ? this.setNear(near) : undefined;
+		far != undefined ? this.setFar(far) : undefined;
+		label != undefined ? this.setLabel(label) : undefined;
 		this.viewHeight = viewHeight;
 	}
 
