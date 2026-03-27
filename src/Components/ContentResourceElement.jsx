@@ -1,22 +1,25 @@
 import React from "react";
 import LabelElement from "./LabelElement.jsx";
+import TextAnnotation from "./TextAnnotation.jsx";
 
 function ContentResourceElement(props) {
-    const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata } = props;
+    const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata, object} = props;
 
     var types;
 
+    if (object.getMotivation() == "commenting"){
+        return <TextAnnotation
+                    count={count}
+                    setcount={setcount}
+                    object={object}
+                />;
+    }
     // Grab the specific resource from the class instance
-    const resource = manifestObj
-        .getContainerObj()
-        .getAnnotationPage()
-        .getAnnotation(contentResourceIndex)
-        .getContentResource();
+    const resource = object.getContentResource();
+    const annotation = object 
 
-    const annotation = manifestObj
-        .getContainerObj()
-        .getAnnotationPage()
-        .getAnnotation(contentResourceIndex);
+    if (!resource) 
+        return <p>No Resource</p>
 
     if (resource.getType().includes("Light")){
         types = {
@@ -38,8 +41,6 @@ function ContentResourceElement(props) {
         resource.setFormat(types[e.target.value]);
         setcount(count + 1); // Trigger re-render of App.js
     }
-
-    if (!resource) return <p>No resource found.</p>;
 
     return (
         <div className="sidebar-editor-container">
@@ -77,7 +78,7 @@ function ContentResourceElement(props) {
                         max={1}
                         step={0.1}
                         onChange={(e) => {
-                            resource.setIntensity("Quantity", Number(e.target.value), "relative");
+                            resource.setIntensity("Value", Number(e.target.value), "relative");
                             setcount(count + 1);
                         }}
                     />
@@ -125,7 +126,7 @@ function ContentResourceElement(props) {
                     <input
                         placeholder="https://..."
                         type="text"
-                        value={resource.id || ""} 
+                        value={resource.getID() || ""} 
                         onChange={(e) => {
                             resource.setID(e.target.value);
                             setcount(count + 1);
@@ -134,45 +135,47 @@ function ContentResourceElement(props) {
                 </div>
             ) : null}
 
-            <div>
-                <h4>Position</h4>
-                <div className="field-group">
-                    <label>X</label>
-                    <input
-                        placeholder="0"
-                        type="number"
-                        value={annotation.getTarget().getX()} 
-                        onChange={(e) => {
-                            annotation.setX(Number(e.target.value));
-                            setcount(count + 1);
-                        }}
-                    />
+            {!resource.getType().includes("Light") ? (
+                <div>
+                    <h4>Position</h4>
+                    <div className="field-group">
+                        <label>X</label>
+                        <input
+                            placeholder="0"
+                            type="number"
+                            value={annotation.getTarget().getX()} 
+                            onChange={(e) => {
+                                annotation.setX(Number(e.target.value));
+                                setcount(count + 1);
+                            }}
+                        />
+                    </div>
+                    <div className="field-group">
+                        <label>Y</label>
+                        <input
+                            placeholder="0"
+                            type="number"
+                            value={annotation.getTarget().getY()} 
+                            onChange={(e) => {
+                                annotation.setY(Number(e.target.value));
+                                setcount(count + 1);
+                            }}
+                        />
+                    </div>
+                    <div className="field-group">
+                        <label>Z</label>
+                        <input
+                            placeholder="0"
+                            type="number"
+                            value={annotation.getTarget().getZ()} 
+                            onChange={(e) => {
+                                annotation.setZ(Number(e.target.value));
+                                setcount(count + 1);
+                            }}
+                        />
+                    </div>
                 </div>
-                <div className="field-group">
-                    <label>Y</label>
-                    <input
-                        placeholder="0"
-                        type="number"
-                        value={annotation.getTarget().getY()} 
-                        onChange={(e) => {
-                            annotation.setY(Number(e.target.value));
-                            setcount(count + 1);
-                        }}
-                    />
-                </div>
-                <div className="field-group">
-                    <label>Z</label>
-                    <input
-                        placeholder="0"
-                        type="number"
-                        value={annotation.getTarget().getZ()} 
-                        onChange={(e) => {
-                            annotation.setZ(Number(e.target.value));
-                            setcount(count + 1);
-                        }}
-                    />
-                </div>
-            </div>
+            ) : null}
 
             <div className="label-section">
                 <h4>Annotation Label</h4>

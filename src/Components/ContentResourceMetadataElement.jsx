@@ -1,14 +1,14 @@
 import React from "react";
 
 function ContentResourceMetadataElement(props) {
-    const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata } = props;
+    const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata, object} = props;
 
     // Grab the specific resource from the class instance
-    const resource = manifestObj
+    const resource = object.getContentResource();; /* manifestObj
         .getContainerObj()
         .getAnnotationPage()
         .getAnnotation(contentResourceIndex)
-        .getContentResource();
+        .getContentResource();*/
 
     if (!resource || !resource.getMetadata) return <p>No resource found or metadata not supported.</p>;
 

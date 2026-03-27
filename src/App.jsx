@@ -9,12 +9,15 @@ import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
 import Light from "./ManifestClasses/TypeScript/Light.ts";
+import TextAnnotation from "./ManifestClasses/TypeScript/TextAnnotation.ts";
+
 /*
 models for testing exports:
 https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb
 https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb
 https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb 
 */
+
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
 }
@@ -23,6 +26,8 @@ function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
+  const [allResources] = useState([]);
+
   const [containerType, setContainerType] = useState("Scene");
 
   // NEW: State to track which resource is currently being edited in the sidebar
@@ -56,21 +61,13 @@ function App() {
   function createAnnotation(resourceType) {
     let index = 0;
     for (let i = 0; i < annotationResource.length; i++){
-      if (annotationResource[i].getContentResource() == undefined){
-        manifestObj
-        .getContainerObj()
-        .getAnnotationPage()
-        .getAnnotation(i)
-        .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
-        setcount((value) => value + 1);
-      }
       index++;
     }
-
+    
     manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .addAnnotation(new Annotation(manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length + 1));
+    .addAnnotation(new Annotation(allResources.length));
 
     if (resourceType == "Default"){
        manifestObj
@@ -86,19 +83,32 @@ function App() {
       .getAnnotation(index)
       .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
     }
+
+    allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index))
+    setcount((value) => value + 1);
+  }
+
+  function createTextAnnotation(){
+
+    manifestObj.getContainerObj().getTextAnnotations().addAnnotation(new TextAnnotation(allResources.length));
+    
+    let length = manifestObj.getContainerObj().getTextAnnotations().getAllAnnotations().length
+    allResources.push(manifestObj.getContainerObj().getTextAnnotations().getAnnotation(length - 1))
+
+    console.log(allResources);
+
     setcount((value) => value + 1);
   }
 
   const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .getAllAnnotations();
-
-  const contentResources = annotationResource.map((anno) => anno.getContentResource());
+    .getAllAnnotations()
+  
 
   // Helper to get the currently selected resource object
   const selectedResource = selectedResourceIndex !== null 
-    ? contentResources[selectedResourceIndex] || null
+    ? allResources[selectedResourceIndex]
     : null;
 
   return (
@@ -148,24 +158,27 @@ function App() {
                 <button type="button" onClick={() => {createAnnotation("Light")}}>
                   Add Light
                 </button>
+                <button type="button" onClick={() => {createTextAnnotation()}}>
+                  Add Text Annotation
+                </button>
               </div>
-
+                
               <ol className="manifest-creator__list">
-                {annotationResource.map((resource, index) => (
+                {allResources.map((resource, index) => (
                   <li key={index} className="resource-list-item">
                     {/* Clicking this button sets the sidebar context */}
                     <button 
                       onClick={() => {setSelectedResourceIndex(index); setIsEditingMetadata(false);}}
                       className={selectedResourceIndex === index ? 'active' : ''}>
-                    <img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>
+                      {(resource.getContentResource() == null) ? (resource.constructor.name): resource.getContentResource().constructor.name}
                     </button>
-                    
-                    {/* Add/Edit Metadata button appears next to each content resource */}
-                    <button 
+
+                    {allResources[index].getMotivation() != ("commenting") ? (
+                      <button 
                       type="button" 
                       onClick={() => {
                         setSelectedResourceIndex(index);
-                        const resource = contentResources[index];
+                        const resource = allResources[index];
                         if (!resource || !resource.getMetadata) {
                           // nothing to edit yet
                           setIsEditingMetadata(false);
@@ -195,10 +208,12 @@ function App() {
                         cursor: 'pointer'
                       }}
                     >
-                      {metadataInitialized.has(index) || (contentResources[index] && contentResources[index].getMetadata && contentResources[index].getMetadata().getAllEntries().length > 0) 
+                      {metadataInitialized.has(index) || (allResources[index] && allResources[index].getMetadata && allResources[index].getMetadata().getAllEntries().length > 0) 
                         ? 'Edit Metadata' 
                         : 'Add Metadata'}
                     </button>
+                    ) : null}          
+                    {/* Add/Edit Metadata button appears next to each content resource */}
                   </li>
                 ))}
               </ol>
@@ -220,6 +235,7 @@ function App() {
                         setcount={setcount}
                         index={selectedResourceIndex}
                         contentResourceIndex={selectedResourceIndex}
+                        object={selectedResource}
                         manifestObj={manifestObj}
                         setIsEditingMetadata={setIsEditingMetadata}
                       />
@@ -231,6 +247,7 @@ function App() {
                         setcount={setcount}
                         index={selectedResourceIndex}
                         contentResourceIndex={selectedResourceIndex}
+                        object={selectedResource}
                         manifestObj={manifestObj}
                         setIsEditingMetadata={setIsEditingMetadata}
                       />
