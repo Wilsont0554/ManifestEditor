@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import Camera from "../ManifestClasses/TypeScript/SceneComponets/Camera.ts";
 import OrthographicCamera from "../ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
+import Container from "../ManifestClasses/TypeScript/Container.ts";
 
 function CameraElement(props: any){
-    const { camera, setcount, count } = props;
+    const { container, camera, setcount, count } = props;
     const [type, setType] = useState("DEFAULT CAMERA");
+
+    var containerItems = container.getItems();
+    var cameraIndex: number;
+    for(let i = 0; i < containerItems.size(); i++){
+        if(containerItems[i].instanceof(Camera)) cameraIndex = i; break;
+    }
     
     function handleCameraChange(e: any){
         const newType = e.target.value;
@@ -12,8 +19,22 @@ function CameraElement(props: any){
         let newCamera;
 
         if(newType === "OrthographicCamera") {
-            newCamera = new OrthographicCamera(0.0, camera.getID() || undefined, "OrthographicCamera", camera.getNear() || undefined, camera.getFar() || undefined, camera.getLabel() || undefined);
+            newCamera = new OrthographicCamera(
+                0.0,
+                camera.getID() || undefined,
+                "OrthographicCamera",
+                camera.getNear() || undefined,
+                camera.getFar() || undefined,
+                camera.getLabel() || undefined
+            );
         }
+
+        if(newType === "PerspectiveCamera") {
+            // newCamera = new PerspectiveCamera();
+        }
+
+        container.setItems(cameraIndex, newCamera);
+
     }
 
     if(!camera) return <p>No Camera Found</p>;
