@@ -87,6 +87,11 @@ class TextAnnotation {
     getAllLabels() {
         return this.label;
     }
+
+    
+    getContentResource(){
+        return null;
+    }
 }
 
 export default TextAnnotation;

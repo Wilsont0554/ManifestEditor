@@ -162,7 +162,7 @@ function App() {
                   Add Text Annotation
                 </button>
               </div>
-
+                
               <ol className="manifest-creator__list">
                 {allResources.map((resource, index) => (
                   <li key={index} className="resource-list-item">
@@ -170,7 +170,7 @@ function App() {
                     <button 
                       onClick={() => {setSelectedResourceIndex(index); setIsEditingMetadata(false);}}
                       className={selectedResourceIndex === index ? 'active' : ''}>
-                      Content Resource {index + 1}
+                      {(resource.getContentResource() == null) ? (resource.constructor.name): resource.getContentResource().constructor.name}
                     </button>
 
                     {allResources[index].getMotivation() != ("commenting") ? (
