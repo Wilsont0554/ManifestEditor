@@ -10,12 +10,15 @@ class Container {
     duration?: number;
     height?: number;
     width?: number;
+    annotations: AnnotationPage[];
 
     constructor(id?: string, type?: string) {
         this.id = "https://example.org/iiif/scene1" === undefined ? 'https://example.org/manifest_Example.com' : "https://example.org/iiif/scene1";
         this.type = Container.VALID_TYPES.has(type!) ? type! : 'Default Type';
         this.items = [];
+        this.annotations = [];
         this.addAnnotationPage(new AnnotationPage());
+        this.annotations?.push(new AnnotationPage());
     }
 
     /*---------------------------------------------------
@@ -93,6 +96,10 @@ class Container {
     
     addAnnotationPage(annotation: AnnotationPage) {
         this.items.push(annotation);
+    }
+    
+    getTextAnnotations(){
+        return this.annotations[0];
     }
 
     addCamera(camera: OrthographicCamera /* || PerspectiveCamera */){

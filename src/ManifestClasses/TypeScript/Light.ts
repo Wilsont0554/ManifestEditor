@@ -2,7 +2,7 @@ import ContentResource from "./ContentResource";
 
 class Light extends ContentResource {
     color?: string;
-    intensity?: { type: string; quantityValue: number; unit: string };
+    intensity?: { type: string; value: number; unit: string };
     lookAt?: { id: string };
     angle?: number;
 
@@ -18,7 +18,7 @@ class Light extends ContentResource {
         return this.color;
     }
 
-    getIntensity(): { type: string; quantityValue: number; unit: string } | undefined {
+    getIntensity(): { type: string; value: number; unit: string } | undefined {
         return this.intensity;
     }
 
@@ -29,10 +29,10 @@ class Light extends ContentResource {
         this.color = color;
     }
 
-    setIntensity(type: string, quantityValue: number, unit: string): void {
+    setIntensity(type: string, value: number, unit: string): void {
         this.intensity = {
             type: type,
-            quantityValue: quantityValue,
+            value: value,
             unit: unit
         };
     }
@@ -41,6 +41,16 @@ class Light extends ContentResource {
         this.lookAt = {
             id: lookID
         };
+    }
+
+    setType(type: string){
+        if (type != "DirectionalLight"){
+            this.lookAt = undefined;
+        }
+        if (type != "SpotLight"){
+            this.angle = undefined;
+        }
+        this.type = type;
     }
 
     setAngle(angle: number): void{
