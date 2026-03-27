@@ -1,5 +1,6 @@
 import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
+import type { IiifContentResource } from "@/types/iiif";
 
 class ContentResource {
     id: string;
@@ -9,7 +10,7 @@ class ContentResource {
     width?: number;
     label: Label;
     duration?: number;
-    summary?: string;
+    summary?: Label;
     metadata: Metadata;
 
     constructor(id: string, type: string, format?: string) {
@@ -53,7 +54,11 @@ class ContentResource {
     }
 
     setSummary(summary: string): void {
-        this.summary = summary;
+        if (!this.summary) {
+            this.summary = new Label('', 'en');
+        }
+
+        this.summary.changeLabelTest(summary);
     }
 
     /*---------------------------------------------------
@@ -96,11 +101,52 @@ class ContentResource {
     }
 
     getSummary(): string | undefined {
-        return this.summary;
+        return this.summary?.getValue();
     }
 
     getMetadata(): Metadata {
         return this.metadata;
+    }
+
+    protected buildBaseJson(): IiifContentResource {
+        const out: IiifContentResource = {
+            id: this.id,
+            type: this.type,
+        };
+
+        if (this.format) {
+            out.format = this.format;
+        }
+
+        if (this.label.hasValue()) {
+            out.label = this.label.toJSON();
+        }
+
+        if (this.metadata.getEntryCount() > 0) {
+            out.metadata = this.metadata.toJSON();
+        }
+
+        if (this.height !== undefined) {
+            out.height = this.height;
+        }
+
+        if (this.width !== undefined) {
+            out.width = this.width;
+        }
+
+        if (this.duration !== undefined) {
+            out.duration = this.duration;
+        }
+
+        if (this.summary?.hasValue()) {
+            out.summary = this.summary.toJSON();
+        }
+
+        return out;
+    }
+
+    toJSON(): IiifContentResource {
+        return this.buildBaseJson();
     }
 }
 

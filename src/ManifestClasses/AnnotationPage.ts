@@ -1,4 +1,5 @@
 import Annotation from "./Annotation.ts";
+import type { IiifAnnotationPage } from "@/types/iiif";
 
 class AnnotationPage {
     id: string;
@@ -6,9 +7,13 @@ class AnnotationPage {
     items: Annotation[];
 
     constructor() {
-        this.id = "https://example.org/iiif/scene1/page/p1/1";
+        this.id = "https://example.org/iiif/manifest/1/scene/1/page/1";
         this.type = "AnnotationPage";
         this.items = [];
+    }
+
+    setID(id: string): void {
+        this.id = id;
     }
 
     addAnnotation(annotation: Annotation): void {
@@ -32,6 +37,14 @@ class AnnotationPage {
 
     getAllAnnotations(): Annotation[] {
         return this.items;
+    }
+
+    toJSON(): IiifAnnotationPage {
+        return {
+            id: this.id,
+            type: this.type,
+            items: this.items.map((item) => item.toJSON()),
+        };
     }
 }
 

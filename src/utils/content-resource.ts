@@ -63,6 +63,7 @@ export interface LightContentResourceItem extends Omit<ContentResourceItem, "res
 
 export function createDefaultContentResource(
   type: EditableContentResourceType = "Model",
+  _annotationIndex?: number,
 ): ContentResource {
   if (type === "Light") {
     return new Light("", "AmbientLight");
@@ -168,7 +169,7 @@ export function getDisplayableContentResourceItems(
   manifestObj: ManifestObject,
 ): ContentResourceItem[] {
   return getContentResourceItems(manifestObj).filter(({ resource }) =>
-    hasContentResourceUrl(resource),
+    hasContentResourceUrl(resource) && !(resource instanceof Light),
   );
 }
 

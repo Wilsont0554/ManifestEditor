@@ -1,7 +1,11 @@
 import ContentResource from "./ContentResource.ts";
+import type {
+    IiifContentResource,
+    IiifQuantity,
+    IiifResourceReference,
+} from "@/types/iiif";
 
-interface LightIntensity {
-    type: string;
+interface LightIntensity extends IiifQuantity {
     quantityValue: number;
     unit: string;
 }
@@ -9,7 +13,7 @@ interface LightIntensity {
 class Light extends ContentResource {
     color?: string;
     intensity?: LightIntensity;
-    lookAt?: { id: string };
+    lookAt?: IiifResourceReference;
     angle?: number;
 
     constructor(id: string, type: string) {
@@ -38,7 +42,8 @@ class Light extends ContentResource {
 
     setIntensity(type: string, quantityValue: number, unit: string): void {
         this.intensity = {
-            type,
+            id: this.intensity?.id ?? "",
+            type: type as "Quantity",
             quantityValue,
             unit,
         };
@@ -48,7 +53,7 @@ class Light extends ContentResource {
         this.intensity = undefined;
     }
 
-    setLookAt(lookID: string): void {
+    setLookAt(lookID: string, type: string = "Annotation"): void {
         const nextLookId = lookID.trim();
 
         if (!nextLookId) {
@@ -58,6 +63,7 @@ class Light extends ContentResource {
 
         this.lookAt = {
             id: nextLookId,
+            type,
         };
     }
 
@@ -71,6 +77,37 @@ class Light extends ContentResource {
 
     removeAngle(): void {
         this.angle = undefined;
+    }
+
+    synchronizeDerivedIds(): void {
+        if (this.intensity) {
+            this.intensity.id = `${this.id}/intensity`;
+            this.intensity.type = "Quantity";
+        }
+    }
+
+    toJSON(): IiifContentResource {
+        this.synchronizeDerivedIds();
+
+        const out = this.buildBaseJson();
+
+        if (this.color) {
+            out.color = this.color;
+        }
+
+        if (this.intensity) {
+            out.intensity = this.intensity;
+        }
+
+        if (this.lookAt) {
+            out.lookAt = this.lookAt;
+        }
+
+        if (this.angle !== undefined) {
+            out.angle = this.angle;
+        }
+
+        return out;
     }
 }
 

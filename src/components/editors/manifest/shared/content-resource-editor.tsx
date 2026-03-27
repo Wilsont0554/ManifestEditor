@@ -1,6 +1,7 @@
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import type Annotation from "@/ManifestClasses/Annotation";
 import type ContentResource from "@/ManifestClasses/ContentResource";
+import Light from "@/ManifestClasses/Light";
 import {
   contentResourceTypeToFormat,
 } from "@/utils/content-resource";
@@ -46,6 +47,8 @@ function ContentResourceEditor({
   showMetadataAction = true,
   onOpenMetadata,
 }: ContentResourceEditorProps) {
+  const isLightResource = resource instanceof Light;
+
   function getAnnotationLabel(): string {
     return annotation.getLabel()?.getValue() ?? "";
   }
@@ -126,16 +129,29 @@ function ContentResourceEditor({
         </section>
       ) : null}
 
-      <ManifestInput
-        label="Resource URL"
-        id={`${idPrefix}-resource-url`}
-        type="text"
-        value={resource.id}
-        onChange={(newValue) => {
-          resource.setID(newValue);
-          onCommit();
-        }}
-      />
+      {isLightResource ? (
+        <ManifestInput
+          label="Light Identifier"
+          id={`${idPrefix}-light-identifier`}
+          type="text"
+          value={resource.id}
+          onChange={() => {}}
+          appearance="outline"
+          readOnly
+          inputClassName="bg-slate-50 text-slate-500"
+        />
+      ) : (
+        <ManifestInput
+          label="Resource URL"
+          id={`${idPrefix}-resource-url`}
+          type="text"
+          value={resource.id}
+          onChange={(newValue) => {
+            resource.setID(newValue);
+            onCommit();
+          }}
+        />
+      )}
 
       <InputWithLanguage
         label="Annotation Label"

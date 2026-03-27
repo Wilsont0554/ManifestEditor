@@ -1,18 +1,31 @@
 import AnnotationPage from './AnnotationPage.ts';
+import type { IiifCanvasLike, IiifContainerType } from "@/types/iiif";
+
+function normalizeContainerType(type?: string): IiifContainerType {
+    if (type === "canvas" || type === "Canvas") {
+        return "Canvas";
+    }
+
+    if (type === "timeline" || type === "Timeline") {
+        return "Timeline";
+    }
+
+    return "Scene";
+}
 
 class Container {
-    static VALID_TYPES: Set<string> = new Set(['timeline', 'canvas', 'scene']);
+    static VALID_TYPES: Set<IiifContainerType> = new Set(['Timeline', 'Canvas', 'Scene']);
 
     id: string;
-    type: string;
+    type: IiifContainerType;
     items: AnnotationPage[];
     duration?: number;
     height?: number;
     width?: number;
 
     constructor(id?: string, type?: string) {
-        this.id = id === undefined ? 'https://example.org/manifest_Example.com' : id;
-        this.type = Container.VALID_TYPES.has(type!) ? type! : 'Default Type';
+        this.id = id === undefined ? 'https://example.org/iiif/manifest/1/scene/1' : id;
+        this.type = normalizeContainerType(type);
         this.items = [];
         this.addAnnotationPage(new AnnotationPage());
     }
@@ -30,7 +43,11 @@ class Container {
         return this.items;
     }
 
-    getType(): string {
+    setID(id: string): void {
+        this.id = id;
+    }
+
+    getType(): IiifContainerType {
         return this.type;
     }
 
@@ -61,11 +78,13 @@ class Container {
     }
 
     setType(type: string) {
-        this.type = type;
-        if (type === "canvas") {
+        const normalizedType = normalizeContainerType(type);
+
+        this.type = normalizedType;
+        if (normalizedType === "Canvas") {
             this.setDimensions(0, 0);
             this.deleteDuration();
-        } else if (type === "timeline") {
+        } else if (normalizedType === "Timeline") {
             this.setDuration(0);
             this.deleteDimensions();
         } else {
@@ -78,18 +97,18 @@ class Container {
         this.items.push(annotation);
     }
 
-    toJSON() {
-        const out: { id: string; type: string; duration?: number; height?: number; width?: number; item: AnnotationPage[] } = {
+    toJSON(): IiifCanvasLike {
+        const out: IiifCanvasLike = {
             id: this.id,
             type: this.type,
-            item: this.items,
+            items: this.items.map((item) => item.toJSON()),
         };
 
-        if (this.type === "timeline" && this.duration !== undefined) {
+        if (this.type === "Timeline" && this.duration !== undefined) {
             out.duration = this.duration;
         }
 
-        if (this.type === "canvas" && this.height !== undefined && this.width !== undefined) {
+        if (this.type === "Canvas" && this.height !== undefined && this.width !== undefined) {
             out.height = this.height;
             out.width = this.width;
         }

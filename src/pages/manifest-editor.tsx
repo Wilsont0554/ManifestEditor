@@ -15,6 +15,7 @@ import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
 import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
+import type { IiifContainerType } from "@/types/iiif";
 import {
   createDefaultContentResource,
   type EditableContentResourceType,
@@ -23,8 +24,8 @@ import {
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
-const INSPECTOR_DOCK_SPACE = 760;
-type ContainerType = "canvas" | "scene" | "timeline";
+const INSPECTOR_DOCK_GUTTER = 40;
+type ContainerType = IiifContainerType;
 
 interface ResizeState {
   startX: number;
@@ -117,7 +118,9 @@ function ManifestEditorPage() {
 
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1);
-    annotation.setContentResource(createDefaultContentResource(type));
+    annotation.setContentResource(
+      createDefaultContentResource(type, nextAnnotationIndex),
+    );
 
     if (type === "Light") {
       annotation.ensureSpatialTarget();
@@ -134,6 +137,10 @@ function ManifestEditorPage() {
     downloadJsonFile(manifestObj, "manifest");
   }
 
+  const inspectorDockPadding = isInspectorOpen
+    ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
+    : undefined;
+
   return (
     <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-slate-100">
       <ContentResourceModal
@@ -147,9 +154,7 @@ function ManifestEditorPage() {
       <div
         className="h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
         style={{
-          paddingRight: isInspectorOpen
-            ? `clamp(0px, calc(100vw - 360px), ${INSPECTOR_DOCK_SPACE}px)`
-            : undefined,
+          paddingRight: inspectorDockPadding,
         }}
       >
         <div className="mr-auto max-w-245 space-y-4 pb-6">
@@ -172,9 +177,9 @@ function ManifestEditorPage() {
                 value={manifestObj.getContainerObj().getType() as ContainerType}
                 onChange={(e) => onContainerTypeChange(e.target.value as ContainerType)}
               >
-                <option value="canvas">Canvas</option>
-                <option value="scene">Scene</option>
-                <option value="timeline">Timeline</option>
+                <option value="Canvas">Canvas</option>
+                <option value="Scene">Scene</option>
+                <option value="Timeline">Timeline</option>
               </select>
 
               <Button

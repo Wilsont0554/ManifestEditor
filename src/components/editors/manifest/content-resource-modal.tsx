@@ -127,7 +127,7 @@ function LightIcon() {
   );
 }
 
-const contentResourceOptions: ContentResourceOption[] = [
+const baseContentResourceOptions: ContentResourceOption[] = [
   {
     value: "Image",
     title: "Image",
@@ -156,6 +156,7 @@ function ContentResourceModal({
   onSelectType,
 }: ContentResourceModalProps) {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
+  const isSceneContainer = manifestObj.getContainerObj().getType() === "Scene";
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const annotations = manifestObj
@@ -174,6 +175,9 @@ function ContentResourceModal({
           (item) => item.annotationIndex === selectedAnnotationIndex,
         ) ?? null
       : null;
+  const contentResourceOptions = baseContentResourceOptions.filter(
+    (option) => option.value !== "Light" || isSceneContainer,
+  );
 
   useEffect(() => {
     if (!isOpen) {

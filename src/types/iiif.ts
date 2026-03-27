@@ -17,6 +17,8 @@ export const supportedLanguageCodes = [
   "vi",
 ] as const;
 
+export const iiifContainerTypes = ["Timeline", "Canvas", "Scene"] as const;
+
 export const manifestViewingDirections = [
   "left-to-right",
   "right-to-left",
@@ -45,6 +47,7 @@ export const builtInManifestBehaviors = [
 ] as const;
 
 export type SupportedLanguageCode = (typeof supportedLanguageCodes)[number];
+export type IiifContainerType = (typeof iiifContainerTypes)[number];
 export type ManifestViewingDirection =
   (typeof manifestViewingDirections)[number];
 export type ManifestOrderingBehavior =
@@ -69,24 +72,56 @@ export interface IiifLinkedResource {
   label?: IiifLanguageMap;
 }
 
+export interface IiifResourceReference {
+  id: string;
+  type: string;
+}
+
+export interface IiifQuantity {
+  id: string;
+  type: "Quantity";
+  unit: string;
+  quantityValue: number;
+}
+
+export interface IiifPointSelector {
+  id?: string;
+  type: "PointSelector";
+  x?: number;
+  y?: number;
+  z?: number;
+  instant?: number;
+}
+
+export interface IiifSpecificResource {
+  id: string;
+  type: "SpecificResource";
+  source: IiifResourceReference;
+  selector: IiifPointSelector[];
+}
+
 export interface IiifContentResource {
   id: string;
   type: string;
-  format: string;
+  format?: string;
   label?: IiifLanguageMap;
   metadata?: IiifMetadataItem[];
   height?: number;
   width?: number;
   duration?: number;
   summary?: IiifLanguageMap;
+  color?: string;
+  angle?: number;
+  intensity?: IiifQuantity;
+  lookAt?: IiifResourceReference;
 }
 
 export interface IiifAnnotation {
   id: string;
   type: string;
   motivation: string[];
-  body: IiifContentResource[];
-  target: string;
+  body: IiifContentResource;
+  target: IiifResourceReference | IiifSpecificResource;
   label?: IiifLanguageMap;
 }
 
@@ -97,21 +132,26 @@ export interface IiifAnnotationPage {
 }
 
 export interface IiifCanvasLike {
-  id?: string;
-  type: string;
+  id: string;
+  type: IiifContainerType;
   items: IiifAnnotationPage[];
+  duration?: number;
+  height?: number;
+  width?: number;
 }
 
 export interface IiifManifest {
   "@context"?: string | string[];
   id: string;
   type: string;
-  label?: IiifLanguageMap;
+  label: IiifLanguageMap;
   summary?: IiifLanguageMap;
   metadata?: IiifMetadataItem[];
   homepage?: IiifLinkedResource[];
   seeAlso?: IiifLinkedResource[];
   navPlace?: string;
+  rights?: string;
+  navDate?: string;
   viewingDirection?: ManifestViewingDirection;
   behavior?: string[];
   items: IiifCanvasLike[];

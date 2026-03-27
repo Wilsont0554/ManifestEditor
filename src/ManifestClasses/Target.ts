@@ -1,26 +1,24 @@
-interface TargetSource {
-    id: string;
-    type: string;
-}
-
-interface TargetSelector {
-    type: string;
-    x?: number;
-    y?: number;
-    z?: number;
-}
+import type {
+    IiifContainerType,
+    IiifPointSelector,
+    IiifResourceReference,
+    IiifSpecificResource,
+} from "@/types/iiif";
 
 class Target {
+    id: string;
     type: string;
-    source: [TargetSource];
-    selector: [TargetSelector];
+    source: IiifResourceReference;
+    selector: [IiifPointSelector];
 
     constructor(
-        sourceId: string = "https://example.org/iiif/scene1",
-        sourceType: string = "Scene",
+        id: string = "https://example.org/iiif/manifest/1/scene/1/anno/1/target",
+        sourceId: string = "https://example.org/iiif/manifest/1/scene/1",
+        sourceType: IiifContainerType = "Scene",
     ) {
+        this.id = id;
         this.type = "SpecificResource";
-        this.source = [{ id: sourceId, type: sourceType }];
+        this.source = { id: sourceId, type: sourceType };
         this.selector = [
             {
                 type: "PointSelector",
@@ -31,11 +29,19 @@ class Target {
         ];
     }
 
-    getSource(): [TargetSource] {
+    setID(id: string): void {
+        this.id = id;
+    }
+
+    setSource(id: string, type: IiifContainerType): void {
+        this.source = { id, type };
+    }
+
+    getSource(): IiifResourceReference {
         return this.source;
     }
 
-    getSelector(): [TargetSelector] {
+    getSelector(): [IiifPointSelector] {
         return this.selector;
     }
 
@@ -43,7 +49,7 @@ class Target {
         return [this.getX(), this.getY(), this.getZ()];
     }
 
-    setSelectorType(type: string): void {
+    setSelectorType(type: IiifPointSelector["type"]): void {
         this.selector[0].type = type;
     }
 
@@ -69,6 +75,15 @@ class Target {
 
     getZ(): number {
         return this.selector[0].z ?? 0;
+    }
+
+    toJSON(): IiifSpecificResource {
+        return {
+            id: this.id,
+            type: "SpecificResource",
+            source: this.source,
+            selector: this.selector,
+        };
     }
 }
 

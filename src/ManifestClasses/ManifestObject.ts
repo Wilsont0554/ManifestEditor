@@ -1,10 +1,13 @@
 import Container from './Container.ts';
 import Label from './Label.ts';
+import Light from "./Light.ts";
 import {
     builtInManifestBehaviors,
     manifestAutoAdvanceBehaviors,
     manifestOrderingBehaviors,
     manifestRepeatBehaviors,
+    type IiifContainerType,
+    type IiifManifest,
     type ManifestAutoAdvanceBehavior,
     type ManifestOrderingBehavior,
     type ManifestRepeatBehavior,
@@ -15,6 +18,22 @@ const manifestOrderingBehaviorSet = new Set<string>(manifestOrderingBehaviors);
 const manifestRepeatBehaviorSet = new Set<string>(manifestRepeatBehaviors);
 const manifestAutoAdvanceBehaviorSet = new Set<string>(manifestAutoAdvanceBehaviors);
 const builtInManifestBehaviorSet = new Set<string>(builtInManifestBehaviors);
+const presentationContext = "http://iiif.io/api/presentation/4/context.json";
+const defaultManifestId = "https://example.org/iiif/manifest/1";
+const defaultManifestLabel = "Blank Manifest";
+
+function trimTrailingSlash(value: string): string {
+    return value.replace(/\/+$/, '');
+}
+
+function getEffectiveManifestId(value: string): string {
+    const trimmedValue = value.trim();
+    return trimmedValue.length > 0 ? trimmedValue : defaultManifestId;
+}
+
+function getManifestBaseId(value: string): string {
+    return trimTrailingSlash(getEffectiveManifestId(value).replace(/\.json$/i, ''));
+}
 
 class ManifestObject {
     id: string;
@@ -28,14 +47,17 @@ class ManifestObject {
     behavior?: string[];
 
     constructor(containerType: string) {
-        this.id = "https://example.org/to13swr5ws-mlwptp83";
+        this.id = defaultManifestId;
         this.type = "Manifest";
         this.items = [];
-        this.label = new Label("Blank Manifest", "en");
-        this.addContainer(new Container(this.id, containerType));
+        this.label = new Label(defaultManifestLabel, "en");
+        this.addContainer(new Container(undefined, containerType));
+        this.synchronizeStructure();
     }
 
     clone(): ManifestObject {
+        this.synchronizeStructure();
+
         return Object.assign(
             Object.create(Object.getPrototypeOf(this)),
             this
@@ -44,6 +66,7 @@ class ManifestObject {
     
     addContainer(container: Container): void {
         this.items.push(container);
+        this.synchronizeStructure();
     }
 
     getContainerObj(index?: number): Container {
@@ -228,29 +251,76 @@ class ManifestObject {
         return (currentValue ?? '') as T | '';
     }
 
-    toJSON() {
-        const out: {
-            id: string;
-            type: string;
-            label?: Label;
-            summary?: Label;
-            rights?: string;
-            navDate?: string;
-            viewingDirection?: ManifestViewingDirection;
-            behavior?: string[];
-            items: Container[];
-        } = {
-            id: this.id,
-            type: this.type,
-            items: this.items,
-        };
-
+    private getSerializableLabel(): Label {
         if (this.label?.hasValue()) {
-            out.label = this.label;
+            return this.label;
         }
 
+        return new Label(defaultManifestLabel, "en");
+    }
+
+    private synchronizeStructure(): void {
+        const manifestBaseId = getManifestBaseId(this.id);
+
+        this.items.forEach((container, containerIndex) => {
+            const containerId = `${manifestBaseId}/${container.getType().toLowerCase()}/${containerIndex + 1}`;
+            container.setID(containerId);
+
+            container.getItems().forEach((annotationPage, annotationPageIndex) => {
+                annotationPage.setID(`${containerId}/page/${annotationPageIndex + 1}`);
+
+                let lightIndex = 0;
+
+                annotationPage.getAllAnnotations().forEach((annotation, annotationIndex) => {
+                    const annotationId = `${containerId}/anno/${annotationIndex + 1}`;
+                    annotation.changeID(annotationId);
+
+                    const resource = annotation.getContentResource();
+                    const targetId = `${annotationId}/target`;
+
+                    if (resource instanceof Light) {
+                        lightIndex += 1;
+                        resource.setID(`${containerId}/lights/${lightIndex}`);
+                        resource.synchronizeDerivedIds();
+                        annotation.ensureSpatialTarget(
+                            targetId,
+                            containerId,
+                            container.getType(),
+                        );
+                        return;
+                    }
+
+                    if (annotation.getTarget()) {
+                        annotation.ensureSpatialTarget(
+                            targetId,
+                            containerId,
+                            container.getType(),
+                        );
+                        return;
+                    }
+
+                    annotation.setTargetReference(
+                        containerId,
+                        container.getType() as IiifContainerType,
+                    );
+                });
+            });
+        });
+    }
+
+    toJSON(): IiifManifest {
+        this.synchronizeStructure();
+
+        const out: IiifManifest = {
+            "@context": presentationContext,
+            id: getEffectiveManifestId(this.id),
+            type: this.type,
+            label: this.getSerializableLabel().toJSON(),
+            items: this.items.map((item) => item.toJSON()),
+        };
+
         if (this.summary?.hasValue()) {
-            out.summary = this.summary;
+            out.summary = this.summary.toJSON();
         }
 
         if (this.rights) {

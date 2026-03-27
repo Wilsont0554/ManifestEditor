@@ -1,3 +1,5 @@
+import type { IiifLanguageMap } from "@/types/iiif";
+
 type LanguageFactory = new (value: string) => {
     changeValue(value: string): void;
 };
@@ -100,8 +102,8 @@ class Label {
         return this.getValue().length > 0;
     }
 
-    toJSON() {
-        return this.language as Record<string, unknown>;
+    toJSON(): IiifLanguageMap {
+        return this.language as unknown as IiifLanguageMap;
     }
 }
 

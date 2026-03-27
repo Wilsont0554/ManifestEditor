@@ -1,20 +1,31 @@
 import Label from './Label.ts';
 import ContentResource from './ContentResource.ts';
 import Target from "./Target.ts";
+import type {
+    IiifAnnotation,
+    IiifContainerType,
+    IiifContentResource,
+    IiifResourceReference,
+} from "@/types/iiif";
+
+type AnnotationTargetReference = IiifResourceReference;
 
 class Annotation {
     id: string;
     type: string;
     motivation: string[];
     body?: ContentResource;
-    target: string | Target;
+    target: AnnotationTargetReference | Target;
     label?: Label;
 
     constructor(index: number = 1) {
-        this.id = `https://example.org/iiif/3d/anno${index}`;
+        this.id = `https://example.org/iiif/manifest/1/scene/1/anno/${index}`;
         this.type = "Annotation";
         this.motivation = ["painting"];
-        this.target = "https://example.org/iiif/scene1/page/p1/1";
+        this.target = {
+            id: "https://example.org/iiif/manifest/1/scene/1",
+            type: "Scene",
+        };
         this.createLabel("en");
     }
 
@@ -30,17 +41,28 @@ class Annotation {
         this.label?.changeLabelTest(value);
     }
 
-    setTarget(target?: Target | string): void {
-        this.target = target ?? new Target();
+    setTarget(target: AnnotationTargetReference | Target): void {
+        this.target = target;
     }
 
-    ensureSpatialTarget(): Target {
+    setTargetReference(id: string, type: IiifContainerType): void {
+        this.target = { id, type };
+    }
+
+    ensureSpatialTarget(
+        targetId: string = `${this.id}/target`,
+        sourceId: string = "https://example.org/iiif/manifest/1/scene/1",
+        sourceType: IiifContainerType = "Scene",
+    ): Target {
         if (this.target instanceof Target) {
+            this.target.setID(targetId);
+            this.target.setSource(sourceId, sourceType);
             return this.target;
         }
 
-        this.target = new Target();
-        return this.target;
+        const nextTarget = new Target(targetId, sourceId, sourceType);
+        this.target = nextTarget;
+        return nextTarget;
     }
 
     getTarget(): Target | null {
@@ -88,6 +110,26 @@ class Annotation {
 
     getAllLabels() {
         return this.label;
+    }
+
+    toJSON(): IiifAnnotation {
+        const out = {
+            id: this.id,
+            type: this.type,
+            motivation: this.motivation,
+            body: this.body?.toJSON() as IiifContentResource,
+            target: this.target instanceof Target ? this.target.toJSON() : this.target,
+        } as Partial<IiifAnnotation>;
+
+        if (!this.body) {
+            out.body = undefined;
+        }
+
+        if (this.label?.hasValue()) {
+            out.label = this.label.toJSON();
+        }
+
+        return out as IiifAnnotation;
     }
 }
 

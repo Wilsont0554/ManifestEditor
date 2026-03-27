@@ -226,11 +226,11 @@ function isContentResourceFieldEdited(
 }
 
 const defaultManifestSnapshot = createManifestEditableSnapshot(
-  new ManifestObject("scene"),
+  new ManifestObject("Scene"),
 );
 
 export const ManifestObjProvider = ({ children }: { children: React.ReactNode }) => {
-  const [manifestObj, setManifestObj] = useState(() => new ManifestObject("scene"));
+  const [manifestObj, setManifestObj] = useState(() => new ManifestObject("Scene"));
   const [initialSnapshot] = useState(defaultManifestSnapshot);
   const currentSnapshot = createManifestEditableSnapshot(manifestObj);
 

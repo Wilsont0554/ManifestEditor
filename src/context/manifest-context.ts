@@ -22,7 +22,7 @@ export type ManifestObjContext = {
   isFieldEdited: (field: ManifestEditableField) => boolean;
 };
 
-const defaultManifestObj = new ManifestObject("scene");
+const defaultManifestObj = new ManifestObject("Scene");
 
 export const manifestObjContext = createContext<ManifestObjContext>({
   manifestObj: defaultManifestObj,

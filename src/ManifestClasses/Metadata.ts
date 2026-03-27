@@ -1,4 +1,5 @@
 import Label from "./Label.ts";
+import type { IiifMetadataItem } from "@/types/iiif";
 
 class MetadataEntry {
     label: Label;
@@ -50,10 +51,10 @@ class MetadataEntry {
         return this.value.getLanguage() ?? "en";
     }
 
-    toJSON() {
+    toJSON(): IiifMetadataItem {
         return {
-            label: this.label,
-            value: this.value,
+            label: this.label.toJSON(),
+            value: this.value.toJSON(),
         };
     }
 }
@@ -109,7 +110,7 @@ class Metadata {
         return this.entries.length;
     }
 
-    toJSON() {
+    toJSON(): IiifMetadataItem[] {
         return this.entries.map((entry) => entry.toJSON());
     }
 }
