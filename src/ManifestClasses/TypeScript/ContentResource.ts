@@ -1,4 +1,5 @@
 import Label from './Label.ts';
+import Metadata from './Metadata.ts';
 
 class ContentResource {
     id: string;
@@ -9,12 +10,14 @@ class ContentResource {
     label?: Label;
     duration?: number;
     summary?: string;
+    metadata: any;
 
     constructor(id: string, type: string, format: string) {
         this.id = id;
         this.type = type;
         this.format = format;
-        //this.label = this.createLabel("en");
+        this.label = this.createLabel("en");
+        this.metadata = new Metadata();
     }
 
     /*---------------------------------------------------
@@ -95,6 +98,10 @@ class ContentResource {
 
     getSummary(): string | undefined {
         return this.summary;
+    }
+
+    getMetadata() {
+        return this.metadata;
     }
     getID(){
         return this.id
