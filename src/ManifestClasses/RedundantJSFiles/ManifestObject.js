@@ -1,5 +1,6 @@
 import Container from './Container.js'
 import Annotation from './ContentResource.js';
+import Metadata from './Metadata.js';
 
 class ManifestObject{
     constructor(containerType){
@@ -7,6 +8,7 @@ class ManifestObject{
         this.type = "Manifest";
         this.items = [];
         this.addContainer(new Container(this.id, containerType))
+        this.metadata = undefined;
     }
 
     addContainer(container){
@@ -18,6 +20,10 @@ class ManifestObject{
             index = 0;
         }
         return this.items[index];
+    }
+
+    getMetadata(){
+        return this.metadata;
     }
 
 } export default ManifestObject

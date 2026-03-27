@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { JsonEditor } from "json-edit-react";
 import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
+import ContentResourceMetadataElement from "./Components/ContentResourceMetadataElement.jsx";
+import MetadataElement from "./Components/MetadataElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
@@ -25,6 +27,10 @@ function App() {
 
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
+  // NEW: State to track if we're editing metadata for the selected resource
+  const [isEditingMetadata, setIsEditingMetadata] = useState(false);
+  // NEW: State to track which resources have had metadata initialized
+  const [metadataInitialized, setMetadataInitialized] = useState(new Set());
 
   useEffect(() => {
     const onHashChange = () => {
@@ -86,11 +92,13 @@ function App() {
   const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .getAllAnnotations()
+    .getAllAnnotations();
+
+  const contentResources = annotationResource.map((anno) => anno.getContentResource());
 
   // Helper to get the currently selected resource object
   const selectedResource = selectedResourceIndex !== null 
-    ? annotationResource[selectedResourceIndex].getContentResource()
+    ? contentResources[selectedResourceIndex] || null
     : null;
 
   return (
@@ -147,9 +155,49 @@ function App() {
                   <li key={index} className="resource-list-item">
                     {/* Clicking this button sets the sidebar context */}
                     <button 
-                      onClick={() => setSelectedResourceIndex(index)}
+                      onClick={() => {setSelectedResourceIndex(index); setIsEditingMetadata(false);}}
                       className={selectedResourceIndex === index ? 'active' : ''}>
                     <img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>
+                    </button>
+                    
+                    {/* Add/Edit Metadata button appears next to each content resource */}
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setSelectedResourceIndex(index);
+                        const resource = contentResources[index];
+                        if (!resource || !resource.getMetadata) {
+                          // nothing to edit yet
+                          setIsEditingMetadata(false);
+                          return;
+                        }
+
+                        const metadata = resource.getMetadata();
+                        const hasMetadata = metadataInitialized.has(index) || metadata.getAllEntries().length > 0;
+
+                        if (!hasMetadata) {
+                          // First time clicking - add an empty metadata entry
+                          metadata.addEntry('', '', 'en');
+                          setMetadataInitialized(prev => new Set([...prev, index]));
+                        }
+
+                        setIsEditingMetadata(true);
+                        setcount((value) => value + 1);
+                      }}
+                      style={{
+                        marginLeft: '10px',
+                        padding: '4px 8px',
+                        fontSize: '0.8em',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {metadataInitialized.has(index) || (contentResources[index] && contentResources[index].getMetadata && contentResources[index].getMetadata().getAllEntries().length > 0) 
+                        ? 'Edit Metadata' 
+                        : 'Add Metadata'}
                     </button>
                   </li>
                 ))}
@@ -164,13 +212,30 @@ function App() {
               {selectedResource ? (
                 <div className="sidebar-controls">
                   <p>Editing Resource {selectedResourceIndex + 1}</p>
-                  <ContentResourceElement
-                    count={count}
-                    setcount={setcount}
-                    index={selectedResourceIndex}
-                    contentResourceIndex={selectedResourceIndex}
-                    manifestObj={manifestObj}
-                  />
+
+                  {!isEditingMetadata ? (
+                    <>
+                      <ContentResourceElement
+                        count={count}
+                        setcount={setcount}
+                        index={selectedResourceIndex}
+                        contentResourceIndex={selectedResourceIndex}
+                        manifestObj={manifestObj}
+                        setIsEditingMetadata={setIsEditingMetadata}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <ContentResourceMetadataElement
+                        count={count}
+                        setcount={setcount}
+                        index={selectedResourceIndex}
+                        contentResourceIndex={selectedResourceIndex}
+                        manifestObj={manifestObj}
+                        setIsEditingMetadata={setIsEditingMetadata}
+                      />
+                    </>
+                  )}
                 </div>
               ) : (
                 <p>Select a resource to edit</p>
