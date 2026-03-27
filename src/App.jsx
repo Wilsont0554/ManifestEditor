@@ -8,7 +8,13 @@ import MetadataElement from "./Components/MetadataElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
-
+import Light from "./ManifestClasses/TypeScript/Light.ts";
+/*
+models for testing exports:
+https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb 
+*/
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
 }
@@ -16,9 +22,9 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerType, setContainerType] = useState("Scene");
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
-  
+  const [containerType, setContainerType] = useState("Scene");
+
   // NEW: State to track which resource is currently being edited in the sidebar
   const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
   // NEW: State to track if we're editing metadata for the selected resource
@@ -47,7 +53,7 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  function createAnnotation() {
+  function createAnnotation(resourceType) {
     let index = 0;
     for (let i = 0; i < annotationResource.length; i++){
       if (annotationResource[i].getContentResource() == undefined){
@@ -64,13 +70,22 @@ function App() {
     manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .addAnnotation(new Annotation());
+    .addAnnotation(new Annotation(manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length + 1));
 
-    manifestObj
-    .getContainerObj()
-    .getAnnotationPage()
-    .getAnnotation(index)
-    .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    if (resourceType == "Default"){
+       manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    } 
+    else if (resourceType == "Light"){
+      manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
+    }
     setcount((value) => value + 1);
   }
 
@@ -122,13 +137,16 @@ function App() {
                   setcount((value) => value + 1);
                 }}
               >
-                <option value="canvas">Canvas</option>
-                <option value="scene">Scene</option>
-                <option value="timeline">Timeline</option>
+                <option value="Canvas">Canvas</option>
+                <option value="Scene">Scene</option>
+                <option value="Timeline">Timeline</option>
               </select>
 
-                <button type="button" onClick={createAnnotation}>
+                <button type="button" onClick={() => {createAnnotation("Default")}}>
                   Add Content Resource
+                </button>
+                <button type="button" onClick={() => {createAnnotation("Light")}}>
+                  Add Light
                 </button>
               </div>
 
@@ -137,13 +155,9 @@ function App() {
                   <li key={index} className="resource-list-item">
                     {/* Clicking this button sets the sidebar context */}
                     <button 
-                      onClick={() => {
-                        {setSelectedResourceIndex(index);};
-                        setIsEditingMetadata(false); // Reset metadata editing when selecting a different resource
-                      }}
-                      className={selectedResourceIndex === index ? 'active' : ''}
-                    >
-                      Content Resource {index + 1}
+                      onClick={() => {setSelectedResourceIndex(index); setIsEditingMetadata(false);}}
+                      className={selectedResourceIndex === index ? 'active' : ''}>
+                    <img className="CRPreview" src={resource.getContentResource().getID()} alt={"Content Resource " + (index + 1)}></img>
                     </button>
                     
                     {/* Add/Edit Metadata button appears next to each content resource */}

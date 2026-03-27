@@ -1,7 +1,7 @@
 import AnnotationPage from './AnnotationPage.ts';
 
 class Container {
-    static VALID_TYPES: Set<string> = new Set(['timeline', 'canvas', 'scene']);
+    static VALID_TYPES: Set<string> = new Set(['Timeline', 'Canvas', 'Scene']);
 
     id: string;
     type: string;
@@ -11,7 +11,7 @@ class Container {
     width?: number;
 
     constructor(id?: string, type?: string) {
-        this.id = id === undefined ? 'https://example.org/manifest_Example.com' : id;
+        this.id = "https://example.org/iiif/scene1" === undefined ? 'https://example.org/manifest_Example.com' : "https://example.org/iiif/scene1";
         this.type = Container.VALID_TYPES.has(type!) ? type! : 'Default Type';
         this.items = [];
         this.addAnnotationPage(new AnnotationPage());
@@ -78,24 +78,6 @@ class Container {
         this.items.push(annotation);
     }
 
-    toJSON() {
-        const out: { id: string; type: string; duration?: number; height?: number; width?: number; item: AnnotationPage[] } = {
-            id: this.id,
-            type: this.type,
-            item: this.items,
-        };
-
-        if (this.type === "timeline" && this.duration !== undefined) {
-            out.duration = this.duration;
-        }
-
-        if (this.type === "canvas" && this.height !== undefined && this.width !== undefined) {
-            out.height = this.height;
-            out.width = this.width;
-        }
-
-        return out;
-    }
 }
 
 export default Container;

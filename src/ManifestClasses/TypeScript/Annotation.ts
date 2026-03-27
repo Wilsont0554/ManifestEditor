@@ -1,33 +1,52 @@
 import Label from './Label.ts';
-import ContentResource from './ContentResource.ts';
+import ContentResource from './ContentResource.js';
+import Target from './Target.ts';
 
 class Annotation {
     id: string;
     type: string;
     motivation: string[];
     body?: ContentResource;
-    target: string;
+    target?: Target;
     label?: Label;
 
-    constructor() {
-        this.id = "https://example.org/iiif/3d/anno1";
+    constructor(index: number) {
+        this.id = "https://example.org/iiif/3d/anno" + index;
         this.type = "Annotation";
         this.motivation = ["painting"];
-        this.target = "https://example.org/iiif/scene1/page/p1/1";
         this.label;
         this.createLabel("en");
+        this.setTarget();
     }
 
     setContentResource(contentResource: ContentResource) {
         this.body = contentResource;
     }
 
-    getContentResource(index?: number) {
+    getContentResource() {
         return this.body;
     }
 
     setLabel(index: number, value: string) {
         this.label?.changeLabelTest(value);
+    }
+
+    setTarget(){
+        this.target = new Target(); //"https://example.org/iiif/scene1"
+    }
+
+    getTarget(){
+        return this.target;
+    }
+
+    setX(x: number){
+        this.target?.setX(x);
+    }
+    setY(x: number){
+        this.target?.setY(x);
+    }
+    setZ(x: number){
+        this.target?.setZ(x);
     }
 
     createLabel(languageCode: string = 'en') {
