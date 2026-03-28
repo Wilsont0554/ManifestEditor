@@ -90,9 +90,9 @@ function App() {
       const newCamera = new OrthographicCamera(
       0.0,
       undefined,
-      "OrthographicCamera",
       0.0,
-      0.0
+      0.0, 
+      undefined
       );
 
       manifestObj
@@ -134,27 +134,27 @@ function App() {
   const container = manifestObj.getContainerObj();
   const camera = container.getItems().find(item => item instanceof Camera);
 
-  function createCamera(){
-    let index = annotationResource.length - 1;
+  // function createCamera(){
+  //   let index = annotationResource.length - 1;
 
-    const newCamera = new OrthographicCamera(
-      0.0,
-      undefined,
-      "OrthographicCamera",
-      0.0,
-      0.0
-    );
+  //   const newCamera = new OrthographicCamera(
+  //     0.0,
+  //     undefined,
+  //     "OrthographicCamera",
+  //     0.0,
+  //     0.0
+  //   );
 
-    manifestObj
-      .getContainerObj()
-      .getAnnotationPage()
-      .getAnnotation(index)
-      .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
-    let length = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length
-    allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(length - 1))
+  //   manifestObj
+  //     .getContainerObj()
+  //     .getAnnotationPage()
+  //     .getAnnotation(index)
+  //     .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+  //   let length = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length
+  //   allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(length - 1))
 
-    setcount((value) => value + 1);
-  }
+  //   setcount((value) => value + 1);
+  // }
 
   return (
     <div className="app-shell">
@@ -274,7 +274,7 @@ function App() {
               <h3>Edit Resource</h3>
               {selectedResource ? (
                 <div className="sidebar-controls">
-                  <p>Editing {selectedResource.getType().getAllAnnotations[selectedResourceIndex].getType()} {selectedResourceIndex + 1}</p>
+                  <p>Editing Resource {selectedResourceIndex + 1}</p>
 
                   {!isEditingMetadata ? (
                     <>
