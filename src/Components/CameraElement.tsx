@@ -59,16 +59,6 @@ function CameraElement(props: any){
 
         {/*Shared componets of camera UI */}
             <div className="field-group">
-                <label>ID</label>
-                <input
-                    placeholder="https://...."
-                    type="text"
-                    value={camera.getID() || ""} 
-                        onChange={(e) => {
-                            camera.setID(e.target.value);
-                            setcount(count + 1);
-                        }}
-                />
 
                 {/* The far and near values should be bounded by
                     the scene dimesions evenutally */}

@@ -12,6 +12,7 @@ abstract class Camera{
 
 	public constructor(){
 		this.label = this.createLabel("en");
+		this.id = "https://example.org/iiif/3d/cameras/1";
 	};
 
 /*------------------------------------------------------------
