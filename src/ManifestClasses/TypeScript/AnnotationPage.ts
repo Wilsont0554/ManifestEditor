@@ -1,5 +1,6 @@
 import Annotation from "./Annotation.ts";
 import TextAnnotation from "./TextAnnotation.ts";
+import OrthographicCamera from "./SceneComponets/OrthographicCamera.ts";
 
 class AnnotationPage {
     id: string;
@@ -25,6 +26,10 @@ class AnnotationPage {
 
     getAllAnnotations(): Annotation[] | TextAnnotation[] {
         return this.items;
+    }
+
+    addCamera(camera: OrthographicCamera /* || PerspectiveCamera */){
+        this.items.push(camera);
     }
 }
 

@@ -1,6 +1,8 @@
 import React from "react";
 import LabelElement from "./LabelElement.jsx";
 import TextAnnotation from "./TextAnnotation.jsx";
+import CameraElement from "./CameraElement.tsx";
+import Camera from "../ManifestClasses/TypeScript/SceneComponets/Camera.ts"
 
 function ContentResourceElement(props) {
     const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata, object} = props;
@@ -17,6 +19,14 @@ function ContentResourceElement(props) {
     // Grab the specific resource from the class instance
     const resource = object.getContentResource();
     const annotation = object 
+
+    if(resource.getType().includes("Camera")){
+        return <CameraElement
+            count={count}
+            setcount={setcount}
+            camera={resource}
+            ></CameraElement>
+    }
 
     if (!resource) 
         return <p>No Resource</p>

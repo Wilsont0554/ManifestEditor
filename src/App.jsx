@@ -63,10 +63,10 @@ function App() {
 
   function createAnnotation(resourceType) {
     let index = 0;
-    for (let i = 0; i < annotationResource.length; i++){
+    for(let i = 0; i < annotationResource.length; i++){
       index++;
     }
-    
+
     manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -85,6 +85,21 @@ function App() {
       .getAnnotationPage()
       .getAnnotation(index)
       .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
+    }
+    else if(resourceType == "Camera"){
+      const newCamera = new OrthographicCamera(
+      0.0,
+      undefined,
+      "OrthographicCamera",
+      0.0,
+      0.0
+      );
+
+      manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(newCamera);
     }
 
     allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index))
@@ -120,6 +135,8 @@ function App() {
   const camera = container.getItems().find(item => item instanceof Camera);
 
   function createCamera(){
+    let index = annotationResource.length - 1;
+
     const newCamera = new OrthographicCamera(
       0.0,
       undefined,
@@ -128,7 +145,14 @@ function App() {
       0.0
     );
 
-    manifestObj.getContainerObj().addCamera(newCamera);
+    manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    let length = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length
+    allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(length - 1))
+
     setcount((value) => value + 1);
   }
 
@@ -179,7 +203,7 @@ function App() {
                 <button type="button" onClick={() => {createAnnotation("Light")}}>
                   Add Light
                 </button>
-                <button type="button" onClick={() => {createCamera()}}>
+                <button type="button" onClick={() => {createAnnotation("Camera")}}>
                   Add Camera
                 </button>
                 <button type="button" onClick={() => {createTextAnnotation()}}>
@@ -250,7 +274,7 @@ function App() {
               <h3>Edit Resource</h3>
               {selectedResource ? (
                 <div className="sidebar-controls">
-                  <p>Editing Resource {selectedResourceIndex + 1}</p>
+                  <p>Editing {selectedResource.getType().getAllAnnotations[selectedResourceIndex].getType()} {selectedResourceIndex + 1}</p>
 
                   {!isEditingMetadata ? (
                     <>

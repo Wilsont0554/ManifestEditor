@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import Camera from "../ManifestClasses/TypeScript/SceneComponets/Camera.ts";
 import OrthographicCamera from "../ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
-import Container from "../ManifestClasses/TypeScript/Container.ts";
 
 function CameraElement(props: any){
-    const { container, camera, setcount, count } = props;
+    const { camera, setcount, count } = props;
     const [type, setType] = useState("OrthographicCamera");
 
     // here we get the container items index for an object with a camera type
-    var containerItems = container.getItems();
-    var cameraIndex: number;
-    for(let i = 0; i < containerItems.length(); i++){
-        if(containerItems[i] instanceof Camera){ cameraIndex = i; break; }
-    }
+    // var containerItems = container.getItems();
+    // var cameraIndex: number;
+    // for(let i = 0; i < containerItems.length(); i++){
+    //     if(containerItems[i] instanceof Camera){ cameraIndex = i; break; }
+    // }
 
     // Creates new camera object when called
     // updates the items array in container with the new object
@@ -37,8 +36,6 @@ function CameraElement(props: any){
             // newCamera = new PerspectiveCamera();
         }
 
-        container.setItems(cameraIndex, newCamera);
-
         setcount(count + 1);
     }
 
@@ -60,16 +57,32 @@ function CameraElement(props: any){
                 </select>
             </div>
 
-        {/* Shared componets of camera UI */}
-            {/* <div className="field-group">
+        {/*Shared componets of camera UI */}
+            <div className="field-group">
                 <label>ID</label>
                 <input
                     placeholder="https://..."
                     type="text"
-                    value={camera}
-                <label></label>
+                    value={camera.getID() || ""} 
+                        onChange={(e) => {
+                            camera.setID(e.target.value);
+                            setcount(count + 1);
+                        }}
+                />
+                <br></br>
+                <label>Near</label>
+                <input
+                    placeholder="0.0"
+                    type="text"
+                    value={camera.getNear() || ""}
+                        onChange={(e) => {
+                            camera.setNear(e.target.value);
+                            setcount(count + 1);
+                        }}
+                />
+                
 
-            </div> */}
+            </div>
         
 
         {/* Ternary operator to choose whats displayed based on camera type */}
