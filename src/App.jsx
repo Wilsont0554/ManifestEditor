@@ -8,6 +8,9 @@ import MetadataElement from "./Components/MetadataElement.jsx";
 import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
 import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
+import Camera from "./ManifestClasses/TypeScript/SceneComponets/Camera.ts";
+import OrthographicCamera from "./ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
+import CameraElement from "./Components/CameraElement.tsx";
 import Light from "./ManifestClasses/TypeScript/Light.ts";
 import TextAnnotation from "./ManifestClasses/TypeScript/TextAnnotation.ts";
 
@@ -60,10 +63,10 @@ function App() {
 
   function createAnnotation(resourceType) {
     let index = 0;
-    for (let i = 0; i < annotationResource.length; i++){
+    for(let i = 0; i < annotationResource.length; i++){
       index++;
     }
-    
+
     manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -82,6 +85,21 @@ function App() {
       .getAnnotationPage()
       .getAnnotation(index)
       .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
+    }
+    else if(resourceType == "Camera"){
+      const newCamera = new OrthographicCamera(
+      0.0,
+      undefined,
+      0.0,
+      0.0, 
+      undefined
+      );
+
+      manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(newCamera);
     }
 
     allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index))
@@ -110,6 +128,11 @@ function App() {
   const selectedResource = selectedResourceIndex !== null 
     ? allResources[selectedResourceIndex]
     : null;
+
+
+    
+  // const container = manifestObj.getContainerObj();
+  // const camera = container.getItems().find(item => item instanceof Camera);
 
   return (
     <div className="app-shell">
@@ -157,6 +180,9 @@ function App() {
                 </button>
                 <button type="button" onClick={() => {createAnnotation("Light")}}>
                   Add Light
+                </button>
+                <button type="button" onClick={() => {createAnnotation("Camera")}}>
+                  Add Camera
                 </button>
                 <button type="button" onClick={() => {createTextAnnotation()}}>
                   Add Text Annotation

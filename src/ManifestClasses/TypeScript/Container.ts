@@ -1,11 +1,12 @@
 import AnnotationPage from './AnnotationPage.ts';
+import OrthographicCamera from './SceneComponets/OrthographicCamera.ts';
 
 class Container {
     static VALID_TYPES: Set<string> = new Set(['Timeline', 'Canvas', 'Scene']);
 
     id: string;
     type: string;
-    items: AnnotationPage[];
+    items: ( AnnotationPage | OrthographicCamera)[];
     duration?: number;
     height?: number;
     width?: number;
@@ -20,6 +21,10 @@ class Container {
         this.annotations?.push(new AnnotationPage());
     }
 
+    /*---------------------------------------------------
+                        DELETE
+    ---------------------------------------------------*/
+
     deleteDimensions() {
         delete this.height;
         delete this.width;
@@ -29,7 +34,11 @@ class Container {
         delete this.duration;
     }
 
-    getItems(): AnnotationPage[] {
+    /*---------------------------------------------------
+                        Getters
+    ---------------------------------------------------*/
+
+    getItems(){
         return this.items;
     }
 
@@ -49,10 +58,14 @@ class Container {
         return [this.height, this.width];
     }
 
-    getAnnotationPage(index?: number): AnnotationPage {
+    getAnnotationPage(index?: number){
         if (index === undefined) index = 0;
         return this.items[index];
     }
+
+    /*---------------------------------------------------
+                        SETTERS
+    ---------------------------------------------------*/
 
     setDuration(duration: number) {
         this.duration = duration;
@@ -77,6 +90,10 @@ class Container {
         }
     }
 
+    setItems(index: number, input: any ){
+        this.items[index] = input;
+    }
+    
     addAnnotationPage(annotation: AnnotationPage) {
         this.items.push(annotation);
     }
@@ -84,6 +101,11 @@ class Container {
     getTextAnnotations(){
         return this.annotations[0];
     }
+
+    addCamera(camera: OrthographicCamera /* || PerspectiveCamera */){
+        this.items.push(camera);
+    }
+
 
 }
 
