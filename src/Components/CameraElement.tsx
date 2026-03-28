@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import LabelElement from "./LabelElement.jsx";
-import Camera from "../ManifestClasses/TypeScript/SceneComponets/Camera.ts";
 import OrthographicCamera from "../ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
+import PerspectiveCamera from "../ManifestClasses/TypeScript/SceneComponets/PerspectiveCamera.ts";
+
+
 
 function CameraElement(props: any){
     const { camera, setcount, count, currentObject } = props;
-    const [type, setType] = useState("OrthographicCamera");
 
     // Creates new camera object when called
     // updates the items array in container with the new object
     // this is used when the drop down changes options in the UI  
-    function handleCameraChange(e: any){
-        const newType = e.target.value;
+    function handleCameraChange(e: string){
+        const newType = e;
 
         let newCamera;
 
@@ -26,10 +27,16 @@ function CameraElement(props: any){
         }
 
         if(newType === "PerspectiveCamera") {
-            // newCamera = new PerspectiveCamera();
+            newCamera = new PerspectiveCamera(
+                0.0,
+                camera.getID() || undefined,
+                camera.getNear(),
+                camera.getFar(),
+                camera.getLabel()
+            );
         }
-
-        setcount(count + 1);
+        currentObject.setContentResource(newCamera);
+        setcount((value:number) => count + 1);
     }
 
     if(!camera) return <p>No Camera Found</p>;
@@ -42,7 +49,7 @@ function CameraElement(props: any){
                 <select
                     value={camera.getType() || ""}
                     onChange={(e) => {
-                        handleCameraChange(e);
+                        handleCameraChange(e.target.value);
                         setcount(count + 1);
                     }}>
                         <option value={"OrthographicCamera"}>OrthographicCamera</option>
@@ -112,11 +119,16 @@ function CameraElement(props: any){
                 <div>
                     <label>Field of View</label>
                     <input
-                        placeholder="0.0"
+                        placeholder={camera.getFieldOfView()}
                         type="number"
                         min={camera.getNear()}
-                        max={camera.getFar()}
+                        max={camera.getFar() || undefined}
                         step={1}
+                        value={camera.getFieldOfView() || ""}
+                        onChange={(e) => {
+                            camera.setFieldOfView(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
                     />
                 </div>
             )}
