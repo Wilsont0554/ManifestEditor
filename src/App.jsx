@@ -131,8 +131,8 @@ function App() {
 
 
     
-  const container = manifestObj.getContainerObj();
-  const camera = container.getItems().find(item => item instanceof Camera);
+  // const container = manifestObj.getContainerObj();
+  // const camera = container.getItems().find(item => item instanceof Camera);
 
   return (
     <div className="app-shell">
