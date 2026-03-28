@@ -10,7 +10,7 @@ class OrthographicCamera extends Camera{
 		id != undefined ? this.setID(id) : id = "https://iiif/camera/default.com";
 		near != undefined ? this.setNear(near) : 0.0;
 		far != undefined ? this.setFar(far) : 0.0;
-		label != undefined ? this.setLabel(label) : "https://iiif/labelman.com";
+		label != undefined ? this.setLabel(0, "") : "https://iiif/labelman.com";
 		this.viewHeight = viewHeight;
 	}
 
