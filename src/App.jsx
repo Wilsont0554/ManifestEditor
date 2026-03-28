@@ -134,28 +134,6 @@ function App() {
   const container = manifestObj.getContainerObj();
   const camera = container.getItems().find(item => item instanceof Camera);
 
-  // function createCamera(){
-  //   let index = annotationResource.length - 1;
-
-  //   const newCamera = new OrthographicCamera(
-  //     0.0,
-  //     undefined,
-  //     "OrthographicCamera",
-  //     0.0,
-  //     0.0
-  //   );
-
-  //   manifestObj
-  //     .getContainerObj()
-  //     .getAnnotationPage()
-  //     .getAnnotation(index)
-  //     .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
-  //   let length = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations().length
-  //   allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(length - 1))
-
-  //   setcount((value) => value + 1);
-  // }
-
   return (
     <div className="app-shell">
       <header className="app-nav">
