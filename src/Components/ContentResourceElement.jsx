@@ -25,6 +25,7 @@ function ContentResourceElement(props) {
             count={count}
             setcount={setcount}
             camera={resource}
+            currentObject={object}
             ></CameraElement>
     }
 
