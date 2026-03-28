@@ -6,26 +6,41 @@ abstract class Camera{
 	id?: string;
 	label?: Label;
 	// lookAt?: LookAt; // needs to be created
-	near?: number; // floating point number // see bottom of file
-	far?: number; // floating point number // see bottom of file
+	near?: number; // floating point number 
+	far?: number; // floating point number 
 	// interactionMode?: InteractionMode // needs to be created
 
-	public constructor(){};
+	public constructor(){
+		this.label = this.createLabel("en");
+	};
 
 /*------------------------------------------------------------
     						LABEL
 --------------------------------------------------------------*/
 
-	addLabel(value: string, languageCode: string = 'en'): void{
-		this.label = new Label(value, languageCode);
-	}
+    setLabel(index: number, value: string): void {
+        this.label?.changeLabelTest(value);
+    }
 
-	changeLabel(index: number, value: string, languageCode?: string) {
+    createLabel(languageCode: string = 'en'): Label {
+        return new Label('', languageCode);
+    }
+
+    changeLabel(index: number, value: string, languageCode?: string): void {
         this.label?.changeLabelTest(value);
         if (languageCode) {
             this.label?.setLanguage(languageCode);
         }
     }
+
+    getLabel(index?: number): Label | undefined {
+        if (index === undefined) {
+            index = 0;
+        }
+
+        return this.label;
+    }
+
 
 /*------------------------------------------------------------
     						DELETE
@@ -65,10 +80,6 @@ abstract class Camera{
 		this.id = id;
 	}
 
-	setLabel(label: Label){
-		this.label = label;
-	}
-
 	setNear(near: number){
 		this.near = near;
 	}
@@ -93,10 +104,6 @@ abstract class Camera{
 
 	getID(){
 		return this.id;
-	}
-
-	getLabel(){
-		return this.label;
 	}
 
 	getNear(){
