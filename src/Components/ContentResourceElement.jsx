@@ -146,47 +146,45 @@ function ContentResourceElement(props) {
                 </div>
             ) : null}
 
-            {!resource.getType().includes("Light") ? (
-                <div>
-                    <h4>Position</h4>
-                    <div className="field-group">
-                        <label>X</label>
-                        <input
-                            placeholder="0"
-                            type="number"
-                            value={annotation.getTarget().getX()} 
-                            onChange={(e) => {
-                                annotation.setX(Number(e.target.value));
-                                setcount(count + 1);
-                            }}
-                        />
-                    </div>
-                    <div className="field-group">
-                        <label>Y</label>
-                        <input
-                            placeholder="0"
-                            type="number"
-                            value={annotation.getTarget().getY()} 
-                            onChange={(e) => {
-                                annotation.setY(Number(e.target.value));
-                                setcount(count + 1);
-                            }}
-                        />
-                    </div>
-                    <div className="field-group">
-                        <label>Z</label>
-                        <input
-                            placeholder="0"
-                            type="number"
-                            value={annotation.getTarget().getZ()} 
-                            onChange={(e) => {
-                                annotation.setZ(Number(e.target.value));
-                                setcount(count + 1);
-                            }}
-                        />
-                    </div>
+            <div>
+                <h4>Position</h4>
+                <div className="field-group">
+                    <label>X</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getX()} 
+                        onChange={(e) => {
+                            annotation.setX(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
                 </div>
-            ) : null}
+                <div className="field-group">
+                    <label>Y</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getY()} 
+                        onChange={(e) => {
+                            annotation.setY(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Z</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getZ()} 
+                        onChange={(e) => {
+                            annotation.setZ(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            </div>
 
             <div className="label-section">
                 <h4>Annotation Label</h4>
