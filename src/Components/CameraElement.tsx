@@ -1,17 +1,11 @@
 import React, { useState } from "react";
+import LabelElement from "./LabelElement.jsx";
 import Camera from "../ManifestClasses/TypeScript/SceneComponets/Camera.ts";
 import OrthographicCamera from "../ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
 
 function CameraElement(props: any){
-    const { camera, setcount, count } = props;
+    const { camera, setcount, count, currentObject } = props;
     const [type, setType] = useState("OrthographicCamera");
-
-    // here we get the container items index for an object with a camera type
-    // var containerItems = container.getItems();
-    // var cameraIndex: number;
-    // for(let i = 0; i < containerItems.length(); i++){
-    //     if(containerItems[i] instanceof Camera){ cameraIndex = i; break; }
-    // }
 
     // Creates new camera object when called
     // updates the items array in container with the new object
@@ -25,10 +19,9 @@ function CameraElement(props: any){
             newCamera = new OrthographicCamera(
                 0.0,
                 camera.getID() || undefined,
-                "OrthographicCamera",
-                camera.getNear() || undefined,
-                camera.getFar() || undefined,
-                camera.getLabel() || undefined
+                camera.getNear(),
+                camera.getFar(),
+                camera.getLabel()
             );
         }
 
@@ -61,7 +54,7 @@ function CameraElement(props: any){
             <div className="field-group">
                 <label>ID</label>
                 <input
-                    placeholder="https://..."
+                    placeholder="https://...."
                     type="text"
                     value={camera.getID() || ""} 
                         onChange={(e) => {
@@ -69,25 +62,72 @@ function CameraElement(props: any){
                             setcount(count + 1);
                         }}
                 />
+
+                {/* The far and near values should be bounded by
+                    the scene dimesions evenutally */}
+
                 <br></br>
                 <label>Near</label>
                 <input
                     placeholder="0.0"
-                    type="text"
+                    type="number"
+                    min={0}
+                    step={1}
                     value={camera.getNear() || ""}
-                        onChange={(e) => {
-                            camera.setNear(e.target.value);
-                            setcount(count + 1);
-                        }}
+                    onChange={(e) => {
+                        camera.setNear(Number(e.target.value));
+                        setcount(count + 1);
+                    }}
                 />
-                
-
+                <br></br>
+                <label>Far</label>
+                <input
+                    placeholder={camera.getNear()}
+                    type="number"
+                    min={camera.getNear() + 1}
+                    step={1}
+                    value={camera.getFar() || ""}
+                    onChange={(e) => {
+                        camera.setFar(Number(e.target.value));
+                        setcount(count + 1);
+                    }}
+                />
             </div>
-        
+        {camera.getType() == "OrthographicCamera" ? (
+            <div>
+                <label>View Height</label>
+                <input
+                    placeholder={camera.getViewHeight()}
+                    type="number"
+                    min={0.0}
+                    step={.1}
+                    value={camera.getViewHeight() || ""}
+                    onChange={(e) => {
+                        camera.setViewHeight(Number(e.target.value));
+                        setcount(count + 1);
+                    }}
+                />
+            </div>
+            ) : (
+                <div>
+                    <label>Field of View</label>
+                    <input
+                        placeholder="0.0"
+                        type="number"
+                        min={camera.getNear()}
+                        max={camera.getFar()}
+                        step={1}
+                    />
+                </div>
+            )}
+            <div>
+                <h3>Camera Label</h3>
+                <LabelElement
+                    {...props}
+                    currentObject={camera}
+                />
+            </div>
+    </div>     
 
-        {/* Ternary operator to choose whats displayed based on camera type */}
-            
-
-        </div>
     );
 } export default CameraElement
