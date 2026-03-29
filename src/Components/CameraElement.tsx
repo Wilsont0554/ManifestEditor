@@ -122,6 +122,47 @@ function CameraElement(props: any){
                     />
                 </div>
             )}
+
+            <div>
+                <h4>Position</h4>
+                <div className="field-group">
+                    <label>X</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={currentObject.getTarget().getX()} 
+                        onChange={(e) => {
+                            currentObject.setX(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Y</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={currentObject.getTarget().getY()} 
+                        onChange={(e) => {
+                            currentObject.setY(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Z</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={currentObject.getTarget().getZ()} 
+                        onChange={(e) => {
+                            currentObject.setZ(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            </div>
+
             <div>
                 <h3>Camera Label</h3>
                 <LabelElement
