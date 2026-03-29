@@ -127,6 +127,51 @@ function LightIcon() {
   );
 }
 
+function CameraIcon() {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className="h-14 w-14 text-slate-950"
+      aria-hidden="true"
+    >
+      <rect
+        x="10"
+        y="14"
+        width="28"
+        height="20"
+        rx="4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <circle
+        cx="24"
+        cy="24"
+        r="6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <path
+        d="M16 14V10.5h8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M30 14V10.5h2.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const baseContentResourceOptions: ContentResourceOption[] = [
   {
     value: "Image",
@@ -145,6 +190,12 @@ const baseContentResourceOptions: ContentResourceOption[] = [
     title: "Light",
     description: "Add a light content resource.",
     icon: <LightIcon />,
+  },
+  {
+    value: "Camera",
+    title: "Camera",
+    description: "Add a camera content resource.",
+    icon: <CameraIcon />,
   },
 ];
 
@@ -176,7 +227,8 @@ function ContentResourceModal({
         ) ?? null
       : null;
   const contentResourceOptions = baseContentResourceOptions.filter(
-    (option) => option.value !== "Light" || isSceneContainer,
+    (option) =>
+      (option.value !== "Light" && option.value !== "Camera") || isSceneContainer,
   );
 
   useEffect(() => {

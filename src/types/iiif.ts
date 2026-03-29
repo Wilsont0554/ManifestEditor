@@ -114,6 +114,10 @@ export interface IiifContentResource {
   angle?: number;
   intensity?: IiifQuantity;
   lookAt?: IiifResourceReference;
+  near?: number;
+  far?: number;
+  viewHeight?: number;
+  fieldOfView?: number;
 }
 
 export interface IiifAnnotation {

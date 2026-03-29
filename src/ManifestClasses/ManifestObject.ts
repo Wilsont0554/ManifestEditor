@@ -1,5 +1,6 @@
 import Container from './Container.ts';
 import Label from './Label.ts';
+import Camera from "./Camera.ts";
 import Light from "./Light.ts";
 import {
     builtInManifestBehaviors,
@@ -270,6 +271,7 @@ class ManifestObject {
                 annotationPage.setID(`${containerId}/page/${annotationPageIndex + 1}`);
 
                 let lightIndex = 0;
+                let cameraIndex = 0;
 
                 annotationPage.getAllAnnotations().forEach((annotation, annotationIndex) => {
                     const annotationId = `${containerId}/anno/${annotationIndex + 1}`;
@@ -286,6 +288,16 @@ class ManifestObject {
                             targetId,
                             containerId,
                             container.getType(),
+                        );
+                        return;
+                    }
+
+                    if (resource instanceof Camera) {
+                        cameraIndex += 1;
+                        resource.setID(`${containerId}/cameras/${cameraIndex}`);
+                        annotation.setTargetReference(
+                            containerId,
+                            container.getType() as IiifContainerType,
                         );
                         return;
                     }

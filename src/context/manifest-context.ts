@@ -13,6 +13,7 @@ type ManifestEditableField =
   | "repeatBehavior"
   | "autoAdvanceBehavior"
   | "customBehaviors"
+  | "cameraTechnical"
   | "lightTechnical"
   | "metadata";
 

@@ -1,5 +1,6 @@
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import type Annotation from "@/ManifestClasses/Annotation";
+import Camera from "@/ManifestClasses/Camera";
 import type ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import {
@@ -48,6 +49,9 @@ function ContentResourceEditor({
   onOpenMetadata,
 }: ContentResourceEditorProps) {
   const isLightResource = resource instanceof Light;
+  const isCameraResource = resource instanceof Camera;
+  const shouldShowTypeSelector =
+    showTypeSelector && !isLightResource && !isCameraResource;
 
   function getAnnotationLabel(): string {
     return annotation.getLabel()?.getValue() ?? "";
@@ -116,7 +120,7 @@ function ContentResourceEditor({
 
   return (
     <section className={`space-y-6 ${className}`}>
-      {showTypeSelector ? (
+      {shouldShowTypeSelector ? (
         <section className="space-y-3">
           <p className="text-base font-semibold text-slate-950">Type</p>
           <TechnicalOptionGroup
@@ -129,10 +133,10 @@ function ContentResourceEditor({
         </section>
       ) : null}
 
-      {isLightResource ? (
+      {isLightResource || isCameraResource ? (
         <ManifestInput
-          label="Light Identifier"
-          id={`${idPrefix}-light-identifier`}
+          label={isLightResource ? "Light Identifier" : "Camera Identifier"}
+          id={`${idPrefix}-${isLightResource ? "light" : "camera"}-identifier`}
           type="text"
           value={resource.id}
           onChange={() => {}}

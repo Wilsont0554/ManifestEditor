@@ -2,8 +2,10 @@ import { useState } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
 import {
+  createCameraTechnicalSnapshot,
   createContentResourceSnapshot,
   createLightTechnicalSnapshot,
+  type CameraTechnicalSnapshot,
   type ContentResourceSnapshot,
   type LightTechnicalSnapshot,
 } from "@/utils/content-resource";
@@ -20,6 +22,7 @@ type ManifestEditableField =
   | "repeatBehavior"
   | "autoAdvanceBehavior"
   | "customBehaviors"
+  | "cameraTechnical"
   | "lightTechnical"
   | "metadata";
 
@@ -40,6 +43,7 @@ interface ManifestEditableSnapshot {
   repeatBehavior: string;
   autoAdvanceBehavior: string;
   customBehaviors: string[];
+  cameraTechnical: CameraTechnicalSnapshot[];
   lightTechnical: LightTechnicalSnapshot[];
   metadata: ContentResourceMetadataSnapshot[];
 }
@@ -106,6 +110,7 @@ function createManifestEditableSnapshot(
     repeatBehavior: manifestObj.getRepeatBehavior(),
     autoAdvanceBehavior: manifestObj.getAutoAdvanceBehavior(),
     customBehaviors: manifestObj.getCustomBehaviors(),
+    cameraTechnical: createCameraTechnicalSnapshot(manifestObj),
     lightTechnical: createLightTechnicalSnapshot(manifestObj),
     metadata: createMetadataSnapshot(manifestObj),
   };
@@ -198,6 +203,28 @@ function isLightTechnicalFieldEdited(
   });
 }
 
+function isCameraTechnicalFieldEdited(
+  currentField: CameraTechnicalSnapshot[],
+  initialField: CameraTechnicalSnapshot[],
+): boolean {
+  if (currentField.length !== initialField.length) {
+    return true;
+  }
+
+  return currentField.some((currentCamera, cameraIndex) => {
+    const initialCamera = initialField[cameraIndex];
+
+    return (
+      currentCamera.annotationIndex !== initialCamera.annotationIndex ||
+      currentCamera.type !== initialCamera.type ||
+      currentCamera.near !== initialCamera.near ||
+      currentCamera.far !== initialCamera.far ||
+      currentCamera.viewHeight !== initialCamera.viewHeight ||
+      currentCamera.fieldOfView !== initialCamera.fieldOfView
+    );
+  });
+}
+
 function isContentResourceFieldEdited(
   currentField: ContentResourceSnapshot[],
   initialField: ContentResourceSnapshot[],
@@ -254,6 +281,13 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
       return isContentResourceFieldEdited(
         currentSnapshot.contentResources,
         initialSnapshot.contentResources,
+      );
+    }
+
+    if (field === "cameraTechnical") {
+      return isCameraTechnicalFieldEdited(
+        currentSnapshot.cameraTechnical,
+        initialSnapshot.cameraTechnical,
       );
     }
 

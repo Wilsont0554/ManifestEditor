@@ -1,4 +1,5 @@
 import Annotation from "@/ManifestClasses/Annotation";
+import Camera, { type CameraContentResourceType } from "@/ManifestClasses/Camera";
 import ContentResource from "@/ManifestClasses/ContentResource";
 import Light, { type LightIntensity } from "@/ManifestClasses/Light";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
@@ -15,10 +16,18 @@ export const lightContentResourceTypes = [
   "SpotLight",
 ] as const;
 
+export const cameraContentResourceTypes = [
+  "OrthographicCamera",
+  "PerspectiveCamera",
+] as const;
+
 export type LightContentResourceType = (typeof lightContentResourceTypes)[number];
+export type SupportedCameraContentResourceType =
+  (typeof cameraContentResourceTypes)[number];
 export type EditableContentResourceType =
   | keyof typeof contentResourceTypeToFormat
-  | "Light";
+  | "Light"
+  | "Camera";
 
 interface LocalizedContentResourceFieldSnapshot {
   value: string;
@@ -50,6 +59,15 @@ export interface LightTechnicalSnapshot {
   coordinates: LightCoordinatesSnapshot;
 }
 
+export interface CameraTechnicalSnapshot {
+  annotationIndex: number;
+  type: CameraContentResourceType;
+  near?: number;
+  far?: number;
+  viewHeight?: number;
+  fieldOfView?: number;
+}
+
 export interface ContentResourceItem {
   annotation: Annotation;
   resource: ContentResource;
@@ -61,12 +79,21 @@ export interface LightContentResourceItem extends Omit<ContentResourceItem, "res
   resource: Light;
 }
 
+export interface CameraContentResourceItem
+  extends Omit<ContentResourceItem, "resource"> {
+  resource: Camera;
+}
+
 export function createDefaultContentResource(
   type: EditableContentResourceType = "Model",
   _annotationIndex?: number,
 ): ContentResource {
   if (type === "Light") {
     return new Light("", "AmbientLight");
+  }
+
+  if (type === "Camera") {
+    return new Camera("", "OrthographicCamera");
   }
 
   return new ContentResource("", type, contentResourceTypeToFormat[type]);
@@ -121,10 +148,24 @@ export function getLightContentResourceTypeLabel(
   return value.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
+export function getCameraContentResourceTypeLabel(
+  value: SupportedCameraContentResourceType,
+): string {
+  return value.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
 export function isLightContentResourceType(
   value: string,
 ): value is LightContentResourceType {
   return lightContentResourceTypes.includes(value as LightContentResourceType);
+}
+
+export function isCameraContentResourceType(
+  value: string,
+): value is SupportedCameraContentResourceType {
+  return cameraContentResourceTypes.includes(
+    value as SupportedCameraContentResourceType,
+  );
 }
 
 export function getLightContentResourceItems(
@@ -132,6 +173,21 @@ export function getLightContentResourceItems(
 ): LightContentResourceItem[] {
   return getContentResourceItems(manifestObj).flatMap((item) =>
     item.resource instanceof Light
+      ? [
+          {
+            ...item,
+            resource: item.resource,
+          },
+        ]
+      : [],
+  );
+}
+
+export function getCameraContentResourceItems(
+  manifestObj: ManifestObject,
+): CameraContentResourceItem[] {
+  return getContentResourceItems(manifestObj).flatMap((item) =>
+    item.resource instanceof Camera
       ? [
           {
             ...item,
@@ -169,7 +225,9 @@ export function getDisplayableContentResourceItems(
   manifestObj: ManifestObject,
 ): ContentResourceItem[] {
   return getContentResourceItems(manifestObj).filter(({ resource }) =>
-    hasContentResourceUrl(resource) && !(resource instanceof Light),
+    hasContentResourceUrl(resource) &&
+    !(resource instanceof Light) &&
+    !(resource instanceof Camera),
   );
 }
 
@@ -229,4 +287,19 @@ export function createLightTechnicalSnapshot(
         },
       };
     });
+}
+
+export function createCameraTechnicalSnapshot(
+  manifestObj: ManifestObject,
+): CameraTechnicalSnapshot[] {
+  return getCameraContentResourceItems(manifestObj).map(
+    ({ annotationIndex, resource }) => ({
+      annotationIndex,
+      type: resource.getType(),
+      near: resource.getNear(),
+      far: resource.getFar(),
+      viewHeight: resource.getViewHeight(),
+      fieldOfView: resource.getFieldOfView(),
+    }),
+  );
 }

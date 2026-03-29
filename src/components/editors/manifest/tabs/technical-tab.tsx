@@ -1,5 +1,9 @@
 import { manifestObjContext } from "@/context/manifest-context";
-import { getContentResourceDisplayTitle, getLightContentResourceItems } from "@/utils/content-resource";
+import {
+  getCameraContentResourceItems,
+  getContentResourceDisplayTitle,
+  getLightContentResourceItems,
+} from "@/utils/content-resource";
 import {
   builtInManifestBehaviors,
   manifestAutoAdvanceBehaviors,
@@ -12,6 +16,7 @@ import {
   type ManifestViewingDirection,
 } from "@/types/iiif";
 import { type ReactNode, useContext, useState } from "react";
+import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
 import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
 import ManifestInput from "../shared/manifest-input";
@@ -109,6 +114,7 @@ function TechnicalOptionGroupContent({ children }: { children: ReactNode }) {
 
 function TechnicalTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
+  const cameraResourceItems = getCameraContentResourceItems(manifestObj);
   const lightResourceItems = getLightContentResourceItems(manifestObj);
   const [openSections, setOpenSections] = useState<
     Record<TechnicalSectionId, boolean>
@@ -183,6 +189,51 @@ function TechnicalTab() {
         value={manifestObj.getId()}
         onChange={handleIdentifierChange}
       />
+
+      {cameraResourceItems.length > 0 ? (
+        <section className="space-y-4">
+          <div className="space-y-1">
+            <p className="text-lg font-medium text-slate-950">Cameras</p>
+            <p className="text-sm leading-6 text-slate-500">
+              Edit camera type, clipping planes, and type-specific settings for
+              each camera content resource.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {cameraResourceItems.map(
+              ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                <section
+                  key={`technical-camera-resource-${annotationIndex}`}
+                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                >
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                    >
+                      Content Resource {resourceNumber}
+                    </button>
+                    <p className="text-sm text-slate-500">
+                      {getContentResourceDisplayTitle(
+                        annotation,
+                        resource,
+                        resourceNumber,
+                      )}
+                    </p>
+                  </div>
+
+                  <CameraResourceTechnicalEditor
+                    resource={resource}
+                    idPrefix={`technical-camera-${annotationIndex}`}
+                    onCommit={commitManifestChange}
+                  />
+                </section>
+              ),
+            )}
+          </div>
+        </section>
+      ) : null}
 
       {lightResourceItems.length > 0 ? (
         <section className="space-y-4">

@@ -2,6 +2,7 @@ import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import { manifestObjContext } from "@/context/manifest-context";
 import type ContentResource from "@/ManifestClasses/ContentResource";
 import {
+  getCameraContentResourceItems,
   getContentResourceDisplayTitle,
   getDisplayableContentResourceItems,
   getLightContentResourceItems,
@@ -19,6 +20,7 @@ import {
   type ManifestViewingDirection,
 } from "@/types/iiif";
 import { useContext, useState } from "react";
+import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
 import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
 import ContentResourceMediaList from "../shared/content-resource-media-list";
@@ -149,6 +151,7 @@ function OverviewTab() {
   const hasEditedRepeatBehavior = isFieldEdited("repeatBehavior");
   const hasEditedAutoAdvanceBehavior = isFieldEdited("autoAdvanceBehavior");
   const hasEditedCustomBehaviors = isFieldEdited("customBehaviors");
+  const hasEditedCameraTechnical = isFieldEdited("cameraTechnical");
   const hasEditedLightTechnical = isFieldEdited("lightTechnical");
   const hasEditedMetadata = isFieldEdited("metadata");
   const hasEditedDescriptiveFields =
@@ -162,6 +165,7 @@ function OverviewTab() {
     hasEditedAutoAdvanceBehavior;
   const hasEditedTechnicalFields =
     hasEditedId ||
+    hasEditedCameraTechnical ||
     hasEditedLightTechnical ||
     hasEditedViewingDirection ||
     hasEditedBuiltInBehaviorFields ||
@@ -182,6 +186,7 @@ function OverviewTab() {
     );
   const contentResourceMediaItems =
     getDisplayableContentResourceItems(manifestObj);
+  const editedCameraResourceItems = getCameraContentResourceItems(manifestObj);
   const editedLightResourceItems = getLightContentResourceItems(manifestObj).filter(
     ({ annotation, resource }) => hasLightTechnicalChanges(annotation, resource),
   );
@@ -437,6 +442,50 @@ function OverviewTab() {
               value={manifestObj.getId()}
               onChange={handleIdentifierChange}
             />
+          ) : null}
+
+          {hasEditedCameraTechnical && editedCameraResourceItems.length > 0 ? (
+            <section className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-lg font-medium text-slate-950">Cameras</p>
+                <p className="text-sm leading-6 text-slate-500">
+                  Camera configuration changes from the Technical tab appear here.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {editedCameraResourceItems.map(
+                  ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                    <section
+                      key={`overview-camera-resource-${annotationIndex}`}
+                      className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                    >
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                        >
+                          Content Resource {resourceNumber}
+                        </button>
+                        <p className="text-sm text-slate-500">
+                          {getContentResourceDisplayTitle(
+                            annotation,
+                            resource,
+                            resourceNumber,
+                          )}
+                        </p>
+                      </div>
+
+                      <CameraResourceTechnicalEditor
+                        resource={resource}
+                        idPrefix={`overview-camera-${annotationIndex}`}
+                        onCommit={commitManifestChange}
+                      />
+                    </section>
+                  ),
+                )}
+              </div>
+            </section>
           ) : null}
 
           {hasEditedLightTechnical && editedLightResourceItems.length > 0 ? (
