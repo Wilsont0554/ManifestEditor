@@ -1,62 +1,225 @@
-import React, { useState } from "react";
-import Label from '../ManifestClasses/Label.js'
+import React from "react";
 import LabelElement from "./LabelElement.jsx";
+import TextAnnotation from "./TextAnnotation.jsx";
+import CameraElement from "./CameraElement.tsx";
+import Camera from "../ManifestClasses/TypeScript/SceneComponets/Camera.ts"
 
-function ContentResourceElement(props){
+function ContentResourceElement(props) {
+    const { manifestObj, contentResourceIndex, setcount, count, setIsEditingMetadata, object} = props;
 
-    const [annotationURL, setAnnotationURL] = useState('');
-    const [selectedType, setType] = useState('');
+    var types;
 
-    const types = {
-        "Image": "image/jpeg",
-        "Model" : "model/gltf-binary"
+    if (object.getMotivation() == "commenting"){
+        return <TextAnnotation
+                    count={count}
+                    setcount={setcount}
+                    object={object}
+                />;
+    }
+    // Grab the specific resource from the class instance
+    const resource = object.getContentResource();
+    const annotation = object 
+
+    if(resource.getType().includes("Camera")){
+        return <CameraElement
+            count={count}
+            setcount={setcount}
+            camera={resource}
+            currentObject={object}
+            ></CameraElement>
     }
 
-    return(
-    <>
-        <li>
-            
-            <select 
-                    value={selectedType} 
-                    onChange={(e) => {
-                        setType(e.target.value);
-                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).setType(e.target.value);
-                        props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation(0).getContentResource(props.contentResourceIndex).setFormat(types[e.target.value]);
-                        props.setcount(props.count + 1);
-                    }}
-                    style={{ padding: '5px' }}
+    if (!resource) 
+        return <p>No Resource</p>
+
+    if (resource.getType().includes("Light")){
+        types = {
+            "AmbientLight" : undefined,
+            "DirectionalLight" : undefined,
+            "PointLight" : undefined,
+            "SpotLight" : undefined
+        }
+    }
+    else{
+        types = {
+            "Image": "image/jpeg",
+            "Model": "model/gltf-binary",
+        };
+    }
+
+    function updateResource(e){
+        resource.setType(e.target.value);
+        resource.setFormat(types[e.target.value]);
+        setcount(count + 1); // Trigger re-render of App.js
+    }
+
+    return (
+        <div className="sidebar-editor-container">
+            <div className="field-group">
+                <label>Type </label>
+                <select
+                    value={resource.getType() || ""} 
+                    onChange={(e) => {updateResource(e)}}
                 >
+                    <option value="" disabled>Select Type</option>
+                    {Object.keys(types).map(type => (
+                        <option key={type} value={type}>{type}</option>
+                    ))}
+                </select>
+            </div>
 
-                {Object.keys(types).map(type => (
-                    <option key={type} value={type}>{type}</option>
-                ))}
-            </select>
+            {resource.getType().includes("Light") ? (
+                <div className="field-group">
+                    <label>Color </label>
+                    <input
+                        placeholder="#FFFFF"
+                        type="color"
+                        value={resource.color || ""} 
+                        onChange={(e) => {
+                            resource.setColor(e.target.value);
+                            setcount(count + 1);
+                        }}
+                    />
+                    <br/>
+                    <label>Intensity </label>
+                    <input
+                        placeholder="0.5"
+                        type="number"
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        onChange={(e) => {
+                            resource.setIntensity("Value", Number(e.target.value), "relative");
+                            setcount(count + 1);
+                        }}
+                    />
 
-            <input placeholder="URL" type="text" value={annotationURL} onChange={e => 
-                {
-                    setAnnotationURL(e.target.value); 
-                    props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.index).setID(e.target.value);
-                    props.setcount(props.count + 1);
-                }}>
-            </input>
-            <p>Annotation Label</p>
-            <LabelElement {...props} currentObject={props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation()}></LabelElement>
+                    {resource.getType() == ("DirectionalLight") ? (
+                        <div>
+                            <br/>
+                            <label>LookAt </label>
+                            <input
+                                placeholder="https://..."
+                                type="text"
+                                onChange={(e) => {
+                                    resource.setLookAt(e.target.value);
+                                    setcount(count + 1);
+                                }}
+                            />
+                        </div>
+                    ) : null}
 
-            <p>Content Resource Label</p>
-            <LabelElement {...props} currentObject={props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex)}/>
+                    {resource.getType() == ("SpotLight") ? (
+                        <div>
+                            <br/>
+                            <label>Angle </label>
+                            <input
+                                placeholder="5"
+                                type="number"
+                                min={0}
+                                max={360}
+                                step={10}
+                                onChange={(e) => {
+                                    resource.setAngle(Number(e.target.value));
+                                    setcount(count + 1);
+                                }}
+                            />
+                        </div>
+                    ) : null}
 
-        </li>
-    </>
-    )
-/*
+                </div>
+            ) : null}
 
-<ol>
-                {props.manifestObj.getContainerObj().getAnnotationPage().getAnnotation().getContentResource(props.contentResourceIndex).getAllLabels().map((label, labelIndex) => (
-                    <LabelElement key={labelIndex} labelIndex={labelIndex} {...props}></LabelElement>
-                ))}
-            </ol>
-    <li key={index}>
-        <input placeholder={index} type="text" value={annotationURL} onChange={e => manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index).changeID(e.target.value)}></input>
-    </li>
-*/
-} export default ContentResourceElement
+            {!resource.getType().includes("Light") ? (
+
+                <div className="field-group">
+                    <label>URL</label>
+                    <input
+                        placeholder="https://..."
+                        type="text"
+                        value={resource.getID() || ""} 
+                        onChange={(e) => {
+                            resource.setID(e.target.value);
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            ) : null}
+
+            <div>
+                <h4>Position</h4>
+                <div className="field-group">
+                    <label>X</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getX()} 
+                        onChange={(e) => {
+                            annotation.setX(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Y</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getY()} 
+                        onChange={(e) => {
+                            annotation.setY(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+                <div className="field-group">
+                    <label>Z</label>
+                    <input
+                        placeholder="0"
+                        type="number"
+                        value={annotation.getTarget().getZ()} 
+                        onChange={(e) => {
+                            annotation.setZ(Number(e.target.value));
+                            setcount(count + 1);
+                        }}
+                    />
+                </div>
+            </div>
+
+            <div className="label-section">
+                <h4>Annotation Label</h4>
+                <LabelElement 
+                    {...props} 
+                    currentObject={manifestObj.getContainerObj().getAnnotationPage().getAnnotation(contentResourceIndex)} 
+                />
+
+                <h4>Content Resource Label</h4>
+                <LabelElement 
+                    {...props} 
+                    currentObject={resource} 
+                />
+            </div>
+
+            <div className="field-group" style={{ marginTop: '20px' }}>
+                <button
+                    type="button"
+                    onClick={() => setIsEditingMetadata(true)}
+                    style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.9em'
+                    }}
+                >
+                    Edit Metadata
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default ContentResourceElement;

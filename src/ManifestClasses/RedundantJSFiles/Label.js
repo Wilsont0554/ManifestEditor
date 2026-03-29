@@ -56,6 +56,14 @@ class Label{
         return this.currentLanguage;
     }
 
+    getValue(){
+        const langKey = this.currentLanguage;
+        if (this.language && this.language[langKey] && this.language[langKey].length > 0) {
+            return this.language[langKey][0];
+        }
+        return '';
+    }
+
     getSupportedLanguages(){
         return Object.keys(this.languageClasses);
     }

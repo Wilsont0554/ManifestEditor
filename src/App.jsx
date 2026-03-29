@@ -1,9 +1,25 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import { JsonEditor } from "json-edit-react";
-import ManifestObject from "./ManifestClasses/ManifestObject.js";
+import ManifestObject from "./ManifestClasses/TypeScript/ManifestObject.ts";
 import ContentResourceElement from "./Components/ContentResourceElement.jsx";
-import ContentResource from "./ManifestClasses/ContentResource.js";
+import ContentResourceMetadataElement from "./Components/ContentResourceMetadataElement.jsx";
+import MetadataElement from "./Components/MetadataElement.jsx";
+import ContentResource from "./ManifestClasses/TypeScript/ContentResource.ts";
+import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
+import Container from "./ManifestClasses/TypeScript/Container.ts";
+import Camera from "./ManifestClasses/TypeScript/SceneComponets/Camera.ts";
+import OrthographicCamera from "./ManifestClasses/TypeScript/SceneComponets/OrthographicCamera.ts";
+import CameraElement from "./Components/CameraElement.tsx";
+import Light from "./ManifestClasses/TypeScript/Light.ts";
+import TextAnnotation from "./ManifestClasses/TypeScript/TextAnnotation.ts";
+
+/*
+models for testing exports:
+https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb
+https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb 
+*/
 
 function getViewFromHash() {
   return window.location.hash === "#manifest-creator" ? "manifest-creator" : "home";
@@ -12,8 +28,17 @@ function getViewFromHash() {
 function App() {
   const [activeView, setActiveView] = useState(getViewFromHash);
   const [count, setcount] = useState(0);
-  const [containerType, setContainerType] = useState("Scene");
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
+  const [allResources] = useState([]);
+
+  const [containerType, setContainerType] = useState("Scene");
+
+  // NEW: State to track which resource is currently being edited in the sidebar
+  const [selectedResourceIndex, setSelectedResourceIndex] = useState(null);
+  // NEW: State to track if we're editing metadata for the selected resource
+  const [isEditingMetadata, setIsEditingMetadata] = useState(false);
+  // NEW: State to track which resources have had metadata initialized
+  const [metadataInitialized, setMetadataInitialized] = useState(new Set());
 
   useEffect(() => {
     const onHashChange = () => {
@@ -36,20 +61,78 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  function createAnnotation() {
+  function createAnnotation(resourceType) {
+    let index = 0;
+    for(let i = 0; i < annotationResource.length; i++){
+      index++;
+    }
+
     manifestObj
+    .getContainerObj()
+    .getAnnotationPage()
+    .addAnnotation(new Annotation(allResources.length));
+
+    if (resourceType == "Default"){
+       manifestObj
       .getContainerObj()
       .getAnnotationPage()
-      .getAnnotation()
-      .addContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+      .getAnnotation(index)
+      .setContentResource(new ContentResource("", "Model", "model/gltf-binary"));
+    } 
+    else if (resourceType == "Light"){
+      manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(new Light("https://example.org/iiif/light/1", "AmbientLight"));
+    }
+    else if(resourceType == "Camera"){
+      const newCamera = new OrthographicCamera(
+      0.0,
+      undefined,
+      0.0,
+      0.0, 
+      undefined
+      );
+
+      manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .getAnnotation(index)
+      .setContentResource(newCamera);
+    }
+
+    allResources.push(manifestObj.getContainerObj().getAnnotationPage().getAnnotation(index))
     setcount((value) => value + 1);
   }
 
-  const contentResources = manifestObj
+  function createTextAnnotation(){
+
+    manifestObj.getContainerObj().getTextAnnotations().addAnnotation(new TextAnnotation(allResources.length));
+    
+    let length = manifestObj.getContainerObj().getTextAnnotations().getAllAnnotations().length
+    allResources.push(manifestObj.getContainerObj().getTextAnnotations().getAnnotation(length - 1))
+
+    console.log(allResources);
+
+    setcount((value) => value + 1);
+  }
+
+  const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
-    .getAnnotation(0)
-    .getAllContentResource();
+    .getAllAnnotations()
+  
+
+  // Helper to get the currently selected resource object
+  const selectedResource = selectedResourceIndex !== null 
+    ? allResources[selectedResourceIndex]
+    : null;
+
+
+    
+  // const container = manifestObj.getContainerObj();
+  // const camera = container.getItems().find(item => item instanceof Camera);
 
   return (
     <div className="app-shell">
@@ -58,10 +141,10 @@ function App() {
         <nav className="app-nav__links">
           <a href="#home">Home</a>
           <a href="#manifest-creator">Manifest Creator</a>
-          <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer">
+          <a href="https://github.com" target="_blank" rel="noreferrer">
             Github
           </a>
-          <a href="https://preview.iiif.io/api/full_manifests/presentation/4.0/#scene" target="_blank" rel="noreferrer">
+          <a href="https://iiif.io/api/presentation/3.0/" target="_blank" rel="noreferrer">
             Documentation
           </a>
         </nav>
@@ -70,6 +153,7 @@ function App() {
       <main className="app-main">
         {activeView === "manifest-creator" ? (
           <section className="manifest-creator">
+          <div className="main-content">
             <p
               className="manifest-creator__download"
               onClick={() => JSONToFile(manifestObj, "manifest")}
@@ -86,29 +170,120 @@ function App() {
                   setcount((value) => value + 1);
                 }}
               >
-                <option>Canvas</option>
-                <option>Scene</option>
+                <option value="Canvas">Canvas</option>
+                <option value="Scene">Scene</option>
+                <option value="Timeline">Timeline</option>
               </select>
 
-              <button type="button" onClick={createAnnotation}>
-                Add Content Resource
-              </button>
-            </div>
+                <button type="button" onClick={() => {createAnnotation("Default")}}>
+                  Add Content Resource
+                </button>
+                <button type="button" onClick={() => {createAnnotation("Light")}}>
+                  Add Light
+                </button>
+                <button type="button" onClick={() => {createAnnotation("Camera")}}>
+                  Add Camera
+                </button>
+                <button type="button" onClick={() => {createTextAnnotation()}}>
+                  Add Text Annotation
+                </button>
+              </div>
+                
+              <ol className="manifest-creator__list">
+                {allResources.map((resource, index) => (
+                  <li key={index} className="resource-list-item">
+                    {/* Clicking this button sets the sidebar context */}
+                    <button 
+                      onClick={() => {setSelectedResourceIndex(index); setIsEditingMetadata(false);}}
+                      className={selectedResourceIndex === index ? 'active' : ''}>
+                      {(resource.getContentResource() == null) ? (resource.constructor.name): resource.getContentResource().constructor.name}
+                    </button>
 
-            <ol className="manifest-creator__list">
-              {contentResources.map((annotation, contentResourceIndex) => (
-                <ContentResourceElement
-                  key={contentResourceIndex}
-                  count={count}
-                  setcount={setcount}
-                  index={contentResourceIndex}
-                  contentResourceIndex={contentResourceIndex}
-                  manifestObj={manifestObj}
-                />
-              ))}
-            </ol>
+                    {allResources[index].getMotivation() != ("commenting") ? (
+                      <button 
+                      type="button" 
+                      onClick={() => {
+                        setSelectedResourceIndex(index);
+                        const resource = allResources[index];
+                        if (!resource || !resource.getMetadata) {
+                          // nothing to edit yet
+                          setIsEditingMetadata(false);
+                          return;
+                        }
 
-            <JsonEditor data={manifestObj} />
+                        const metadata = resource.getMetadata();
+                        const hasMetadata = metadataInitialized.has(index) || metadata.getAllEntries().length > 0;
+
+                        if (!hasMetadata) {
+                          // First time clicking - add an empty metadata entry
+                          metadata.addEntry('', '', 'en');
+                          setMetadataInitialized(prev => new Set([...prev, index]));
+                        }
+
+                        setIsEditingMetadata(true);
+                        setcount((value) => value + 1);
+                      }}
+                      style={{
+                        marginLeft: '10px',
+                        padding: '4px 8px',
+                        fontSize: '0.8em',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {metadataInitialized.has(index) || (allResources[index] && allResources[index].getMetadata && allResources[index].getMetadata().getAllEntries().length > 0) 
+                        ? 'Edit Metadata' 
+                        : 'Add Metadata'}
+                    </button>
+                    ) : null}          
+                    {/* Add/Edit Metadata button appears next to each content resource */}
+                  </li>
+                ))}
+              </ol>
+
+              <JsonEditor data={manifestObj} />
+          </div>
+
+            {/* NEW: Sidebar for editing */}
+            <aside className="manifest-sidebar">
+              <h3>Edit Resource</h3>
+              {selectedResource ? (
+                <div className="sidebar-controls">
+                  <p>Editing Resource {selectedResourceIndex + 1}</p>
+
+                  {!isEditingMetadata ? (
+                    <>
+                      <ContentResourceElement
+                        count={count}
+                        setcount={setcount}
+                        index={selectedResourceIndex}
+                        contentResourceIndex={selectedResourceIndex}
+                        object={selectedResource}
+                        manifestObj={manifestObj}
+                        setIsEditingMetadata={setIsEditingMetadata}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <ContentResourceMetadataElement
+                        count={count}
+                        setcount={setcount}
+                        index={selectedResourceIndex}
+                        contentResourceIndex={selectedResourceIndex}
+                        object={selectedResource}
+                        manifestObj={manifestObj}
+                        setIsEditingMetadata={setIsEditingMetadata}
+                      />
+                    </>
+                  )}
+                </div>
+              ) : (
+                <p>Select a resource to edit</p>
+              )}
+            </aside>
           </section>
         ) : null}
       </main>
@@ -116,6 +291,7 @@ function App() {
       <footer className="app-footer">{"\u00A9"} manifest editor</footer>
     </div>
   );
+
 }
 
 export default App;
