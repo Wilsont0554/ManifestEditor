@@ -33,8 +33,12 @@ class Annotation {
         this.body = contentResource;
     }
 
-    getContentResource(_index?: number) {
+    getContentResource(_index?: number): ContentResource | undefined {
         return this.body;
+    }
+
+    getMotivation(): string[] {
+        return this.motivation;
     }
 
     setLabel(index: number, value: string) {

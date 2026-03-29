@@ -3,6 +3,7 @@ import Camera, { type CameraContentResourceType } from "@/ManifestClasses/Camera
 import ContentResource from "@/ManifestClasses/ContentResource";
 import Light, { type LightIntensity } from "@/ManifestClasses/Light";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
+import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 
 export const contentResourceTypeToFormat = {
   Image: "image/jpeg",
@@ -85,6 +86,12 @@ export interface LightContentResourceItem extends Omit<ContentResourceItem, "res
 export interface CameraContentResourceItem
   extends Omit<ContentResourceItem, "resource"> {
   resource: Camera;
+}
+
+export interface TextAnnotationItem {
+  annotation: TextAnnotation;
+  annotationIndex: number;
+  annotationNumber: number;
 }
 
 export function createDefaultContentResource(
@@ -201,6 +208,32 @@ export function getCameraContentResourceItems(
   );
 }
 
+export function getTextAnnotationItems(
+  manifestObj: ManifestObject,
+): TextAnnotationItem[] {
+  let annotationNumber = 0;
+
+  return manifestObj
+    .getContainerObj()
+    .getAnnotationPage()
+    .getAllAnnotations()
+    .flatMap((annotation, annotationIndex) => {
+      if (!(annotation instanceof TextAnnotation)) {
+        return [];
+      }
+
+      annotationNumber += 1;
+
+      return [
+        {
+          annotation,
+          annotationIndex,
+          annotationNumber,
+        },
+      ];
+    });
+}
+
 export function hasLightTechnicalChanges(
   annotation: Annotation,
   resource: Light,
@@ -243,6 +276,16 @@ export function getContentResourceDisplayTitle(
   const annotationLabel = annotation.getLabel()?.getValue().trim() ?? "";
 
   return resourceLabel || annotationLabel || `Content Resource ${resourceNumber}`;
+}
+
+export function getTextAnnotationDisplayTitle(
+  annotation: TextAnnotation,
+  annotationNumber: number,
+): string {
+  const bodyValue = annotation.getBodyValue().trim();
+  const annotationLabel = annotation.getLabel()?.getValue().trim() ?? "";
+
+  return bodyValue || annotationLabel || `Text Annotation ${annotationNumber}`;
 }
 
 function createSpatialCoordinatesSnapshot(

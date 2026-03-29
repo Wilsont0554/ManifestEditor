@@ -15,6 +15,7 @@ import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
 import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
+import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import type { IiifContainerType } from "@/types/iiif";
 import {
   createDefaultContentResource,
@@ -133,6 +134,19 @@ function ManifestEditorPage() {
     updateManifestObj(manifestObj.clone());
   }
 
+  function handleCreateTextAnnotation(): void {
+    const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
+    const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
+    const annotation = new TextAnnotation(nextAnnotationIndex + 1);
+
+    annotationPage.addAnnotation(annotation);
+
+    setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
+    setContentResourceModalView("editor");
+    setIsContentResourceModalOpen(true);
+    updateManifestObj(manifestObj.clone());
+  }
+
   function handleDownloadManifest(): void {
     downloadJsonFile(manifestObj, "manifest");
   }
@@ -187,6 +201,14 @@ function ManifestEditorPage() {
                 onClick={handleOpenContentResourceModal}
               >
                 Add Content Resource
+              </Button>
+
+              <Button
+                type="button"
+                className="!bg-white !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
+                onClick={handleCreateTextAnnotation}
+              >
+                Add Text Annotation
               </Button>
             </div>
           </div>

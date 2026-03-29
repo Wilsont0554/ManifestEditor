@@ -100,6 +100,14 @@ export interface IiifSpecificResource {
   selector: IiifPointSelector[];
 }
 
+export interface IiifTextualBody {
+  type: "TextualBody";
+  value: string;
+  format?: string;
+  language?: string;
+  purpose?: string;
+}
+
 export interface IiifContentResource {
   id: string;
   type: string;
@@ -124,7 +132,7 @@ export interface IiifAnnotation {
   id: string;
   type: string;
   motivation: string[];
-  body: IiifContentResource;
+  body: IiifContentResource | IiifTextualBody;
   target: IiifResourceReference | IiifSpecificResource;
   label?: IiifLanguageMap;
 }
