@@ -1,19 +1,105 @@
 import { useContext } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
-import { getDisplayableContentResourceItems } from "@/utils/content-resource";
-import ContentResourceMediaList from "../shared/content-resource-media-list";
+import {
+  getContentResourceDisplayTitle,
+  getContentResourceItems,
+} from "@/utils/content-resource";
+import ContentResourceEditor from "../shared/content-resource-editor";
+import EmptyStateCard from "../shared/empty-state-card";
 import ManifestTabBody from "../shared/manifest-tab-body";
 
 function StructureTab() {
-  const { manifestObj } = useContext(manifestObjContext);
-  const mediaItems = getDisplayableContentResourceItems(manifestObj);
+  const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
+  const resourceItems = getContentResourceItems(manifestObj);
+
+  function commitManifestChange(): void {
+    updateManifestObj(manifestObj.clone());
+  }
+
+  function syncManifestLabel({
+    previousValue,
+    previousLanguageCode,
+    value,
+    languageCode,
+  }: {
+    previousValue: string;
+    previousLanguageCode: string;
+    value: string;
+    languageCode: string;
+  }): void {
+    const currentManifestLabel = manifestObj.getLabelValue().trim();
+    const currentManifestLabelLanguage = manifestObj.getLabelLanguage();
+    const isManifestLabelBlank =
+      currentManifestLabel.length === 0 ||
+      currentManifestLabel === "Blank Manifest";
+    const matchesPreviousResourceLabel =
+      currentManifestLabel === previousValue.trim() &&
+      currentManifestLabelLanguage === previousLanguageCode;
+
+    if (!value.trim() || (!isManifestLabelBlank && !matchesPreviousResourceLabel)) {
+      return;
+    }
+
+    manifestObj.setLabel(value);
+    manifestObj.setLabelLanguage(languageCode);
+  }
 
   return (
     <ManifestTabBody className="pb-6">
       <section className="space-y-4">
-        <p className="text-lg font-medium text-slate-950">Media</p>
+        <div className="space-y-1">
+          <p className="text-lg font-medium text-slate-950">Content resources</p>
+          <p className="text-sm leading-6 text-slate-500">
+            Review and edit each content resource directly from the sidebar.
+          </p>
+        </div>
 
-        {mediaItems.length > 0 ? <ContentResourceMediaList items={mediaItems} /> : null}
+        {resourceItems.length > 0 ? (
+          <div className="space-y-4">
+            {resourceItems.map(
+              ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                <section
+                  key={`structure-content-resource-${annotationIndex}`}
+                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                >
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                    >
+                      Content Resource {resourceNumber}
+                    </button>
+                    <p className="text-sm text-slate-500">
+                      {getContentResourceDisplayTitle(
+                        annotation,
+                        resource,
+                        resourceNumber,
+                      )}
+                    </p>
+                  </div>
+
+                  <ContentResourceEditor
+                    annotation={annotation}
+                    resource={resource}
+                    idPrefix={`structure-content-resource-${annotationIndex}`}
+                    onCommit={commitManifestChange}
+                    onResourceLabelSync={syncManifestLabel}
+                    showMetadataAction={false}
+                  />
+                </section>
+              ),
+            )}
+          </div>
+        ) : (
+          <EmptyStateCard
+            title="No content resources"
+            description="Add a content resource to populate editable fields here."
+            align="left"
+            className="border border-slate-200 bg-slate-50"
+            titleClassName="text-slate-950 text-lg"
+            descriptionClassName="max-w-none text-base leading-relaxed text-slate-500"
+          />
+        )}
       </section>
     </ManifestTabBody>
   );
