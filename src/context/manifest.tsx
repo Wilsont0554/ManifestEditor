@@ -199,7 +199,7 @@ function isLightTechnicalFieldEdited(
       currentLight.coordinates.y !== initialLight.coordinates.y ||
       currentLight.coordinates.z !== initialLight.coordinates.z ||
       currentIntensity?.type !== initialIntensity?.type ||
-      currentIntensity?.quantityValue !== initialIntensity?.quantityValue ||
+      currentIntensity?.value !== initialIntensity?.value ||
       currentIntensity?.unit !== initialIntensity?.unit
     );
   });

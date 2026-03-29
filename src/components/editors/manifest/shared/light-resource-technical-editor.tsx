@@ -148,7 +148,7 @@ function LightResourceTechnicalEditor({
         <NumericDraftInput
           id={`${idPrefix}-intensity`}
           label="Intensity"
-          value={intensity?.quantityValue.toString() ?? ""}
+          value={intensity?.value.toString() ?? ""}
           min={0}
           max={1}
           step={0.1}
@@ -158,7 +158,7 @@ function LightResourceTechnicalEditor({
             if (newValue === undefined) {
               resource.removeIntensity();
             } else {
-              resource.setIntensity("Quantity", newValue, "relative");
+              resource.setIntensity("Value", newValue, "relative");
             }
 
             onCommit();

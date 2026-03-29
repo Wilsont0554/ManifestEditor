@@ -78,10 +78,9 @@ export interface IiifResourceReference {
 }
 
 export interface IiifQuantity {
-  id: string;
-  type: "Quantity";
+  type: "Value";
   unit: string;
-  quantityValue: number;
+  value: number;
 }
 
 export interface IiifPointSelector {
@@ -94,18 +93,20 @@ export interface IiifPointSelector {
 }
 
 export interface IiifSpecificResource {
-  id: string;
+  id?: string;
   type: "SpecificResource";
   source: IiifResourceReference;
   selector: IiifPointSelector[];
 }
 
 export interface IiifTextualBody {
+  id?: string;
   type: "TextualBody";
   value: string;
   format?: string;
   language?: string;
   purpose?: string;
+  position?: IiifSpecificResource;
 }
 
 export interface IiifContentResource {
@@ -167,4 +168,5 @@ export interface IiifManifest {
   viewingDirection?: ManifestViewingDirection;
   behavior?: string[];
   items: IiifCanvasLike[];
+  annotations?: IiifAnnotationPage[];
 }

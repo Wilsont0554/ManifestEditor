@@ -1,5 +1,9 @@
 import AnnotationPage from './AnnotationPage.ts';
-import type { IiifCanvasLike, IiifContainerType } from "@/types/iiif";
+import type {
+    IiifAnnotationPage,
+    IiifCanvasLike,
+    IiifContainerType,
+} from "@/types/iiif";
 
 function normalizeContainerType(type?: string): IiifContainerType {
     if (type === "canvas" || type === "Canvas") {
@@ -98,10 +102,14 @@ class Container {
     }
 
     toJSON(): IiifCanvasLike {
+        const paintingAnnotationPages = this.items
+            .map((item) => item.toFilteredJSON(item.getPaintingAnnotations(), item.id))
+            .filter((item): item is IiifAnnotationPage => !!item);
+
         const out: IiifCanvasLike = {
             id: this.id,
             type: this.type,
-            items: this.items.map((item) => item.toJSON()),
+            items: paintingAnnotationPages,
         };
 
         if (this.type === "Timeline" && this.duration !== undefined) {

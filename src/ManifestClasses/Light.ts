@@ -5,10 +5,7 @@ import type {
     IiifResourceReference,
 } from "@/types/iiif";
 
-interface LightIntensity extends IiifQuantity {
-    quantityValue: number;
-    unit: string;
-}
+interface LightIntensity extends IiifQuantity {}
 
 class Light extends ContentResource {
     color?: string;
@@ -40,11 +37,10 @@ class Light extends ContentResource {
         this.color = color;
     }
 
-    setIntensity(type: string, quantityValue: number, unit: string): void {
+    setIntensity(type: string, value: number, unit: string): void {
         this.intensity = {
-            id: this.intensity?.id ?? "",
-            type: type as "Quantity",
-            quantityValue,
+            type: type as "Value",
+            value,
             unit,
         };
     }
@@ -81,8 +77,7 @@ class Light extends ContentResource {
 
     synchronizeDerivedIds(): void {
         if (this.intensity) {
-            this.intensity.id = `${this.id}/intensity`;
-            this.intensity.type = "Quantity";
+            this.intensity.type = "Value";
         }
     }
 

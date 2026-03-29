@@ -2,6 +2,7 @@ import Container from './Container.ts';
 import Label from './Label.ts';
 import Camera from "./Camera.ts";
 import Light from "./Light.ts";
+import TextAnnotation from "./TextAnnotation.ts";
 import {
     builtInManifestBehaviors,
     manifestAutoAdvanceBehaviors,
@@ -280,6 +281,19 @@ class ManifestObject {
                     const resource = annotation.getContentResource();
                     const targetId = `${annotationId}/target`;
 
+                    if (annotation instanceof TextAnnotation) {
+                        annotation.setCommentTargetReference(
+                            containerId,
+                            container.getType(),
+                        );
+                        annotation.ensurePositionTarget(
+                            `${annotationId}/position`,
+                            containerId,
+                            container.getType(),
+                        );
+                        return;
+                    }
+
                     if (resource instanceof Light) {
                         lightIndex += 1;
                         resource.setID(`${containerId}/lights/${lightIndex}`);
@@ -333,6 +347,23 @@ class ManifestObject {
     toJSON(): IiifManifest {
         this.synchronizeStructure();
 
+        const commentingAnnotationPages = this.items.flatMap((container) =>
+            container.getItems().flatMap((annotationPage) => {
+                const commentingAnnotations = annotationPage.getCommentingAnnotations();
+
+                if (commentingAnnotations.length === 0) {
+                    return [];
+                }
+
+                return [
+                    annotationPage.toFilteredJSON(
+                        commentingAnnotations,
+                        `${container.getID()}/annotations/1`,
+                    )!,
+                ];
+            }),
+        );
+
         const out: IiifManifest = {
             "@context": presentationContext,
             id: getEffectiveManifestId(this.id),
@@ -359,6 +390,10 @@ class ManifestObject {
 
         if (this.behavior?.length) {
             out.behavior = this.behavior;
+        }
+
+        if (commentingAnnotationPages.length > 0) {
+            out.annotations = commentingAnnotationPages;
         }
 
         return out;

@@ -39,6 +39,33 @@ class AnnotationPage {
         return this.items;
     }
 
+    getPaintingAnnotations(): Annotation[] {
+        return this.items.filter(
+            (annotation) => !annotation.getMotivation().includes("commenting"),
+        );
+    }
+
+    getCommentingAnnotations(): Annotation[] {
+        return this.items.filter((annotation) =>
+            annotation.getMotivation().includes("commenting"),
+        );
+    }
+
+    toFilteredJSON(
+        items: Annotation[],
+        idOverride?: string,
+    ): IiifAnnotationPage | null {
+        if (items.length === 0) {
+            return null;
+        }
+
+        return {
+            id: idOverride ?? this.id,
+            type: this.type,
+            items: items.map((item) => item.toJSON()),
+        };
+    }
+
     toJSON(): IiifAnnotationPage {
         return {
             id: this.id,
