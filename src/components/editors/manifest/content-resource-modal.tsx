@@ -6,11 +6,15 @@ import {
   useRef,
 } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
+import Camera from "@/ManifestClasses/Camera";
+import Light from "@/ManifestClasses/Light";
 import {
   getContentResourceItems,
   type EditableContentResourceType,
 } from "@/utils/content-resource";
+import CameraResourceTechnicalEditor from "./shared/camera-resource-technical-editor";
 import ContentResourceEditor from "./shared/content-resource-editor";
+import LightResourceTechnicalEditor from "./shared/light-resource-technical-editor";
 
 export type ContentResourceModalView = "picker" | "editor";
 
@@ -409,6 +413,28 @@ function ContentResourceModal({
                   showTypeSelector={false}
                   showMetadataAction={false}
                 />
+
+                {selectedResource instanceof Camera ? (
+                  <div className="pt-6">
+                    <CameraResourceTechnicalEditor
+                      annotation={selectedAnnotation}
+                      resource={selectedResource}
+                      idPrefix={`content-resource-modal-camera-${selectedAnnotationIndex}`}
+                      onCommit={commitManifestChange}
+                    />
+                  </div>
+                ) : null}
+
+                {selectedResource instanceof Light ? (
+                  <div className="pt-6">
+                    <LightResourceTechnicalEditor
+                      annotation={selectedAnnotation}
+                      resource={selectedResource}
+                      idPrefix={`content-resource-modal-light-${selectedAnnotationIndex}`}
+                      onCommit={commitManifestChange}
+                    />
+                  </div>
+                ) : null}
               </section>
             ) : (
               <p className="text-sm text-slate-500">

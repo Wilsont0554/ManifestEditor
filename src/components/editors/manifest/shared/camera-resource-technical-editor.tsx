@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type Annotation from "@/ManifestClasses/Annotation";
 import type Camera from "@/ManifestClasses/Camera";
 import ManifestField from "./manifest-field";
 import TechnicalOptionGroup from "./technical-option-group";
@@ -80,17 +81,20 @@ function NumericDraftInput({
 }
 
 interface CameraResourceTechnicalEditorProps {
+  annotation: Annotation;
   resource: Camera;
   idPrefix: string;
   onCommit: () => void;
 }
 
 function CameraResourceTechnicalEditor({
+  annotation,
   resource,
   idPrefix,
   onCommit,
 }: CameraResourceTechnicalEditorProps) {
   const cameraType = resource.getType();
+  const target = annotation.getTarget();
 
   function handleCameraTypeChange(newValue: string): void {
     resource.setType(newValue as SupportedCameraContentResourceType);
@@ -176,6 +180,48 @@ function CameraResourceTechnicalEditor({
           }}
         />
       )}
+
+      <section className="space-y-3">
+        <p className="text-base font-semibold text-slate-950">Position</p>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <NumericDraftInput
+            id={`${idPrefix}-x`}
+            label="X"
+            value={(target?.getX() ?? 0).toString()}
+            step={0.1}
+            placeholder="0"
+            onCommit={(newValue) => {
+              annotation.setX(newValue ?? 0);
+              onCommit();
+            }}
+          />
+
+          <NumericDraftInput
+            id={`${idPrefix}-y`}
+            label="Y"
+            value={(target?.getY() ?? 0).toString()}
+            step={0.1}
+            placeholder="0"
+            onCommit={(newValue) => {
+              annotation.setY(newValue ?? 0);
+              onCommit();
+            }}
+          />
+
+          <NumericDraftInput
+            id={`${idPrefix}-z`}
+            label="Z"
+            value={(target?.getZ() ?? 0).toString()}
+            step={0.1}
+            placeholder="0"
+            onCommit={(newValue) => {
+              annotation.setZ(newValue ?? 0);
+              onCommit();
+            }}
+          />
+        </div>
+      </section>
     </section>
   );
 }

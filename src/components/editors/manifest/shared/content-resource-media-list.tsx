@@ -148,6 +148,10 @@ function ContentResourceMediaList({
         const detail = isLightContentResourceType(resourceType)
           ? getLightContentResourceTypeLabel(resourceType)
           : item.resource.getFormat() || resourceType;
+        const target = item.annotation.getTarget();
+        const coordinateDetail = target
+          ? `X ${target.getX()}  Y ${target.getY()}  Z ${target.getZ()}`
+          : null;
 
         return (
           <article
@@ -170,6 +174,11 @@ function ContentResourceMediaList({
                   <p className="mt-2 truncate text-sm text-slate-400">
                     {item.resource.id}
                   </p>
+                  {coordinateDetail ? (
+                    <p className="mt-1 text-sm text-slate-400">
+                      {coordinateDetail}
+                    </p>
+                  ) : null}
                 </div>
 
                 <p className="shrink-0 text-sm text-slate-400">{detail}</p>

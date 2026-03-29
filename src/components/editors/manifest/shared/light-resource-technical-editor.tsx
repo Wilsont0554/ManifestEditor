@@ -95,8 +95,8 @@ function LightResourceTechnicalEditor({
   onCommit,
 }: LightResourceTechnicalEditorProps) {
   const lightType = resource.getType() as LightContentResourceType;
-  const target = annotation.getTarget();
   const intensity = resource.getIntensity();
+  const target = annotation.getTarget();
 
   function handleLightTypeChange(newValue: string): void {
     const nextType = newValue as LightContentResourceType;
@@ -210,8 +210,8 @@ function LightResourceTechnicalEditor({
             id={`${idPrefix}-x`}
             label="X"
             value={(target?.getX() ?? 0).toString()}
-            placeholder="0"
             step={0.1}
+            placeholder="0"
             onCommit={(newValue) => {
               annotation.setX(newValue ?? 0);
               onCommit();
@@ -222,8 +222,8 @@ function LightResourceTechnicalEditor({
             id={`${idPrefix}-y`}
             label="Y"
             value={(target?.getY() ?? 0).toString()}
-            placeholder="0"
             step={0.1}
+            placeholder="0"
             onCommit={(newValue) => {
               annotation.setY(newValue ?? 0);
               onCommit();
@@ -234,8 +234,8 @@ function LightResourceTechnicalEditor({
             id={`${idPrefix}-z`}
             label="Z"
             value={(target?.getZ() ?? 0).toString()}
-            placeholder="0"
             step={0.1}
+            placeholder="0"
             onCommit={(newValue) => {
               annotation.setZ(newValue ?? 0);
               onCommit();

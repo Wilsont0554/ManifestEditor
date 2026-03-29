@@ -195,8 +195,8 @@ function TechnicalTab() {
           <div className="space-y-1">
             <p className="text-lg font-medium text-slate-950">Cameras</p>
             <p className="text-sm leading-6 text-slate-500">
-              Edit camera type, clipping planes, and type-specific settings for
-              each camera content resource.
+              Edit camera type, clipping planes, position, and type-specific
+              settings for each camera content resource.
             </p>
           </div>
 
@@ -224,6 +224,7 @@ function TechnicalTab() {
                   </div>
 
                   <CameraResourceTechnicalEditor
+                    annotation={annotation}
                     resource={resource}
                     idPrefix={`technical-camera-${annotationIndex}`}
                     onCommit={commitManifestChange}

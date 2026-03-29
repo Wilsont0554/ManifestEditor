@@ -41,9 +41,11 @@ export interface ContentResourceSnapshot {
   format?: string;
   annotationLabel: LocalizedContentResourceFieldSnapshot;
   resourceLabel: LocalizedContentResourceFieldSnapshot;
+  coordinates: LightCoordinatesSnapshot;
 }
 
 interface LightCoordinatesSnapshot {
+  hasSpatialTarget: boolean;
   x: number;
   y: number;
   z: number;
@@ -66,6 +68,7 @@ export interface CameraTechnicalSnapshot {
   far?: number;
   viewHeight?: number;
   fieldOfView?: number;
+  coordinates: LightCoordinatesSnapshot;
 }
 
 export interface ContentResourceItem {
@@ -242,6 +245,19 @@ export function getContentResourceDisplayTitle(
   return resourceLabel || annotationLabel || `Content Resource ${resourceNumber}`;
 }
 
+function createSpatialCoordinatesSnapshot(
+  annotation: Annotation,
+): LightCoordinatesSnapshot {
+  const target = annotation.getTarget();
+
+  return {
+    hasSpatialTarget: !!target,
+    x: target?.getX() ?? 0,
+    y: target?.getY() ?? 0,
+    z: target?.getZ() ?? 0,
+  };
+}
+
 export function createContentResourceSnapshot(
   manifestObj: ManifestObject,
 ): ContentResourceSnapshot[] {
@@ -259,6 +275,7 @@ export function createContentResourceSnapshot(
         value: resource.getLabel().getValue(),
         languageCode: resource.getLabel().getLanguage() ?? "en",
       },
+      coordinates: createSpatialCoordinatesSnapshot(annotation),
     }),
   );
 }
@@ -271,8 +288,6 @@ export function createLightTechnicalSnapshot(
       hasLightTechnicalChanges(annotation, resource),
     )
     .map(({ annotation, resource, annotationIndex }) => {
-      const target = annotation.getTarget();
-
       return {
         annotationIndex,
         type: resource.getType() as LightContentResourceType,
@@ -280,11 +295,7 @@ export function createLightTechnicalSnapshot(
         intensity: resource.getIntensity(),
         lookAtId: resource.getLookAtId(),
         angle: resource.getAngle(),
-        coordinates: {
-          x: target?.getX() ?? 0,
-          y: target?.getY() ?? 0,
-          z: target?.getZ() ?? 0,
-        },
+        coordinates: createSpatialCoordinatesSnapshot(annotation),
       };
     });
 }
@@ -293,13 +304,14 @@ export function createCameraTechnicalSnapshot(
   manifestObj: ManifestObject,
 ): CameraTechnicalSnapshot[] {
   return getCameraContentResourceItems(manifestObj).map(
-    ({ annotationIndex, resource }) => ({
+    ({ annotation, annotationIndex, resource }) => ({
       annotationIndex,
       type: resource.getType(),
       near: resource.getNear(),
       far: resource.getFar(),
       viewHeight: resource.getViewHeight(),
       fieldOfView: resource.getFieldOfView(),
+      coordinates: createSpatialCoordinatesSnapshot(annotation),
     }),
   );
 }

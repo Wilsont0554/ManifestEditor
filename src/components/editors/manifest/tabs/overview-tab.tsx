@@ -477,6 +477,7 @@ function OverviewTab() {
                       </div>
 
                       <CameraResourceTechnicalEditor
+                        annotation={annotation}
                         resource={resource}
                         idPrefix={`overview-camera-${annotationIndex}`}
                         onCommit={commitManifestChange}

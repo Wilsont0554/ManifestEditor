@@ -193,6 +193,8 @@ function isLightTechnicalFieldEdited(
       currentLight.color !== initialLight.color ||
       currentLight.lookAtId !== initialLight.lookAtId ||
       currentLight.angle !== initialLight.angle ||
+      currentLight.coordinates.hasSpatialTarget !==
+        initialLight.coordinates.hasSpatialTarget ||
       currentLight.coordinates.x !== initialLight.coordinates.x ||
       currentLight.coordinates.y !== initialLight.coordinates.y ||
       currentLight.coordinates.z !== initialLight.coordinates.z ||
@@ -220,7 +222,12 @@ function isCameraTechnicalFieldEdited(
       currentCamera.near !== initialCamera.near ||
       currentCamera.far !== initialCamera.far ||
       currentCamera.viewHeight !== initialCamera.viewHeight ||
-      currentCamera.fieldOfView !== initialCamera.fieldOfView
+      currentCamera.fieldOfView !== initialCamera.fieldOfView ||
+      currentCamera.coordinates.hasSpatialTarget !==
+        initialCamera.coordinates.hasSpatialTarget ||
+      currentCamera.coordinates.x !== initialCamera.coordinates.x ||
+      currentCamera.coordinates.y !== initialCamera.coordinates.y ||
+      currentCamera.coordinates.z !== initialCamera.coordinates.z
     );
   });
 }
@@ -247,7 +254,12 @@ function isContentResourceFieldEdited(
         initialResource.annotationLabel.languageCode ||
       currentResource.resourceLabel.value !== initialResource.resourceLabel.value ||
       currentResource.resourceLabel.languageCode !==
-        initialResource.resourceLabel.languageCode
+        initialResource.resourceLabel.languageCode ||
+      currentResource.coordinates.hasSpatialTarget !==
+        initialResource.coordinates.hasSpatialTarget ||
+      currentResource.coordinates.x !== initialResource.coordinates.x ||
+      currentResource.coordinates.y !== initialResource.coordinates.y ||
+      currentResource.coordinates.z !== initialResource.coordinates.z
     );
   });
 }

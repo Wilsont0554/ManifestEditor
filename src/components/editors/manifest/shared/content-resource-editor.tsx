@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import type Annotation from "@/ManifestClasses/Annotation";
 import Camera from "@/ManifestClasses/Camera";
@@ -37,6 +38,64 @@ interface ContentResourceEditorProps {
   onOpenMetadata?: () => void;
 }
 
+interface NumericDraftInputProps {
+  id: string;
+  label: string;
+  value: string;
+  onCommit: (newValue: number) => void;
+  placeholder?: string;
+  step?: number;
+}
+
+function NumericDraftInput({
+  id,
+  label,
+  value,
+  onCommit,
+  placeholder,
+  step = 0.1,
+}: NumericDraftInputProps) {
+  const [draftValue, setDraftValue] = useState(value);
+
+  useEffect(() => {
+    setDraftValue(value);
+  }, [value]);
+
+  return (
+    <ManifestField label={label} htmlFor={id} className="space-y-2">
+      <input
+        id={id}
+        type="number"
+        inputMode="decimal"
+        value={draftValue}
+        step={step}
+        placeholder={placeholder}
+        className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
+        onChange={(event) => {
+          const nextValue = event.target.value;
+          setDraftValue(nextValue);
+
+          if (!nextValue.trim()) {
+            onCommit(0);
+            return;
+          }
+
+          const parsedValue = Number(nextValue);
+
+          if (!Number.isNaN(parsedValue)) {
+            onCommit(parsedValue);
+          }
+        }}
+        onBlur={() => {
+          if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
+            setDraftValue(value);
+          }
+        }}
+      />
+    </ManifestField>
+  );
+}
+
 function ContentResourceEditor({
   annotation,
   resource,
@@ -52,6 +111,7 @@ function ContentResourceEditor({
   const isCameraResource = resource instanceof Camera;
   const shouldShowTypeSelector =
     showTypeSelector && !isLightResource && !isCameraResource;
+  const target = annotation.getTarget();
 
   function getAnnotationLabel(): string {
     return annotation.getLabel()?.getValue() ?? "";
@@ -172,6 +232,50 @@ function ContentResourceEditor({
         onChange={handleResourceLabelChange}
         onLanguageChange={handleResourceLabelLanguageChange}
       />
+
+      {!isLightResource && !isCameraResource ? (
+        <section className="space-y-3">
+          <p className="text-base font-semibold text-slate-950">Position</p>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <NumericDraftInput
+              id={`${idPrefix}-position-x`}
+              label="X"
+              value={(target?.getX() ?? 0).toString()}
+              step={0.1}
+              placeholder="0"
+              onCommit={(newValue) => {
+                annotation.setX(newValue);
+                onCommit();
+              }}
+            />
+
+            <NumericDraftInput
+              id={`${idPrefix}-position-y`}
+              label="Y"
+              value={(target?.getY() ?? 0).toString()}
+              step={0.1}
+              placeholder="0"
+              onCommit={(newValue) => {
+                annotation.setY(newValue);
+                onCommit();
+              }}
+            />
+
+            <NumericDraftInput
+              id={`${idPrefix}-position-z`}
+              label="Z"
+              value={(target?.getZ() ?? 0).toString()}
+              step={0.1}
+              placeholder="0"
+              onCommit={(newValue) => {
+                annotation.setZ(newValue);
+                onCommit();
+              }}
+            />
+          </div>
+        </section>
+      ) : null}
 
       {showMetadataAction && onOpenMetadata ? (
         <section className="space-y-3 rounded-xl border border-dashed border-pink-200 bg-white p-4">
