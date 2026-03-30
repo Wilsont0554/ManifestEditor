@@ -1,8 +1,10 @@
+
 .app-shell {
   min-height: 100vh;
   background: #f2f3f5;
   color: #1f2937;
 }
+
 
 .app-nav {
   display: flex;
@@ -156,3 +158,4 @@
 }
 
 }
+

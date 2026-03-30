@@ -8,7 +8,6 @@ import Annotation from "./ManifestClasses/TypeScript/Annotation.ts";
 import Container from "./ManifestClasses/TypeScript/Container.ts";
 import Light from "./ManifestClasses/TypeScript/Light.ts";
 import TextAnnotation from "./ManifestClasses/TypeScript/TextAnnotation.ts";
-import '@google/model-viewer';
 
 /*
 models for testing exports:
@@ -26,6 +25,10 @@ function App() {
   const [count, setcount] = useState(0);
   const [manifestObj] = useState(() => new ManifestObject("Scene"));
   const [allResources] = useState([]);
+
+  const [blobTEST, setBlob] = useState(URL.createObjectURL(new Blob([JSON.stringify(manifestObj, null, 2)], {
+      type: "application/json",
+    })));
 
   const [containerType, setContainerType] = useState("Scene");
 
@@ -95,6 +98,14 @@ function App() {
     setcount((value) => value + 1);
   }
 
+  function createBlob(){
+    const temp = new Blob([JSON.stringify(manifestObj, null, 2)], {
+      type: "application/json",
+    });
+    setBlob(URL.createObjectURL(temp));
+    console.log(blobTEST);
+  }
+
   const annotationResource = manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -106,6 +117,12 @@ function App() {
     ? allResources[selectedResourceIndex]
     : null;
 
+useEffect(() => {
+    const scriptTag = document.createElement('script');
+    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js" //"https://3d-api.si.edu/resources/js/voyager-explorer.min.js";
+    scriptTag.addEventListener('load', () => setcount(count + 1));
+    document.body.appendChild(scriptTag);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -135,9 +152,19 @@ function App() {
             >
               Download JSON
             </p>
+
+            <p
+              className="manifest-creator__download"
+              onClick={() => createBlob()}
+            >
+              TEST BLOB
+            </p>
             
             {/*<iframe name="Smithsonian Voyager" src="https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document=https://wilsont0554.github.io/Manifest-Hosting/TextAnnotationExport.json" width="800" height="450" allow="xr; xr-spatial-tracking; fullscreen"></iframe>*/}
 
+            <div class="test">
+              <voyager-explorer model={blobTEST} id="voyager"></voyager-explorer>            </div>
+            
             <div className="manifest-creator__controls">
               <select
                 value={containerType}
@@ -177,17 +204,7 @@ function App() {
               </ol>
 
               <JsonEditor data={manifestObj} />
-
-              <model-viewer
-                alt="Neil Armstrong's Spacesuit from the Smithsonian"
-                src="https://raw.githubusercontent.com/IIIF/3d/main/assets/astronaut/astronaut.glb"
-        ar
-        environment-image="neutral"
-        shadow-intensity="1"
-        camera-controls
-        touch-action="pan-y"
-                >
-              </model-viewer>          
+     
             </div>
 
             {/* NEW: Sidebar for editing */}
