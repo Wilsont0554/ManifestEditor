@@ -81,6 +81,46 @@ Use when:
 - You need the shared add/remove custom behavior UI.
 - The editor should validate against built-in behavior names.
 
+### `ContentResourceEditor`
+
+Use for general content resource editing in the modal, sidebar, and overview.
+
+Use when:
+- You need to edit a model/image resource URL, labels, metadata, or coordinates.
+- The resource is not a light- or camera-specific technical editor.
+
+### `LightResourceTechnicalEditor`
+
+Use for light-specific technical fields.
+
+Use when:
+- You need to edit light color, angle, intensity, look-at, or XYZ position.
+- The UI should match the current Technical and Overview editor sections.
+
+### `CameraResourceTechnicalEditor`
+
+Use for camera-specific technical fields.
+
+Use when:
+- You need to edit orthographic or perspective camera settings.
+- You need to edit clipping planes or XYZ camera position.
+
+### `TextAnnotationEditor`
+
+Use for text annotation content and point-target editing.
+
+Use when:
+- You need to edit the annotation text body.
+- You need to edit the XYZ position for a visible 3D hotspot/comment.
+
+### `ContentResourceMediaList`
+
+Use for compact summaries of content resources in overview-style sections.
+
+Use when:
+- You need to display existing resources and surface edited technical details.
+- You want a read-heavy list rather than the full editor form.
+
 ## Typical Imports
 
 ```tsx
