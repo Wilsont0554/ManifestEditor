@@ -347,23 +347,6 @@ class ManifestObject {
     toJSON(): IiifManifest {
         this.synchronizeStructure();
 
-        const commentingAnnotationPages = this.items.flatMap((container) =>
-            container.getItems().flatMap((annotationPage) => {
-                const commentingAnnotations = annotationPage.getCommentingAnnotations();
-
-                if (commentingAnnotations.length === 0) {
-                    return [];
-                }
-
-                return [
-                    annotationPage.toFilteredJSON(
-                        commentingAnnotations,
-                        `${container.getID()}/annotations/1`,
-                    )!,
-                ];
-            }),
-        );
-
         const out: IiifManifest = {
             "@context": presentationContext,
             id: getEffectiveManifestId(this.id),
@@ -390,10 +373,6 @@ class ManifestObject {
 
         if (this.behavior?.length) {
             out.behavior = this.behavior;
-        }
-
-        if (commentingAnnotationPages.length > 0) {
-            out.annotations = commentingAnnotationPages;
         }
 
         return out;

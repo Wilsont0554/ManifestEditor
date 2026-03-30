@@ -102,14 +102,14 @@ class Container {
     }
 
     toJSON(): IiifCanvasLike {
-        const paintingAnnotationPages = this.items
-            .map((item) => item.toFilteredJSON(item.getPaintingAnnotations(), item.id))
-            .filter((item): item is IiifAnnotationPage => !!item);
+        const annotationPages = this.items
+            .map((item) => item.toJSON())
+            .filter((item): item is IiifAnnotationPage => item.items.length > 0);
 
         const out: IiifCanvasLike = {
             id: this.id,
             type: this.type,
-            items: paintingAnnotationPages,
+            items: annotationPages,
         };
 
         if (this.type === "Timeline" && this.duration !== undefined) {

@@ -1,6 +1,6 @@
 import Annotation from "./Annotation.ts";
 import Target from "./Target.ts";
-import type { IiifAnnotation, IiifTextualBody } from "@/types/iiif";
+import type { IiifAnnotation, IiifLanguageMap, IiifTextualBody } from "@/types/iiif";
 
 class TextAnnotation extends Annotation {
     private bodyValue: string;
@@ -73,19 +73,26 @@ class TextAnnotation extends Annotation {
             format: "text/plain",
             language: this.bodyLanguage,
             purpose: "commenting",
-            position: this.position.toJSON(),
         };
+
+        const fallbackLabel: IiifLanguageMap | undefined = this.bodyValue.trim()
+            ? {
+                [this.bodyLanguage]: [this.bodyValue],
+            }
+            : undefined;
 
         const out = {
             id: this.id,
             type: this.type,
             motivation: this.motivation,
             body,
-            target: this.target,
+            target: this.position.toJSON(),
         } as Partial<IiifAnnotation>;
 
         if (this.label?.hasValue()) {
             out.label = this.label.toJSON();
+        } else if (fallbackLabel) {
+            out.label = fallbackLabel;
         }
 
         return out as IiifAnnotation;
