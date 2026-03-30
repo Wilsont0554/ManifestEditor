@@ -1,16 +1,54 @@
-# React + Vite
+# Manifest Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TypeScript/TSX manifest editor for building IIIF Presentation 4 manifests with
+scene, canvas, and timeline containers.
 
-Currently, two official plugins are available:
+## Current Scope
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Manifest-level editing for descriptive and technical fields
+- Content resource editing for models, images, lights, and cameras
+- Metadata editing for manifests and content resources
+- Text annotation editing with 3D point targets
+- JSON preview and manifest download from the editor UI
 
-## React Compiler
+## 3D / Voyager Notes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Scene manifests can include models, lights, cameras, and text annotations
+- `SpecificResource.source` is exported as an array to match the older
+  Voyager-tested draft shape used by `develop`
+- Text annotations are exported as scene-level point annotations with a visible
+  `label`, which allows the Voyager demo to render hotspot labels on the model
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/ManifestClasses`: mutable domain model and JSON serialization
+- `src/context`: React context for the editor state and snapshots
+- `src/pages`: top-level app pages
+- `src/components/editors/manifest`: manifest editor UI, tabs, modal, and shared
+  controls
+
+## Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the dev server:
+
+```bash
+npm run dev
+```
+
+Verify types:
+
+```bash
+npm run typecheck
+```
+
+Build:
+
+```bash
+npm run build
+```
