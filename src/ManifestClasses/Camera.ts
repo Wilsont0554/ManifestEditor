@@ -1,0 +1,124 @@
+import ContentResource from "./ContentResource.ts";
+import type { IiifContentResource } from "@/types/iiif";
+
+const cameraContentResourceTypeSet = new Set([
+    "OrthographicCamera",
+    "PerspectiveCamera",
+]);
+
+export type CameraContentResourceType = "OrthographicCamera" | "PerspectiveCamera";
+
+function normalizeCameraType(type: string): CameraContentResourceType {
+    if (type === "PerspectiveCamera") {
+        return "PerspectiveCamera";
+    }
+
+    return "OrthographicCamera";
+}
+
+class Camera extends ContentResource {
+    near?: number;
+    far?: number;
+    viewHeight?: number;
+    fieldOfView?: number;
+
+    constructor(id: string, type: CameraContentResourceType = "OrthographicCamera") {
+        super(id, normalizeCameraType(type), undefined);
+        this.setType(type);
+    }
+
+    static isCameraType(type: string): type is CameraContentResourceType {
+        return cameraContentResourceTypeSet.has(type);
+    }
+
+    override setType(type: string): void {
+        const normalizedType = normalizeCameraType(type);
+
+        super.setType(normalizedType);
+
+        if (normalizedType === "OrthographicCamera") {
+            this.fieldOfView = undefined;
+            this.viewHeight ??= 0;
+            return;
+        }
+
+        this.viewHeight = undefined;
+        this.fieldOfView ??= 0;
+    }
+
+    override getType(): CameraContentResourceType {
+        return normalizeCameraType(super.getType());
+    }
+
+    setNear(near?: number): void {
+        this.near = near;
+    }
+
+    getNear(): number | undefined {
+        return this.near;
+    }
+
+    removeNear(): void {
+        this.near = undefined;
+    }
+
+    setFar(far?: number): void {
+        this.far = far;
+    }
+
+    getFar(): number | undefined {
+        return this.far;
+    }
+
+    removeFar(): void {
+        this.far = undefined;
+    }
+
+    setViewHeight(viewHeight?: number): void {
+        this.viewHeight = viewHeight;
+    }
+
+    getViewHeight(): number | undefined {
+        return this.viewHeight;
+    }
+
+    removeViewHeight(): void {
+        this.viewHeight = undefined;
+    }
+
+    setFieldOfView(fieldOfView?: number): void {
+        this.fieldOfView = fieldOfView;
+    }
+
+    getFieldOfView(): number | undefined {
+        return this.fieldOfView;
+    }
+
+    removeFieldOfView(): void {
+        this.fieldOfView = undefined;
+    }
+
+    override toJSON(): IiifContentResource {
+        const out = this.buildBaseJson();
+
+        if (this.near !== undefined) {
+            out.near = this.near;
+        }
+
+        if (this.far !== undefined) {
+            out.far = this.far;
+        }
+
+        if (this.viewHeight !== undefined) {
+            out.viewHeight = this.viewHeight;
+        }
+
+        if (this.fieldOfView !== undefined) {
+            out.fieldOfView = this.fieldOfView;
+        }
+
+        return out;
+    }
+}
+
+export default Camera;
