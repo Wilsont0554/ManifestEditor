@@ -5,7 +5,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
-  base: "/manifest-editor/",
+  base: "/ManifestEditor",
   define: {
     global: "globalThis",
   },
