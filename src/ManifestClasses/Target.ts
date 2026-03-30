@@ -8,7 +8,7 @@ import type {
 class Target {
     id: string;
     type: string;
-    source: IiifResourceReference;
+    source: [IiifResourceReference];
     selector: [IiifPointSelector];
 
     constructor(
@@ -18,7 +18,7 @@ class Target {
     ) {
         this.id = id;
         this.type = "SpecificResource";
-        this.source = { id: sourceId, type: sourceType };
+        this.source = [{ id: sourceId, type: sourceType }];
         this.selector = [
             {
                 type: "PointSelector",
@@ -34,10 +34,10 @@ class Target {
     }
 
     setSource(id: string, type: IiifContainerType): void {
-        this.source = { id, type };
+        this.source = [{ id, type }];
     }
 
-    getSource(): IiifResourceReference {
+    getSource(): [IiifResourceReference] {
         return this.source;
     }
 

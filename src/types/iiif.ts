@@ -95,7 +95,7 @@ export interface IiifPointSelector {
 export interface IiifSpecificResource {
   id?: string;
   type: "SpecificResource";
-  source: IiifResourceReference;
+  source: IiifResourceReference[];
   selector: IiifPointSelector[];
 }
 
