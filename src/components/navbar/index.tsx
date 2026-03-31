@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
 
-const HOME_ROUTE = "/manifest-editor/home";
-const EDITOR_ROUTE = "/manifest-editor/editor";
+const HOME_ROUTE = "/ManifestEditor/manifest-editor/home";
+const EDITOR_ROUTE = "/ManifestEditor/manifest-editor/editor";
 
 function Navbar() {
   const linkActiveStyle = "bg-slate-900 text-white";

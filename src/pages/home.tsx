@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 
-const EDITOR_ROUTE = "/manifest-editor/editor";
+const EDITOR_ROUTE = "/ManifestEditor/manifest-editor/editor";
 
 function HomePage() {
   return (
