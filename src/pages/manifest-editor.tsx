@@ -338,11 +338,10 @@ function ManifestEditorPage() {
       type: "application/json",
     });
     setBlobTEST(URL.createObjectURL(temp));
-    console.log(URL.createObjectURL(temp));
-  }
+    console.log(blobTEST);
+  }  
 
   useEffect(() => {
-    createBlob();
     function handlePointerMove(event: MouseEvent): void {
       if (!resizeStateRef.current) {
         return;
@@ -451,9 +450,7 @@ function ManifestEditorPage() {
     : undefined;
 
   return (
-    
     <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-slate-100">
-            
       <ContentResourceModal
         isOpen={isContentResourceModalOpen}
         view={contentResourceModalView}
@@ -507,19 +504,25 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
+              
             </div>
           </div>
+          
         </div>
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+           
           <JsonEditor data={manifestPreview} />
+          
         </div>
-        <div>
-        {/*<voyager-explorer model={blobTEST} id="voyager" style={{position:"inherit"}}></voyager-explorer>*/}
-        <iframe name="Smithsonian Voyager" src={"https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document="+blobTEST} width="800" height="450" allow="xr; xr-spatial-tracking; fullscreen"></iframe>
-      </div>
+                  <button onClick={createBlob}>Preview</button>
+
+        <div style={{width: "500px", position: "relative", height: "500px"}}>
+        <voyager-explorer document={blobTEST} id="voyager" style={{width: "500px", height: "500px"}}></voyager-explorer>
+        </div>
       </div>
       
-      
+     
+
       {isInspectorOpen ? (
         <ManifestComponent
           width={inspectorWidth}
@@ -548,6 +551,7 @@ function ManifestEditorPage() {
           </div>
         </div>
       )}
+
 
     </section>
   );
