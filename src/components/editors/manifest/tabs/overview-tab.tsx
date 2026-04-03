@@ -61,13 +61,6 @@ const autoAdvanceOptions = [
   })),
 ];
 
-type TechnicalSectionId = "manifestOrdering" | "repeat" | "autoAdvance";
-
-interface OverviewBehaviorSummaryItem {
-  sectionId: TechnicalSectionId;
-  value: string;
-}
-
 interface OverviewMetadataSummaryItem {
   resourceIndex: number;
   resource: ContentResource;
@@ -110,7 +103,6 @@ function OverviewMetadataField({
 
 function OverviewTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
-  const behaviorSummaryItems: OverviewBehaviorSummaryItem[] = [];
   const metadataSummaryItems: OverviewMetadataSummaryItem[] = manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -213,109 +205,101 @@ function OverviewTab() {
               onChange={handleInputChange}
               onLanguageChange={handleLanguageChange}
             />
-            <InputWithLanguage
-              label="Summary"
-              languageCode={manifestObj.getSummaryLanguage()}
-              value={manifestObj.getSummaryValue()}
-              onChange={handleSummaryChange}
-              onLanguageChange={handleSummaryLanguageChange}
+            {manifestObj.getSummaryValue() && 
+              <InputWithLanguage
+                label="Summary"
+                languageCode={manifestObj.getSummaryLanguage()}
+                value={manifestObj.getSummaryValue()}
+                onChange={handleSummaryChange}
+                onLanguageChange={handleSummaryLanguageChange}
               rows={3}
               textareaClassName="min-h-28"
-            />
-            <ManifestInput
-              label="Rights"
-              id="overview-manifest-rights"
-              type="text"
-              value={manifestObj.getRights()}
-              onChange={handleRightsChange}
-            />
-            <ManifestInput
-              label="Nav Date"
-              id="overview-manifest-nav-date"
-              type="datetime-local"
-              value={manifestObj.getNavDate()}
-              onChange={handleNavDateChange}
-              appearance="outline"
-            />
+            /> }
+            {manifestObj.getRights() && 
+              <ManifestInput
+                label="Rights"
+                id="overview-manifest-rights"
+                type="text"
+                value={manifestObj.getRights()}
+                onChange={handleRightsChange}
+              /> }
+            {manifestObj.getNavDate() &&
+              <ManifestInput
+                label="Nav Date"
+                id="overview-manifest-nav-date"
+                type="datetime-local"
+                value={manifestObj.getNavDate()}
+                onChange={handleNavDateChange}
+                appearance="outline"
+              /> }
         </section>
+        {contentResourceMediaItems.length > 0 && 
+          <ManifestField label="Media" className="space-y-4">
+            <ContentResourceMediaList items={contentResourceMediaItems} />
+          </ManifestField> }
 
-        <section
-          className={`space-y-4`}
-        >
-          <p className="text-lg font-medium text-slate-950">Media</p>
-
-          <ContentResourceMediaList items={contentResourceMediaItems} />
-        </section>
-
-        <section className="space-y-4 border-t border-slate-200 pt-8">
-          <div className="space-y-1">
-            <p className="text-lg font-medium text-slate-950">Metadata</p>
+        {metadataSummaryItems.length > 0 && 
+          <ManifestField label="Metadata" className="space-y-4 border-t border-slate-200 pt-8">   
             <p className="text-sm leading-6 text-slate-500">
               Metadata changes from the Metadata tab are summarized here.
             </p>
-          </div>
+            <div className="space-y-4">
+              { metadataSummaryItems.map(({ resourceIndex, resource }) => (
+                <section
+                  key={`overview-metadata-resource-${resourceIndex}`}
+                  className="overflow-hidden rounded-md border border-slate-200"
+                >
+                  <div className="border-b border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[15px] font-semibold text-slate-950">
+                      Content Resource {resourceIndex + 1}
+                    </p>
+                    {resource.id ? (
+                      <p className="mt-1 text-sm text-slate-500">{resource.id}</p>
+                    ) : null}
+                  </div>
 
-          <div className="space-y-4">
-            {metadataSummaryItems.map(({ resourceIndex, resource }) => (
-              <section
-                key={`overview-metadata-resource-${resourceIndex}`}
-                className="overflow-hidden rounded-md border border-slate-200"
-              >
-                <div className="border-b border-slate-200 bg-white px-4 py-3">
-                  <p className="text-[15px] font-semibold text-slate-950">
-                    Content Resource {resourceIndex + 1}
-                  </p>
-                  {resource.id ? (
-                    <p className="mt-1 text-sm text-slate-500">{resource.id}</p>
-                  ) : null}
-                </div>
+                  <div className="divide-y divide-slate-200">
+                    {resource
+                      .getMetadata()
+                      .getAllEntries()
+                      .map((entry, entryIndex) => (
+                        <div
+                          key={`overview-metadata-entry-${resourceIndex}-${entryIndex}`}
+                          className="space-y-4 bg-white px-4 py-4"
+                        >
+                          <OverviewMetadataField
+                            label="Label"
+                            value={entry.getLabelText() || "Untitled metadata"}
+                            languageCode={entry.getLabelLanguage()}
+                          />
 
-                <div className="divide-y divide-slate-200">
-                  {resource
-                    .getMetadata()
-                    .getAllEntries()
-                    .map((entry, entryIndex) => (
-                      <div
-                        key={`overview-metadata-entry-${resourceIndex}-${entryIndex}`}
-                        className="space-y-4 bg-white px-4 py-4"
-                      >
-                        <OverviewMetadataField
-                          label="Label"
-                          value={entry.getLabelText() || "Untitled metadata"}
-                          languageCode={entry.getLabelLanguage()}
-                        />
-
-                        <OverviewMetadataField
-                          label="Value"
-                          value={entry.getValueText() || "No value"}
-                          multiline
-                        />
-                      </div>
-                    ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </section>
-        <ManifestField 
-          className={`space-y-6 "border-t border-slate-200 pt-8`}
-          label="Behaviors"
-        >
+                          <OverviewMetadataField
+                            label="Value"
+                            value={entry.getValueText() || "No value"}
+                            multiline
+                          />
+                        </div>
+                      ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </ManifestField> }
+        <section className={`space-y-6 "border-t border-slate-200 pt-8`}>
+          { manifestObj.getId() && 
             <ManifestInput
               label="Identifier"
               id="overview-manifest-identifier"
               type="text"
               value={manifestObj.getId()}
               onChange={handleIdentifierChange}
-            />
+            /> }
 
-            <section className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-lg font-medium text-slate-950">Cameras</p>
+            { editedCameraResourceItems.length > 0 && 
+              <ManifestField label="Camera" className="space-y-4">
                 <p className="text-sm leading-6 text-slate-500">
                   Camera configuration changes from the Technical tab appear here.
                 </p>
-              </div>
 
               <div className="space-y-4">
                 {editedCameraResourceItems.map(
@@ -350,59 +334,59 @@ function OverviewTab() {
                   ),
                 )}
               </div>
-            </section>
+            </ManifestField> }
 
-            <section className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-lg font-medium text-slate-950">Lights</p>
+            { editedLightResourceItems.length > 0 && 
+              <ManifestField label="Light" className="space-y-4"> 
                 <p className="text-sm leading-6 text-slate-500">
                   Light configuration changes from the Technical tab appear here.
                 </p>
-              </div>
+                <div className="space-y-4">
+                  { editedLightResourceItems.map(
+                    ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                      <section
+                        key={`overview-light-resource-${annotationIndex}`}
+                        className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                      >
+                        <div className="space-y-2">
+                          <button
+                            type="button"
+                            className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                          >
+                            Content Resource {resourceNumber}
+                          </button>
+                          <p className="text-sm text-slate-500">
+                            {getContentResourceDisplayTitle(
+                              annotation,
+                              resource,
+                              resourceNumber,
+                            )}
+                          </p>
+                        </div>
 
-              <div className="space-y-4">
-                {editedLightResourceItems.map(
-                  ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                    <section
-                      key={`overview-light-resource-${annotationIndex}`}
-                      className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
-                    >
-                      <div className="space-y-2">
-                        <button
-                          type="button"
-                          className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
-                        >
-                          Content Resource {resourceNumber}
-                        </button>
-                        <p className="text-sm text-slate-500">
-                          {getContentResourceDisplayTitle(
-                            annotation,
-                            resource,
-                            resourceNumber,
-                          )}
-                        </p>
-                      </div>
+                        <LightResourceTechnicalEditor
+                          annotation={annotation}
+                          resource={resource}
+                          idPrefix={`overview-light-${annotationIndex}`}
+                          onCommit={updateManifestObj}
+                        />
+                      </section>
+                    ),
+                  )}
+                </div>
+              </ManifestField> }
 
-                      <LightResourceTechnicalEditor
-                        annotation={annotation}
-                        resource={resource}
-                        idPrefix={`overview-light-${annotationIndex}`}
-                        onCommit={updateManifestObj}
-                      />
-                    </section>
-                  ),
-                )}
-              </div>
-            </section>
-            <ManifestField label="Viewing direction">
-              <TechnicalOptionGroup
-                options={viewingDirectionOptions}
-                value={manifestObj.getViewingDirection()}
-                onChange={handleViewingDirectionChange}
-                allowDeselect
-              />
-            </ManifestField>
-            <ManifestField label= "Behaviors">
+            { manifestObj.getViewingDirection() && 
+              <ManifestField label="Viewing direction">
+                <TechnicalOptionGroup
+                  options={viewingDirectionOptions}
+                  value={manifestObj.getViewingDirection()}
+                  onChange={handleViewingDirectionChange}
+                  allowDeselect
+                />
+              </ManifestField> }
+            {manifestObj.behavior && <>
+              <ManifestField label="Behaviors">
                 <DropDownField label="Manifest ordering">
                     <div className="pb-4">
                       <TechnicalOptionGroup
@@ -431,19 +415,17 @@ function OverviewTab() {
                         orientation="horizontal"
                       />
                     </div>
-                </DropDownField>
+                </DropDownField> 
             </ManifestField>
-            <section className="space-y-4">
-              <p className="text-lg font-medium text-slate-950">Behaviors</p>
-              {behaviorSummaryItems.length > 0 ? (
+            <ManifestField label="Behaviors" className="space-y-4">
                 <div className="overflow-hidden border-t border-slate-200">
-                  {behaviorSummaryItems.map((item) => (
+                  {manifestObj.behavior.map((item) => (
                     <div
-                      key={`${item.sectionId}-${item.value}`}
+                      key={item}
                       className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-4"
                     >
                       <span className="text-base text-slate-900">
-                        {item.value}
+                        {item}
                       </span>
                       <button
                         type="button"
@@ -455,16 +437,15 @@ function OverviewTab() {
                     </div>
                   ))}
                 </div>
-              ) : null}
-
+          
               <ManifestCustomBehaviorEditor
                 behaviors={manifestObj.getCustomBehaviors()}
                 reservedBehaviors={builtInManifestBehaviors}
                 onAddBehavior={handleAddCustomBehavior}
                 onRemoveBehavior={handleRemoveCustomBehavior}
               />
-            </section>
-        </ManifestField>
+            </ManifestField> </>} 
+        </section> 
     </ManifestTabBody>
   );
 }
