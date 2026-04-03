@@ -92,6 +92,14 @@ export interface IiifPointSelector {
   instant?: number;
 }
 
+export interface IiifTransForm {
+  id?: string;
+  type: "RotateTransform" | "ScaleTransform" | "TranslateTransform";
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
 export interface IiifSpecificResource {
   id?: string;
   type: "SpecificResource";
