@@ -127,6 +127,9 @@ export interface IiifContentResource {
   far?: number;
   viewHeight?: number;
   fieldOfView?: number;
+  x?: number;
+  y?: number;
+  z?: number;
 }
 
 export interface IiifAnnotation {
