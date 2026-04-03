@@ -99,7 +99,7 @@ function ManifestEditorPage() {
 
   function onContainerTypeChange(newType: ContainerType): void {
     manifestObj.getContainerObj().setType(newType);
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function handleOpenContentResourceModal(): void {
@@ -131,7 +131,7 @@ function ManifestEditorPage() {
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
     setContentResourceModalView("editor");
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function handleCreateTextAnnotation(): void {
@@ -144,7 +144,7 @@ function ManifestEditorPage() {
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
     setContentResourceModalView("editor");
     setIsContentResourceModalOpen(true);
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function handleDownloadManifest(): void {
@@ -205,7 +205,7 @@ function ManifestEditorPage() {
 
               <Button
                 type="button"
-                className="!bg-white !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
+                className="bg-white! text-slate-900! ring-1 ring-slate-300 hover:bg-slate-100!"
                 onClick={handleCreateTextAnnotation}
               >
                 Add Text Annotation
