@@ -19,7 +19,7 @@ import {
   type ManifestRepeatBehavior,
   type ManifestViewingDirection,
 } from "@/types/iiif";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
 import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
@@ -285,7 +285,7 @@ function OverviewTab() {
               ))}
             </div>
           </ManifestField> }
-        <section className={`space-y-6 "border-t border-slate-200 pt-8`}>
+        <section className="space-y-6 border-t border-slate-200 pt-8">
           { manifestObj.getId() && 
             <ManifestInput
               label="Identifier"
@@ -422,18 +422,11 @@ function OverviewTab() {
                   {manifestObj.behavior.map((item) => (
                     <div
                       key={item}
-                      className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-4"
+                      className="border-b border-slate-200 bg-slate-50 px-4 py-4"
                     >
                       <span className="text-base text-slate-900">
                         {item}
                       </span>
-                      <button
-                        type="button"
-                        className="text-base font-medium text-slate-500 transition hover:text-slate-700"
-                        onClick={() => {}}
-                      >
-                        edit -&gt;
-                      </button>
                     </div>
                   ))}
                 </div>

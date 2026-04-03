@@ -15,7 +15,7 @@ import {
   type ManifestRepeatBehavior,
   type ManifestViewingDirection,
 } from "@/types/iiif";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
 import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
@@ -56,19 +56,10 @@ const autoAdvanceOptions = [
   })),
 ];
 
-type TechnicalSectionId = "manifestOrdering" | "repeat" | "autoAdvance";
-
 function TechnicalTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const cameraResourceItems = getCameraContentResourceItems(manifestObj);
   const lightResourceItems = getLightContentResourceItems(manifestObj);
-  const [openSections, setOpenSections] = useState<
-    Record<TechnicalSectionId, boolean>
-  >({
-    manifestOrdering: true,
-    repeat: true,
-    autoAdvance: true,
-  });
   const customBehaviors = manifestObj.getCustomBehaviors();
 
   function handleIdentifierChange(newValue: string): void {
