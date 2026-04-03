@@ -21,7 +21,7 @@ const PropertySection: React.FC<SectionProps> = ({
       
       {/* Box Area */}
       <div className={`
-        flex items-center justify-center rounded-md min-h-[80px] mb-2 border text-sm
+        flex items-center justify-center rounded-md min-h-20 mb-2 border text-sm
         ${variant === 'filled' ? 'bg-[#eeeeee] border-transparent' : 'bg-white border-gray-200'}
       `}>
         <span className="text-gray-400 font-medium">

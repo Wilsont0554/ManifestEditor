@@ -5,7 +5,7 @@ import type {
     IiifResourceReference,
 } from "@/types/iiif";
 
-interface LightIntensity extends IiifQuantity {}
+type LightIntensity = IiifQuantity;
 
 class Light extends ContentResource {
     color?: string;
