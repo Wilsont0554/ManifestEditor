@@ -244,7 +244,7 @@ export function hasLightTechnicalChanges(
     (target.getX() !== 0 || target.getY() !== 0 || target.getZ() !== 0);
 
   return (
-    resource.getType() !== "AmbientLight" ||
+    resource.getType() !== undefined ||
     resource.getColor() !== undefined ||
     resource.getIntensity() !== undefined ||
     resource.getLookAtId().trim().length > 0 ||
