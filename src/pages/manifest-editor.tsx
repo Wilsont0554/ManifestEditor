@@ -205,7 +205,6 @@ function ManifestEditorPage() {
 
               <Button
                 type="button"
-                className="!bg-white! text-slate-900! ring-1 ring-slate-300 hover:bg-slate-100!"
                 onClick={handleCreateTextAnnotation}
               >
                 Add Text Annotation
