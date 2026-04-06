@@ -50,6 +50,7 @@ function ManifestEditorPage() {
   const [gistUrl, setGistUrl] = useState<string | null>(null);
   const [gistRawUrl, setGistRawUrl] = useState<string | null>(null);
   const [isCreatingGist, setIsCreatingGist] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [showTokenWarning, setShowTokenWarning] = useState(
     githubToken.length === 0
   );
@@ -284,74 +285,14 @@ function ManifestEditorPage() {
                 Download JSON
               </button>
 
-              {/* GitHub Gist Section */}
-              <div className="flex flex-wrap items-center gap-2 border-l border-slate-300 pl-3">
-                <input
-                  type="password"
-                  placeholder="GitHub token"
-                  value={githubToken}
-                  onChange={(e) => {
-                    setGithubToken(e.target.value);
-                    localStorage.setItem("githubToken", e.target.value);
-                    setShowTokenWarning(false);
-                  }}
-                  className="rounded-md border border-slate-300 px-2 py-1 text-xs outline-none focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
-                  style={{ width: "150px" }}
-                  title="Your GitHub personal access token (not saved permanently)"
-                />
-                <a
-                  href="https://github.com/settings/tokens"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-600 underline hover:text-blue-800"
-                  title="Open GitHub token settings page"
-                >
-                  Get Token
-                </a>
-                <button
-                  className="cursor-pointer rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  type="button"
-                  onClick={handleCreateGist}
-                  disabled={!githubToken || isCreatingGist}
-                  title="Create and share manifest as a GitHub gist"
-                >
-                  {isCreatingGist ? "Creating..." : "Create Gist"}
-                </button>
-                {githubToken && (
-                  <button
-                    className="text-xs text-slate-500 underline hover:text-slate-700"
-                    type="button"
-                    onClick={handleClearToken}
-                    title="Clear stored token from browser"
-                  >
-                    Clear
-                  </button>
-                )}
-                {gistUrl && (
-                  <>
-                    <a
-                      href={gistUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-green-600 underline hover:text-green-800 font-medium"
-                      title="View your created gist on GitHub"
-                    >
-                      ✓ View Gist
-                    </a>
-                    {gistRawUrl && (
-                      <a
-                        href={gistRawUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-slate-600 underline hover:text-slate-800"
-                        title="View raw manifest JSON"
-                      >
-                        RAW
-                      </a>
-                    )}
-                  </>
-                )}
-              </div>
+              <button
+                className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                type="button"
+                onClick={() => setIsExportModalOpen(true)}
+                title="Export manifest to GitHub Gist"
+              >
+                Export
+              </button>
 
               <label htmlFor="container-type" className="sr-only">
                 Container Type
@@ -388,6 +329,120 @@ function ManifestEditorPage() {
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <JsonEditor data={manifestPreview} />
         </div>
+
+        {/* Export Modal */}
+        {isExportModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-sm w-full mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Export to GitHub Gist
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsExportModalOpen(false)}
+                  className="text-slate-500 hover:text-slate-700 text-2xl leading-none"
+                  title="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="export-token" className="block text-xs font-medium text-slate-700 mb-2">
+                    GitHub Token
+                  </label>
+                  <input
+                    id="export-token"
+                    type="password"
+                    placeholder="Enter your GitHub token"
+                    value={githubToken}
+                    onChange={(e) => {
+                      setGithubToken(e.target.value);
+                      localStorage.setItem("githubToken", e.target.value);
+                      setShowTokenWarning(false);
+                    }}
+                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                    title="Your GitHub personal access token (not saved permanently)"
+                  />
+                  <a
+                    href="https://github.com/settings/tokens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 underline hover:text-blue-800 mt-1 inline-block"
+                    title="Open GitHub token settings page"
+                  >
+                    Get Token
+                  </a>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className="flex-1 cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="button"
+                    onClick={handleCreateGist}
+                    disabled={!githubToken || isCreatingGist}
+                    title="Create and share manifest as a GitHub gist"
+                  >
+                    {isCreatingGist ? "Creating..." : "Create Gist"}
+                  </button>
+                  {githubToken && (
+                    <button
+                      className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                      type="button"
+                      onClick={handleClearToken}
+                      title="Clear stored token from browser"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {gistRawUrl && (
+                  <div className="border-t border-slate-200 pt-4 space-y-3">
+                    <div>
+                      <a
+                        href={gistUrl!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full block text-center rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        title="View gist on GitHub"
+                      >
+                        View Gist
+                      </a>
+                      <p className="text-xs text-slate-500 mt-1 break-all">{gistUrl}</p>
+                    </div>
+                    <div>
+                      <a
+                        href={gistRawUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full block text-center rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        title="View raw manifest JSON"
+                      >
+                        View RAW
+                      </a>
+                      <p className="text-xs text-slate-500 mt-1 break-all">{gistRawUrl}</p>
+                    </div>
+                    <div>
+                      <a
+                        href={`https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document=${encodeURIComponent(gistRawUrl)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full block text-center rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        title="View manifest in Voyager"
+                      >
+                        View in Voyager
+                      </a>
+                      <p className="text-xs text-slate-500 mt-1 break-all">{`https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document=${encodeURIComponent(gistRawUrl)}`}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {isInspectorOpen ? (
