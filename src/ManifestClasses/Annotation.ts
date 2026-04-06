@@ -57,6 +57,27 @@ class Annotation {
         this.target = { id, type };
     }
 
+    setAllValues(newAnnotation: Annotation): void{
+        this.id = newAnnotation.id;
+        this.type = newAnnotation.type;
+        this.motivation = newAnnotation.motivation;
+        
+        const tempTarget = new Target;
+
+        tempTarget.setSource(newAnnotation.target.source[0].id, newAnnotation.target.source[0].type);
+        tempTarget.setSelectorType(newAnnotation.target.selector[0].type);
+        tempTarget.setX(newAnnotation.target.selector[0].x);
+        tempTarget.setY(newAnnotation.target.selector[0].y);
+        tempTarget.setZ(newAnnotation.target.selector[0].z);
+
+        this.setTarget(tempTarget);
+
+        const labelCode = Object.keys(newAnnotation.label!);
+        this.setLabel(0, (newAnnotation.label![labelCode][0] as unknown as string));
+        this.label!.setLanguage(labelCode[0]);
+    }
+
+
     ensureSpatialTarget(
         targetId: string = `${this.id}/target`,
         sourceId: string = "https://example.org/iiif/manifest/1/scene/1",

@@ -55,3 +55,8 @@
 .manifest-tab-panel-scroll {
   scrollbar-gutter: stable;
 }
+
+.uploadManifest{
+  padding: 1vh;
+  border-radius: 1vh;
+}

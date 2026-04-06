@@ -15,24 +15,26 @@ export function downloadJsonFile(data: unknown, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function createManifestObjectFromUpload(manifest: ManifestObject): ManifestObject{
-  //const newManifest = new ManifestObject (manifest.type);
-  const newManifest = Object.assign(new ManifestObject(manifest.type), manifest);
-  const testManifest = new ManifestObject(newManifest.type);
+export function createManifestObjectFromUpload(uploadedManifest: ManifestObject): ManifestObject{
+  const newManifest = new ManifestObject(uploadedManifest.type);
+  newManifest.setAllValues(uploadedManifest);
 
-  for (let i = 0; i < newManifest.items[0].items[0].items.length; i++){
-    //console.log(newManifest.items[0].items[0].items[i]);
-    const nextAnnotationIndex = testManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
-    
-    console.log(newManifest.items[0].items[0].items[i].body!);
+  //for each annotation
+  for (let i = 0; i < uploadedManifest.items[0].items[0].items.length; i++){
+    try {
+      const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
+      const tempContentResource = new ContentResource("", "", "");
+      const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
 
-    const temp = new ContentResource("", "", "");
-    temp.setAllValues(newManifest.items[0].items[0].items[i].body!)
-  
-    const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
-    tempAnnotation.setContentResource(temp)
-    testManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
+      tempContentResource.setAllValues(uploadedManifest.items[0].items[0].items[i].body!);
+      tempAnnotation.setContentResource(tempContentResource);
+
+      newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
+      newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i])
+    } catch{
+      return new ManifestObject("");
+    }
   }
 
-  return testManifest;
+  return newManifest;
 }

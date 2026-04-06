@@ -220,13 +220,10 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
-              <Button
-                type="button"
-                className="!bg-white !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
-              >
-                Upload Manifest
-              </Button>
-              <input type="file" onChange={handleUploadManifest}/>
+              Upload Manifest:
+              <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
+                <input type="file" accept="json" onChange={handleUploadManifest}/>
+              </div>
             </div>
           </div>
         </div>
