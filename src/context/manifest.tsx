@@ -3,10 +3,14 @@ import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
 
 export const ManifestObjProvider = ({ children }: { children: React.ReactNode }) => {
-  const [manifestObj, setManifestObj] = useState(() => new ManifestObject("Scene"));
+  const [manifestObj, setManifestState] = useState(() => new ManifestObject("Scene"));
 
   const updateManifestObj = () => {
-    setManifestObj(prev => prev.clone());
+    setManifestState(prev => prev.clone());
+  };
+
+  const setManifestObj = (nextManifestObj: ManifestObject) => {
+    setManifestState(nextManifestObj);
   };
 
   // const handleManifestFieldChange = <T,>(setter: (value: T) => void) => {
@@ -18,7 +22,7 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
 
   return (
     <manifestObjContext.Provider
-      value={{ manifestObj, updateManifestObj}}
+      value={{ manifestObj, updateManifestObj, setManifestObj }}
     >
       {children}
     </manifestObjContext.Provider>
