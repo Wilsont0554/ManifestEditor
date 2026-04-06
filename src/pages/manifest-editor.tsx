@@ -44,6 +44,15 @@ function ManifestEditorPage() {
     useState<ManifestTabId>("overview");
   const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
     useState(0);
+  const [githubToken, setGithubToken] = useState<string>(
+    localStorage.getItem("githubToken") || ""
+  );
+  const [gistUrl, setGistUrl] = useState<string | null>(null);
+  const [gistRawUrl, setGistRawUrl] = useState<string | null>(null);
+  const [isCreatingGist, setIsCreatingGist] = useState(false);
+  const [showTokenWarning, setShowTokenWarning] = useState(
+    githubToken.length === 0
+  );
   const resizeStateRef = useRef<ResizeState | null>(null);
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
@@ -151,6 +160,64 @@ function ManifestEditorPage() {
     downloadJsonFile(manifestObj, "manifest");
   }
 
+  async function handleCreateGist(): Promise<void> {
+    if (!githubToken) {
+      alert("Please enter your GitHub token to create a gist.");
+      setShowTokenWarning(true);
+      return;
+    }
+
+    setIsCreatingGist(true);
+    setGistUrl(null);
+
+    try {
+      const response = await fetch("https://api.github.com/gists", {
+        method: "POST",
+        headers: {
+          Authorization: `token ${githubToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description: "IIIF Manifest exported from Manifest Editor",
+          public: true,
+          files: {
+            "manifest.json": {
+              content: JSON.stringify(manifestObj, null, 2),
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || `GitHub API error: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      setGistUrl(data.html_url);
+      setGistRawUrl(data.files["manifest.json"].raw_url);
+    } catch (error) {
+      console.error("Failed to create gist:", error);
+      alert(
+        error instanceof Error
+          ? `Failed to create gist: ${error.message}`
+          : "Failed to create gist. Check your token and try again."
+      );
+    } finally {
+      setIsCreatingGist(false);
+    }
+  }
+
+  function handleClearToken(): void {
+    setGithubToken("");
+    localStorage.removeItem("githubToken");
+    setGistUrl(null);
+    setGistRawUrl(null);
+    setShowTokenWarning(true);
+  }
+
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;
@@ -172,6 +239,41 @@ function ManifestEditorPage() {
         }}
       >
         <div className="mr-auto max-w-245 space-y-4 pb-6">
+          {/* GitHub Token Security Warning */}
+          {showTokenWarning && githubToken.length === 0 && (
+            <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-yellow-900">
+                    ⚠️ GitHub Token Required for Gists
+                  </p>
+                  <p className="mt-1 text-xs text-yellow-800">
+                    To create a gist, you need a GitHub personal access token with
+                    "gist" scope. This token is stored temporarily in your browser
+                    and never sent anywhere except to GitHub's API.
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <a
+                      href="https://github.com/settings/tokens"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-yellow-900 underline hover:text-yellow-700"
+                    >
+                      Create Token on GitHub
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setShowTokenWarning(false)}
+                      className="text-xs text-yellow-700 hover:text-yellow-900"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -181,6 +283,76 @@ function ManifestEditorPage() {
               >
                 Download JSON
               </button>
+
+              {/* GitHub Gist Section */}
+              <div className="flex flex-wrap items-center gap-2 border-l border-slate-300 pl-3">
+                <input
+                  type="password"
+                  placeholder="GitHub token"
+                  value={githubToken}
+                  onChange={(e) => {
+                    setGithubToken(e.target.value);
+                    localStorage.setItem("githubToken", e.target.value);
+                    setShowTokenWarning(false);
+                  }}
+                  className="rounded-md border border-slate-300 px-2 py-1 text-xs outline-none focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                  style={{ width: "150px" }}
+                  title="Your GitHub personal access token (not saved permanently)"
+                />
+                <a
+                  href="https://github.com/settings/tokens"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 underline hover:text-blue-800"
+                  title="Open GitHub token settings page"
+                >
+                  Get Token
+                </a>
+                <button
+                  className="cursor-pointer rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  onClick={handleCreateGist}
+                  disabled={!githubToken || isCreatingGist}
+                  title="Create and share manifest as a GitHub gist"
+                >
+                  {isCreatingGist ? "Creating..." : "Create Gist"}
+                </button>
+                {githubToken && (
+                  <button
+                    className="text-xs text-slate-500 underline hover:text-slate-700"
+                    type="button"
+                    onClick={handleClearToken}
+                    title="Clear stored token from browser"
+                  >
+                    Clear
+                  </button>
+                )}
+                {gistUrl && (
+                  <>
+                    <a
+                      href={gistUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-green-600 underline hover:text-green-800 font-medium"
+                      title="View your created gist on GitHub"
+                    >
+                      ✓ View Gist
+                    </a>
+                    {gistRawUrl && (
+                      <a
+                        href={gistRawUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-slate-600 underline hover:text-slate-800"
+                        title="View raw manifest JSON"
+                      >
+                        RAW
+                      </a>
+                    )}
+                  </>
+                )}
+              </div>
+
               <label htmlFor="container-type" className="sr-only">
                 Container Type
               </label>
