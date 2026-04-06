@@ -69,12 +69,12 @@ class ContentResource {
         this.width = newContentResource.width;
         this.duration = newContentResource.duration;
         
-        console.log(newContentResource.label);
-        console.log(newContentResource.label);
-        
-        this.setLabel(0, (newContentResource.label.en[0] as unknown as string));
-        this.setSummary("Test summary")
-        this.metadata.addEntry("Label", "Value", "en");
+        const labelCode = Object.keys(newContentResource.label);
+        this.setLabel(0, (newContentResource.label[labelCode][0] as unknown as string));
+        this.label.setLanguage(labelCode[0]);
+
+        const metadataCode = Object.keys(newContentResource.metadata[0].label);
+        this.metadata.addEntry(newContentResource.metadata[0].label[metadataCode][0], newContentResource.metadata[0].value[metadataCode][0],  metadataCode[0])
     }
 
     /*---------------------------------------------------
