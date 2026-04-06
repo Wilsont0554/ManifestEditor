@@ -55,3 +55,25 @@
 .manifest-tab-panel-scroll {
   scrollbar-gutter: stable;
 }
+
+.mainWindow{
+  display: flex;
+  gap: 5vw;
+}
+
+.jsonWindow{
+  flex-shrink: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.round{
+  border-radius: 0.75vh;
+}
+
+.voyagerWindow{
+  position: relative;
+  width: 100vw;
+  height: 75vh;
+}

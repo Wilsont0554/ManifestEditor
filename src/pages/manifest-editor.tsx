@@ -39,6 +39,8 @@ function ManifestEditorPage() {
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(true);
+
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
@@ -59,299 +61,14 @@ function ManifestEditorPage() {
   const resizeStateRef = useRef<ResizeState | null>(null);
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
-  const [blobTEST, setBlobTEST] = useState("");
 
   useEffect(() => {
     const scriptTag = document.createElement('script');
-    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js" //"https://3d-api.si.edu/resources/js/voyager-explorer.min.js";
+    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js"
     scriptTag.addEventListener('load', () => setIsInspectorOpen(!isInspectorOpen));
     document.body.appendChild(scriptTag);
   }, []);
-  
- function createBlob(){
-    const temp3dmanifest = {
-  "@context": "http://iiif.io/api/presentation/4/context.json",
-  "id": "https://example.org/iiif/manifest/1",
-  "type": "Manifest",
-  "label": {
-    "en": [
-      "Blank Manifest"
-    ]
-  },
-  "items": [
-    {
-      "id": "https://example.org/iiif/manifest/1/scene/1",
-      "type": "Scene",
-      "items": [
-        {
-          "id": "https://example.org/iiif/manifest/1/scene/1/page/1",
-          "type": "AnnotationPage",
-          "items": [
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/1",
-              "type": "Annotation",
-              "motivation": [
-                "painting"
-              ],
-              "body": {
-                "id": "https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb",
-                "type": "Model",
-                "format": "model/gltf-binary",
-                "metadata": [
-                  {
-                    "label": {
-                      "en": [
-                        "Whale Skeleton Part"
-                      ]
-                    },
-                    "value": {
-                      "en": [
-                        "Cranium"
-                      ]
-                    }
-                  }
-                ]
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/1/target",
-                "type": "SpecificResource",
-                "source": [
-                  {
-                    "id": "https://example.org/iiif/manifest/1/scene/1",
-                    "type": "Scene"
-                  }
-                ],
-                "selector": [
-                  {
-                    "type": "PointSelector",
-                    "x": 0,
-                    "y": 0.1,
-                    "z": 0
-                  }
-                ]
-              }
-            },
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/2",
-              "type": "Annotation",
-              "motivation": [
-                "painting"
-              ],
-              "body": {
-                "id": "https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb",
-                "type": "Model",
-                "format": "model/gltf-binary",
-                "metadata": [
-                  {
-                    "label": {
-                      "en": [
-                        "Whale Skeleton Part"
-                      ]
-                    },
-                    "value": {
-                      "en": [
-                        "Mandible"
-                      ]
-                    }
-                  }
-                ]
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1",
-                "type": "Scene"
-              }
-            },
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/3",
-              "type": "Annotation",
-              "motivation": [
-                "painting"
-              ],
-              "body": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/lights/1",
-                "type": "AmbientLight",
-                "color": "#1445c7",
-                "intensity": {
-                  "type": "Value",
-                  "value": 0.5,
-                  "unit": "relative"
-                }
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/3/target",
-                "type": "SpecificResource",
-                "source": [
-                  {
-                    "id": "https://example.org/iiif/manifest/1/scene/1",
-                    "type": "Scene"
-                  }
-                ],
-                "selector": [
-                  {
-                    "type": "PointSelector",
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
-                  }
-                ]
-              }
-            },
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/4",
-              "type": "Annotation",
-              "motivation": [
-                "painting"
-              ],
-              "body": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/lights/2",
-                "type": "SpotLight",
-                "color": "#fefbe2",
-                "intensity": {
-                  "type": "Value",
-                  "value": 0.8,
-                  "unit": "relative"
-                },
-                "angle": 45
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/4/target",
-                "type": "SpecificResource",
-                "source": [
-                  {
-                    "id": "https://example.org/iiif/manifest/1/scene/1",
-                    "type": "Scene"
-                  }
-                ],
-                "selector": [
-                  {
-                    "type": "PointSelector",
-                    "x": -0.2,
-                    "y": 3,
-                    "z": 1
-                  }
-                ]
-              }
-            },
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/5",
-              "type": "Annotation",
-              "motivation": [
-                "painting"
-              ],
-              "body": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/cameras/1",
-                "type": "PerspectiveCamera",
-                "near": 0.1,
-                "far": 100,
-                "fieldOfView": 55
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/5/target",
-                "type": "SpecificResource",
-                "source": [
-                  {
-                    "id": "https://example.org/iiif/manifest/1/scene/1",
-                    "type": "Scene"
-                  }
-                ],
-                "selector": [
-                  {
-                    "type": "PointSelector",
-                    "x": -0.5,
-                    "y": 0.5,
-                    "z": 2
-                  }
-                ]
-              }
-            },
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/6",
-              "type": "Annotation",
-              "motivation": [
-                "commenting"
-              ],
-              "body": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/6/body",
-                "type": "TextualBody",
-                "value": "Cranium",
-                "format": "text/plain",
-                "language": "en",
-                "purpose": "commenting"
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/6/position",
-                "type": "SpecificResource",
-                "source": [
-                  {
-                    "id": "https://example.org/iiif/manifest/1/scene/1",
-                    "type": "Scene"
-                  }
-                ],
-                "selector": [
-                  {
-                    "type": "PointSelector",
-                    "x": 0,
-                    "y": 0.1,
-                    "z": 0
-                  }
-                ]
-              },
-              "label": {
-                "en": [
-                  "Cranium"
-                ]
-              }
-            },
-            {
-              "id": "https://example.org/iiif/manifest/1/scene/1/anno/7",
-              "type": "Annotation",
-              "motivation": [
-                "commenting"
-              ],
-              "body": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/7/body",
-                "type": "TextualBody",
-                "value": "Mandible",
-                "format": "text/plain",
-                "language": "en",
-                "purpose": "commenting"
-              },
-              "target": {
-                "id": "https://example.org/iiif/manifest/1/scene/1/anno/7/position",
-                "type": "SpecificResource",
-                "source": [
-                  {
-                    "id": "https://example.org/iiif/manifest/1/scene/1",
-                    "type": "Scene"
-                  }
-                ],
-                "selector": [
-                  {
-                    "type": "PointSelector",
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
-                  }
-                ]
-              },
-              "label": {
-                "en": [
-                  "Mandible"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    }
-  ]
-    }
-    const temp = new Blob([JSON.stringify(temp3dmanifest, null, 2)], {
-      type: "application/json",
-    });
-    setBlobTEST(URL.createObjectURL(temp));
-    console.log(blobTEST);
-  }  
+   
 
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
@@ -705,22 +422,31 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
+
+              <Button 
+                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
+                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
+              >
+                JSON Preview
+              </Button>
               
             </div>
           </div>
           
         </div>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
            
-          <JsonEditor data={manifestPreview} />
-          
-        </div>
-                  <button onClick={createBlob}>Preview</button>
+          <div className="voyagerWindow">
+            <voyager-explorer document={gistRawUrl} id="voyager" style={{width: "500px", height: "500px"}}></voyager-explorer>
+          </div>
 
-        <div style={{width: "500px", position: "relative", height: "500px"}}>
-        <voyager-explorer document={blobTEST} id="voyager" style={{width: "500px", height: "500px"}}></voyager-explorer>
+          <div className="jsonWindow">
+              {isJSONWindowOpen ? (
+                <JsonEditor data={manifestPreview} />
+              ) : (null)}
+          </div>
         </div>
-
+        
         {/* Export Modal */}
         {isExportModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -851,8 +577,6 @@ function ManifestEditorPage() {
         )}
       </div>
       
-     
-
       {isInspectorOpen ? (
         <ManifestComponent
           width={inspectorWidth}
