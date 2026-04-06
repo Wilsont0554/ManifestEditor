@@ -17,6 +17,7 @@ import {
 } from "@/types/iiif";
 import { useContext } from "react";
 import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
+import CollapsibleResourceCard from "../shared/collapsible-resource-card";
 import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
 import ManifestInput from "../shared/manifest-input";
@@ -130,33 +131,23 @@ function TechnicalTab() {
           <div className="space-y-4">
             {cameraResourceItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                <section
+                <CollapsibleResourceCard
                   key={`technical-camera-resource-${annotationIndex}`}
-                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                  badgeLabel={`Content Resource ${resourceNumber}`}
+                  description={getContentResourceDisplayTitle(
+                    annotation,
+                    resource,
+                    resourceNumber,
+                  )}
+                  collapsible
                 >
-                  <div className="space-y-2">
-                    <button
-                      type="button"
-                      className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
-                    >
-                      Content Resource {resourceNumber}
-                    </button>
-                    <p className="text-sm text-slate-500">
-                      {getContentResourceDisplayTitle(
-                        annotation,
-                        resource,
-                        resourceNumber,
-                      )}
-                    </p>
-                  </div>
-
                   <CameraResourceTechnicalEditor
                     annotation={annotation}
                     resource={resource}
                     idPrefix={`technical-camera-${annotationIndex}`}
                     onCommit={updateManifestObj}
                   />
-                </section>
+                </CollapsibleResourceCard>
               ),
             )}
           </div>
@@ -176,33 +167,23 @@ function TechnicalTab() {
           <div className="space-y-4">
             {lightResourceItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                <section
+                <CollapsibleResourceCard
                   key={`technical-light-resource-${annotationIndex}`}
-                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                  badgeLabel={`Content Resource ${resourceNumber}`}
+                  description={getContentResourceDisplayTitle(
+                    annotation,
+                    resource,
+                    resourceNumber,
+                  )}
+                  collapsible
                 >
-                  <div className="space-y-2">
-                    <button
-                      type="button"
-                      className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
-                    >
-                      Content Resource {resourceNumber}
-                    </button>
-                    <p className="text-sm text-slate-500">
-                      {getContentResourceDisplayTitle(
-                        annotation,
-                        resource,
-                        resourceNumber,
-                      )}
-                    </p>
-                  </div>
-
                   <LightResourceTechnicalEditor
                     annotation={annotation}
                     resource={resource}
                     idPrefix={`technical-light-${annotationIndex}`}
                     onCommit={updateManifestObj}
                   />
-                </section>
+                </CollapsibleResourceCard>
               ),
             )}
           </div>
