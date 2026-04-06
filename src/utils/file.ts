@@ -20,28 +20,19 @@ export function createManifestObjectFromUpload(manifest: ManifestObject): Manife
   const newManifest = Object.assign(new ManifestObject(manifest.type), manifest);
   const testManifest = new ManifestObject(newManifest.type);
 
-  /*
-  for (let i = 0; i < newManifest.items.length; i++){
-    //newManifest.items[i] = Object.assign(new Container(newManifest.items[i].id, newManifest.items[i].type))
-  }
-  
-  for (let i = 0; i < newManifest.getContainerObj().items.length; i++){
-    //newManifest.getContainerObj().items[i] = Object.assign(new AnnotationPage())
-  }*/
-
   for (let i = 0; i < newManifest.items[0].items[0].items.length; i++){
     //console.log(newManifest.items[0].items[0].items[i]);
     const nextAnnotationIndex = testManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
     
-    const temp = Object.assign(new ContentResource(newManifest.items[0].items[0].items[i].body!.id, newManifest.items[0].items[0].items[i].body!.type, newManifest.items[0].items[0].items[i].body!.format), newManifest.items[0].items[0].items[i].body);
+    console.log(newManifest.items[0].items[0].items[i].body!);
 
+    const temp = new ContentResource("", "", "");
+    temp.setAllValues(newManifest.items[0].items[0].items[i].body!)
+  
     const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
     tempAnnotation.setContentResource(temp)
     testManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
   }
 
-
-
   return testManifest;
-  
 }

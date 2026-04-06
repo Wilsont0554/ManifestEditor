@@ -13,8 +13,8 @@ function normalizeLanguageCode(languageCode: string): string {
 }
 
 class Label {
-    private languageClasses: Record<string, LanguageFactory>;
-    private currentLanguage?: string;
+    public languageClasses: Record<string, LanguageFactory>;
+    public currentLanguage?: string;
     public language: {
         changeValue(value: string): void;
     };

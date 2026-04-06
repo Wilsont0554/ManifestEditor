@@ -61,6 +61,22 @@ class ContentResource {
         this.summary.changeLabelTest(summary);
     }
 
+    setAllValues(newContentResource: ContentResource): void{
+        this.id = newContentResource.id;
+        this.type = newContentResource.type;
+        this.format = newContentResource.format;
+        this.height = newContentResource.height;
+        this.width = newContentResource.width;
+        this.duration = newContentResource.duration;
+        
+        console.log(newContentResource.label);
+        console.log(newContentResource.label);
+        
+        this.setLabel(0, (newContentResource.label.en[0] as unknown as string));
+        this.setSummary("Test summary")
+        this.metadata.addEntry("Label", "Value", "en");
+    }
+
     /*---------------------------------------------------
                         GETTERS
     ---------------------------------------------------*/
