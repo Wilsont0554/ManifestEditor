@@ -127,19 +127,31 @@ class ManifestObject {
     }
 
     setAllValues(newManifest: ManifestObject): void{
-        this.id = newManifest.id;
-        this.type = newManifest.type;
-        this.rights = newManifest.rights;
-        this.navDate = newManifest.navDate;
-        this.behavior = newManifest.behavior;
+        try{
+            this.id = newManifest.id;
+            this.type = newManifest.type;
+            this.rights = newManifest.rights;
+            this.navDate = newManifest.navDate;
+            this.behavior = newManifest.behavior;
 
-        const labelCode = Object.keys(newManifest.label!);
-        this.setLabel((newManifest.label![labelCode][0] as unknown as string));
-        this.label!.setLanguage(labelCode[0]);
+            if (newManifest.label != undefined){
+                const labelCodeArray = Object.keys(newManifest.label);
+                const labelCode = labelCodeArray[0] as keyof Label;
 
-        const summaryCode = Object.keys(newManifest.summary!);
-        this.setSummary(newManifest.summary![summaryCode][0] as unknown as string);
-        this.summary!.setLanguage(summaryCode[0]);
+                this.setLabel((newManifest.label[labelCode][0] as unknown as string));
+                this.label!.setLanguage(labelCode);
+            }
+
+            if (newManifest.summary != undefined){
+                const summaryCodeArray = Object.keys(newManifest.summary);
+                const summaryCode = summaryCodeArray[0] as keyof Label;
+
+                this.setSummary(newManifest.summary[summaryCode][0] as unknown as string);
+                this.summary!.setLanguage(summaryCode);
+            }
+        }catch(e){
+            console.log(e);
+        }
     }
 
     getSummaryValue(): string {
