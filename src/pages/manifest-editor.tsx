@@ -49,7 +49,9 @@ function ManifestEditorPage() {
   );
   const [gistUrl, setGistUrl] = useState<string | null>(null);
   const [gistRawUrl, setGistRawUrl] = useState<string | null>(null);
+  const [gistId, setGistId] = useState<string | null>(null);
   const [isCreatingGist, setIsCreatingGist] = useState(false);
+  const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [showTokenWarning, setShowTokenWarning] = useState(
     githubToken.length === 0
@@ -197,6 +199,7 @@ function ManifestEditorPage() {
       }
 
       const data = await response.json();
+      setGistId(data.id);
       setGistUrl(data.html_url);
       setGistRawUrl(data.files["manifest.json"].raw_url);
     } catch (error) {
@@ -211,12 +214,92 @@ function ManifestEditorPage() {
     }
   }
 
+  async function handleUpdateGist(): Promise<void> {
+    if (!githubToken) {
+      alert("Please enter your GitHub token to update the gist.");
+      setShowTokenWarning(true);
+      return;
+    }
+
+    if (!gistId) {
+      alert("No existing gist to update. Create one first.");
+      return;
+    }
+
+    if (isCreatingGist) {
+      return;
+    }
+
+    setIsCreatingGist(true);
+
+    try {
+      const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `token ${githubToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          files: {
+            "manifest.json": {
+              content: JSON.stringify(manifestObj, null, 2),
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || `GitHub API error: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      setGistUrl(data.html_url);
+      setGistRawUrl(data.files["manifest.json"].raw_url);
+    } catch (error) {
+      console.error("Failed to update gist:", error);
+      alert(
+        error instanceof Error
+          ? `Failed to update gist: ${error.message}`
+          : "Failed to update gist. Check your token and try again."
+      );
+    } finally {
+      setIsCreatingGist(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!isAutoUpdateEnabled || !gistId) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void handleUpdateGist();
+    }, 30000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isAutoUpdateEnabled, gistId, githubToken, manifestObj]);
+
   function handleClearToken(): void {
     setGithubToken("");
     localStorage.removeItem("githubToken");
     setGistUrl(null);
     setGistRawUrl(null);
+    setGistId(null);
+    setIsAutoUpdateEnabled(false);
     setShowTokenWarning(true);
+  }
+
+  function handleExportButtonClick(): void {
+    setIsExportModalOpen(true);
+
+    if (isAutoUpdateEnabled && gistId) {
+      void handleUpdateGist();
+    }
   }
 
   const inspectorDockPadding = isInspectorOpen
@@ -288,11 +371,16 @@ function ManifestEditorPage() {
               <button
                 className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
                 type="button"
-                onClick={() => setIsExportModalOpen(true)}
+                onClick={handleExportButtonClick}
                 title="Export manifest to GitHub Gist"
               >
                 Export
               </button>
+              {isAutoUpdateEnabled && gistId && (
+                <span className="w-full text-xs text-slate-500">
+                  Auto-Update enabled
+                </span>
+              )}
 
               <label htmlFor="container-type" className="sr-only">
                 Container Type
@@ -382,7 +470,7 @@ function ManifestEditorPage() {
                     className="flex-1 cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                     onClick={handleCreateGist}
-                    disabled={!githubToken || isCreatingGist}
+                    disabled={!githubToken || isCreatingGist || isAutoUpdateEnabled}
                     title="Create and share manifest as a GitHub gist"
                   >
                     {isCreatingGist ? "Creating..." : "Create Gist"}
@@ -398,6 +486,21 @@ function ManifestEditorPage() {
                     </button>
                   )}
                 </div>
+
+                {gistId && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="auto-update"
+                      type="checkbox"
+                      checked={isAutoUpdateEnabled}
+                      onChange={(e) => setIsAutoUpdateEnabled(e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="auto-update" className="text-sm text-slate-700">
+                      Auto-update every 30 seconds and when Export is clicked again
+                    </label>
+                  </div>
+                )}
 
                 {gistRawUrl && (
                   <div className="border-t border-slate-200 pt-4 space-y-3">
