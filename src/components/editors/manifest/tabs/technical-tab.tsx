@@ -61,6 +61,7 @@ function TechnicalTab() {
   const cameraResourceItems = getCameraContentResourceItems(manifestObj);
   const lightResourceItems = getLightContentResourceItems(manifestObj);
   const customBehaviors = manifestObj.getCustomBehaviors();
+  const isCanvasContainer = manifestObj.getContainerObj().getType() === "Canvas";
 
   function handleIdentifierChange(newValue: string): void {
     manifestObj.setId(newValue);
@@ -208,48 +209,56 @@ function TechnicalTab() {
         </section>
       ) : null}
 
-      <ManifestField label="Viewing direction" className="space-y-3">
-        <TechnicalOptionGroup
-          options={viewingDirectionOptions}
-          value={manifestObj.getViewingDirection()}
-          onChange={handleViewingDirectionChange}
-          allowDeselect
-        />
-      </ManifestField>
+      {isCanvasContainer ? (
+        <>
+          <ManifestField label="Viewing direction" className="space-y-3">
+            <TechnicalOptionGroup
+              options={viewingDirectionOptions}
+              value={manifestObj.getViewingDirection()}
+              onChange={handleViewingDirectionChange}
+              allowDeselect
+            />
+          </ManifestField>
 
-      <ManifestField label="Built in behaviors" className="space-y-2">
-        <DropDownField label="Manifest ordering">
-          <TechnicalOptionGroup
-            options={manifestOrderingOptions}
-            value={manifestObj.getManifestOrderingBehavior()}
-            onChange={handleManifestOrderingChange}
-          />
-        </DropDownField>
-        <DropDownField label="Repeat">
-          <TechnicalOptionGroup
-            options={repeatOptions}
-            value={manifestObj.getRepeatBehavior()}
-            onChange={handleRepeatChange}
-            orientation="horizontal"
-          />
-        </DropDownField>
-        <DropDownField label="Auto-advance">
-          <TechnicalOptionGroup
-            options={autoAdvanceOptions}
-            value={manifestObj.getAutoAdvanceBehavior()}
-            onChange={handleAutoAdvanceChange}
-            orientation="horizontal"
-          />
-        </DropDownField>
-      </ManifestField>
-      <ManifestField label="Custom behaviors" className="space-y-4 border-t border-slate-200 pt-6">
-        <ManifestCustomBehaviorEditor
-          behaviors={customBehaviors}
-          reservedBehaviors={builtInManifestBehaviors}
-          onAddBehavior={handleAddCustomBehavior}
-          onRemoveBehavior={handleRemoveCustomBehavior}
-        />
-      </ManifestField>
+          <ManifestField label="Built in behaviors" className="space-y-2">
+            <DropDownField label="Manifest ordering">
+              <TechnicalOptionGroup
+                options={manifestOrderingOptions}
+                value={manifestObj.getManifestOrderingBehavior()}
+                onChange={handleManifestOrderingChange}
+              />
+            </DropDownField>
+            <DropDownField label="Repeat">
+              <TechnicalOptionGroup
+                options={repeatOptions}
+                value={manifestObj.getRepeatBehavior()}
+                onChange={handleRepeatChange}
+                orientation="horizontal"
+              />
+            </DropDownField>
+            <DropDownField label="Auto-advance">
+              <TechnicalOptionGroup
+                options={autoAdvanceOptions}
+                value={manifestObj.getAutoAdvanceBehavior()}
+                onChange={handleAutoAdvanceChange}
+                orientation="horizontal"
+              />
+            </DropDownField>
+          </ManifestField>
+
+          <ManifestField
+            label="Custom behaviors"
+            className="space-y-4 border-t border-slate-200 pt-6"
+          >
+            <ManifestCustomBehaviorEditor
+              behaviors={customBehaviors}
+              reservedBehaviors={builtInManifestBehaviors}
+              onAddBehavior={handleAddCustomBehavior}
+              onRemoveBehavior={handleRemoveCustomBehavior}
+            />
+          </ManifestField>
+        </>
+      ) : null}
     </ManifestTabBody>
   );
 }
