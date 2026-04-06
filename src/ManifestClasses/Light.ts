@@ -81,6 +81,21 @@ class Light extends ContentResource {
         }
     }
 
+    override clone(): Light {
+        const nextLight = this.cloneBaseProperties(
+            new Light(this.id, this.type),
+        );
+
+        nextLight.color = this.color;
+        nextLight.intensity = this.intensity
+            ? { ...this.intensity }
+            : undefined;
+        nextLight.lookAt = this.lookAt ? { ...this.lookAt } : undefined;
+        nextLight.angle = this.angle;
+
+        return nextLight;
+    }
+
     toJSON(): IiifContentResource {
         this.synchronizeDerivedIds();
 
