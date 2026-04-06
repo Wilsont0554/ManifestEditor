@@ -100,11 +100,14 @@ export interface IiifTransForm {
   z?: number;
 }
 
+export type IiifSelector = IiifPointSelector | IiifTransForm;
+
 export interface IiifSpecificResource {
   id?: string;
   type: "SpecificResource";
   source: IiifResourceReference[];
-  selector: IiifPointSelector[];
+  selector?: IiifPointSelector[];
+  transfrom?: IiifTransForm[];
 }
 
 export interface IiifTextualBody {
@@ -114,7 +117,6 @@ export interface IiifTextualBody {
   format?: string;
   language?: string;
   purpose?: string;
-  position?: IiifSpecificResource;
 }
 
 export interface IiifContentResource {
@@ -135,9 +137,6 @@ export interface IiifContentResource {
   far?: number;
   viewHeight?: number;
   fieldOfView?: number;
-  x?: number;
-  y?: number;
-  z?: number;
 }
 
 export interface IiifAnnotation {

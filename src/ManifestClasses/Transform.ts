@@ -1,42 +1,40 @@
-import ContentResource from "./ContentResource";
-import type { IiifContentResource } from "@/types/iiif";
+import type { IiifTransForm } from "@/types/iiif";
 
-const transformContentResourceTypeSet = new Set([
+const transformTypeSet = new Set([
     "RotateTransform",
     "ScaleTransform",
     "TranslateTransform"
 ]);
 
-export type TransformContentResourceType = "RotateTransform" | "ScaleTransform" | "TranslateTransfrom";
+export type TransformType = "RotateTransform" | "ScaleTransform" | "TranslateTransfrom";
 
-function normalizeTransformType(type: string): TransformContentResourceType {
-    if(type === "RotateTransform") return "RotateTransform";
-    else if(type === "ScaleTransform") return "ScaleTransform";
-    else return "TranslateTransfrom";
+function normalizeTransformType(type: string): TransformType {
+    if(type === "ScaleTransform" || type === "TranslateTransform") {
+        return type;
+    }
+    else return "RotateTransfrom";
 }
 
-class Transform extends ContentResource {
+class Transform {
+    type: TransformType;
     x?: number;
     y?: number;
     z?: number;
 
-    constructor(id:string, type: TransformContentResourceType = "RotateTransform") {
-        super(id, normalizeTransformType(type), undefined);
-        this.setType(type);
+    constructor(type: TransformType = "RotateTransform") {
+        this.type = normalizeTransformType(type);
     }
 
-    static isTransformType(type: string): type is TransformContentResourceType {
-        return transformContentResourceTypeSet.has(type);
+    static isTransformType(type: string): type is TransformType {
+        return transformTypeSet.has(type);
     }
 
-    override setType(type: string): void {
-        const normalizedType = normalizeTransformType(type);
-
-        super.setType(normalizedType);
+    setType(type: string): void {
+        this.type = normalizeTransformType(type);
     }
 
-    override getType(): TransformContentResourceType {
-        return normalizeTransformType(super.getType());
+    getType(): TransformType {
+        return this.type;
     }
 
     setX(x?: number): void {
@@ -47,20 +45,12 @@ class Transform extends ContentResource {
         return this.x;
     }
 
-    removeX(): void {
-        this.x = undefined;
-    }
-
     setY(y?: number): void {
         this.y = y;
     }
 
     getY(): number | undefined {
         return this.y;
-    }
-
-    removeY(): void {
-        this.y = undefined;
     }
 
     setZ(z?: number): void {
@@ -71,12 +61,10 @@ class Transform extends ContentResource {
         return this.z;
     }
 
-    removeZ(): void {
-        this.z = undefined;
-    }
-
-    override toJSON(): IiifContentResource {
-        const out = this.buildBaseJson();
+    toJSON(): IiifTransForm {
+        const out = IiifTransform = {
+            type: this.type,
+        };
 
         if(this.x !== undefined){
             out.x = this.x;
