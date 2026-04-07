@@ -1,6 +1,8 @@
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import Annotation from "@/ManifestClasses/Annotation";
 import ContentResource from "@/ManifestClasses/ContentResource";
+import Light from "@/ManifestClasses/Light";
+import Camera from "@/ManifestClasses/Camera";
 
 export function downloadJsonFile(data: unknown, filename: string): void {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -23,11 +25,30 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
   for (let i = 0; i < uploadedManifest.items[0].items[0].items.length; i++){
     try {
       const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
-      const tempContentResource = new ContentResource("", "", "");
-      const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
+      let tempContentResource;
+      
+      const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
 
-      tempContentResource.setAllValues(uploadedManifest.items[0].items[0].items[i].body!);
-      tempAnnotation.setContentResource(tempContentResource);
+      console.log(uploadedResource);
+
+      if (uploadedResource!.type == "Model"){
+        tempContentResource = new ContentResource("", "", "");
+        tempContentResource!.setAllValues(uploadedResource!);
+      }
+      else if(uploadedResource!.type.includes("Light")){
+          tempContentResource = new Light("", "");
+          tempContentResource!.setAllLightValues(uploadedResource! as Light)
+      }
+      else if (uploadedResource!.type.includes("Camera")){
+          tempContentResource = new Camera("");
+          tempContentResource!.setAllCameraValues(uploadedResource! as Camera)
+      }
+      else{
+        console.log('test');
+      }
+
+      const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
+      tempAnnotation.setContentResource(tempContentResource!);
 
       newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
       newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i])

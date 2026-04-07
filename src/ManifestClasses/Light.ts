@@ -17,6 +17,20 @@ class Light extends ContentResource {
         super(id, type, undefined);
     }
 
+    setAllLightValues(newLight: Light): void{
+        try{
+            this.color = newLight.color;
+            this.angle = newLight.angle;
+
+            this.setIntensity(newLight.intensity?.type as string, Number(newLight.intensity?.value), newLight.intensity?.unit as string);
+            if (newLight.lookAt?.id != undefined){
+                this.setLookAt(newLight.lookAt?.id as string);
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     getColor(): string | undefined {
         return this.color;
     }

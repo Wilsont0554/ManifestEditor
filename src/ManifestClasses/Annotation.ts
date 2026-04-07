@@ -18,10 +18,10 @@ class Annotation {
     target: AnnotationTargetReference | Target;
     label?: Label;
 
-    constructor(index: number = 1) {
+    constructor(index: number = 1, motivation: string[] = ["painting"]) {
         this.id = `https://example.org/iiif/manifest/1/scene/1/anno/${index}`;
         this.type = "Annotation";
-        this.motivation = ["painting"];
+        this.motivation = motivation;
         this.target = {
             id: "https://example.org/iiif/manifest/1/scene/1",
             type: "Scene",

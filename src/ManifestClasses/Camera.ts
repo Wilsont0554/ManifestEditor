@@ -54,6 +54,17 @@ class Camera extends ContentResource {
         this.near = near;
     }
 
+    setAllCameraValues(newCamera: Camera): void{
+        try{
+            this.setAllValues(newCamera);
+            this.near = newCamera.near;
+            this.far = newCamera.far;
+            this.fieldOfView = newCamera.fieldOfView;
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     getNear(): number | undefined {
         return this.near;
     }
