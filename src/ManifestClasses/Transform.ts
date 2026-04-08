@@ -1,12 +1,14 @@
 import type { IiifTransForm } from "@/types/iiif";
 
-const transformTypeSet = new Set([
+export const transformTypes = [
     "RotateTransform",
     "ScaleTransform",
-    "TranslateTransform"
-]);
+    "TranslateTransform",
+] as const;
 
-export type TransformType = "RotateTransform" | "ScaleTransform" | "TranslateTransform";
+const transformTypeSet = new Set<string>(transformTypes);
+
+export type TransformType = (typeof transformTypes)[number];
 
 function normalizeTransformType(type: string): TransformType {
     if(type === "ScaleTransform" || type === "TranslateTransform") {
@@ -59,6 +61,10 @@ class Transform {
 
     getZ(): number | undefined {
         return this.z;
+    }
+
+    hasValue(): boolean {
+        return (this.x ?? 0) !== 0 || (this.y ?? 0) !== 0 || (this.z ?? 0) !== 0;
     }
 
     toJSON(): IiifTransForm {
