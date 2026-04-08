@@ -122,7 +122,7 @@ class Annotation {
             id: this.id,
             type: this.type,
             motivation: this.motivation,
-            body: this.body?.toJSON() as IiifContentResource | IiifSpecificResource,
+            body: this.body?.toAnnotationBodyJSON() as IiifContentResource | IiifSpecificResource,
             target: this.target instanceof Target ? this.target.toJSON() : this.target,
         } as Partial<IiifAnnotation>;
 
