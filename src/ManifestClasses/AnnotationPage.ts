@@ -66,6 +66,16 @@ class AnnotationPage {
         };
     }
 
+    clone(): AnnotationPage {
+        const nextAnnotationPage = new AnnotationPage();
+
+        nextAnnotationPage.id = this.id;
+        nextAnnotationPage.type = this.type;
+        nextAnnotationPage.items = this.items.map((item) => item.clone());
+
+        return nextAnnotationPage;
+    }
+
     toJSON(): IiifAnnotationPage {
         return {
             id: this.id,

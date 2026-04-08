@@ -37,6 +37,10 @@ class Annotation {
         return this.body;
     }
 
+    removeContentResource(): void {
+        this.body = undefined;
+    }
+
     getMotivation(): string[] {
         return this.motivation;
     }
@@ -116,17 +120,31 @@ class Annotation {
         return this.label;
     }
 
+    clone(): Annotation {
+        const nextAnnotation = new Annotation();
+
+        nextAnnotation.id = this.id;
+        nextAnnotation.type = this.type;
+        nextAnnotation.motivation = [...this.motivation];
+        nextAnnotation.body = this.body?.clone();
+        nextAnnotation.target = this.target instanceof Target
+            ? this.target.clone()
+            : { ...this.target };
+        nextAnnotation.label = this.label?.clone();
+
+        return nextAnnotation;
+    }
+
     toJSON(): IiifAnnotation {
         const out = {
             id: this.id,
             type: this.type,
             motivation: this.motivation,
-            body: this.body?.toJSON() as IiifContentResource,
             target: this.target instanceof Target ? this.target.toJSON() : this.target,
         } as Partial<IiifAnnotation>;
 
-        if (!this.body) {
-            out.body = undefined;
+        if (this.body) {
+            out.body = this.body.toJSON() as IiifContentResource;
         }
 
         if (this.label?.hasValue()) {

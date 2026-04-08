@@ -38,7 +38,7 @@ function DescriptiveTab() {
   }
 
   function commitManifestChange(): void {
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function handleLabelChange(newValue: string): void {
