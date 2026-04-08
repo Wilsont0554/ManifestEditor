@@ -30,8 +30,6 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
       
       const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
 
-      console.log(uploadedResource);
-
       if (uploadedResource!.type == "Model"){
         tempContentResource = new ContentResource("", "", "");
         tempContentResource!.setAllValues(uploadedResource!);
