@@ -16,7 +16,7 @@ import Button from "@components/shared/button";
 import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import type { IiifContainerType } from "@/types/iiif";
+import { manifestViewingDirections, type IiifContainerType } from "@/types/iiif";
 import {
   createDefaultContentResource,
   type EditableContentResourceType,
@@ -39,6 +39,8 @@ function ManifestEditorPage() {
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(true);
+
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
@@ -59,6 +61,14 @@ function ManifestEditorPage() {
   const resizeStateRef = useRef<ResizeState | null>(null);
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
+
+  useEffect(() => {
+    const scriptTag = document.createElement('script');
+    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js"
+    scriptTag.addEventListener('load', () => setIsInspectorOpen(!isInspectorOpen));
+    document.body.appendChild(scriptTag);
+  }, []);
+   
 
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
@@ -93,6 +103,7 @@ function ManifestEditorPage() {
       window.removeEventListener("mouseup", handlePointerUp);
     };
   }, []);
+
 
   function handleResizeStart(event: ReactMouseEvent<HTMLButtonElement>): void {
     resizeStateRef.current = {
@@ -413,13 +424,31 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
+
+              <Button 
+                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
+                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
+              >
+                JSON Preview
+              </Button>
+              
             </div>
           </div>
+          
         </div>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <JsonEditor data={manifestPreview} />
-        </div>
+        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+           
+          <div className="voyagerWindow">
+            <voyager-explorer document={gistRawUrl} id="voyager" style={{width: "500px", height: "500px"}}></voyager-explorer>
+          </div>
 
+          <div className="jsonWindow">
+              {isJSONWindowOpen ? (
+                <JsonEditor data={manifestPreview} />
+              ) : (null)}
+          </div>
+        </div>
+        
         {/* Export Modal */}
         {isExportModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -549,7 +578,7 @@ function ManifestEditorPage() {
           </div>
         )}
       </div>
-
+      
       {isInspectorOpen ? (
         <ManifestComponent
           width={inspectorWidth}
@@ -578,6 +607,8 @@ function ManifestEditorPage() {
           </div>
         </div>
       )}
+
+
     </section>
   );
 }
