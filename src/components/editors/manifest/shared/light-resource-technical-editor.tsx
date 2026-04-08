@@ -81,10 +81,10 @@ function NumericDraftInput({
   );
 }
 
-const DEFAULT_LIGHT_INTENSITY = 0.5;
-const LIGHT_INTENSITY_MIN = 0;
-const LIGHT_INTENSITY_MAX = 1;
-const LIGHT_INTENSITY_STEP = 0.1;
+const DEFAULT_LIGHT_INTENSITY = 0.50;
+const LIGHT_INTENSITY_MIN = 0.00;
+const LIGHT_INTENSITY_MAX = 1.00;
+const LIGHT_INTENSITY_STEP = 0.01;
 
 interface LightIntensityInputProps {
   idPrefix: string;
