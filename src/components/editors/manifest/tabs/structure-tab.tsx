@@ -17,7 +17,7 @@ function StructureTab() {
   const textAnnotationItems = getTextAnnotationItems(manifestObj);
 
   function commitManifestChange(): void {
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function syncManifestLabel({
