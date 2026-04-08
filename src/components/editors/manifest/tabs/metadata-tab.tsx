@@ -55,7 +55,7 @@ function MetadataTab({
     null;
 
   function commitManifestChange(): void {
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function getAnnotationLabel(annotation: Annotation): string {
