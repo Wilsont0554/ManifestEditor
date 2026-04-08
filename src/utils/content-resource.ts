@@ -88,10 +88,8 @@ export interface CameraContentResourceItem
   resource: Camera;
 }
 
-export interface TextAnnotationItem {
-  annotation: TextAnnotation;
-  annotationIndex: number;
-  annotationNumber: number;
+export interface TextAnnotationItem extends Omit<ContentResourceItem, "resource"> {
+  resource: TextAnnotation;
 }
 
 export function createDefaultContentResource(
@@ -211,27 +209,17 @@ export function getCameraContentResourceItems(
 export function getTextAnnotationItems(
   manifestObj: ManifestObject,
 ): TextAnnotationItem[] {
-  let annotationNumber = 0;
 
-  return manifestObj
-    .getContainerObj()
-    .getAnnotationPage()
-    .getAllAnnotations()
-    .flatMap((annotation, annotationIndex) => {
-      if (!(annotation instanceof TextAnnotation)) {
-        return [];
-      }
-
-      annotationNumber += 1;
-
-      return [
-        {
-          annotation,
-          annotationIndex,
-          annotationNumber,
-        },
-      ];
-    });
+  return getContentResourceItems(manifestObj).flatMap((item) =>
+    item.resource instanceof TextAnnotation
+      ? [
+          {
+            ...item,
+            resource: item.resource,
+          },
+        ]
+      : [],
+  );
 }
 
 export function hasLightTechnicalChanges(
@@ -275,7 +263,7 @@ export function getContentResourceDisplayTitle(
   const resourceLabel = resource.getLabel().getValue().trim();
   const annotationLabel = annotation.getLabel()?.getValue().trim() ?? "";
 
-  return resourceLabel || annotationLabel || `Content Resource ${resourceNumber}`;
+  return "" //resourceLabel || annotationLabel || `Content Resource ${resourceNumber}`;
 }
 
 export function getTextAnnotationDisplayTitle(

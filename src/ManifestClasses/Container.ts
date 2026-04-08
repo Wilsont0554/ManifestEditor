@@ -100,29 +100,6 @@ class Container {
     addAnnotationPage(annotation: AnnotationPage) {
         this.items.push(annotation);
     }
-
-    toJSON(): IiifCanvasLike {
-        const annotationPages = this.items
-            .map((item) => item.toJSON())
-            .filter((item): item is IiifAnnotationPage => item.items.length > 0);
-
-        const out: IiifCanvasLike = {
-            id: this.id,
-            type: this.type,
-            items: annotationPages,
-        };
-
-        if (this.type === "Timeline" && this.duration !== undefined) {
-            out.duration = this.duration;
-        }
-
-        if (this.type === "Canvas" && this.height !== undefined && this.width !== undefined) {
-            out.height = this.height;
-            out.width = this.width;
-        }
-
-        return out;
-    }
 }
 
 export default Container;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import ManifestField from "./manifest-field";
+import Annotation from "@/ManifestClasses/Annotation";
 
 interface NumericDraftInputProps {
   id: string;
@@ -62,6 +63,7 @@ function NumericDraftInput({
 }
 
 interface TextAnnotationEditorProps {
+  annotationParent: Annotation;
   annotation: TextAnnotation;
   idPrefix: string;
   onCommit: () => void;
@@ -69,12 +71,13 @@ interface TextAnnotationEditorProps {
 }
 
 function TextAnnotationEditor({
+  annotationParent,
   annotation,
   idPrefix,
   onCommit,
   className = "",
 }: TextAnnotationEditorProps) {
-  const target = annotation.getTarget();
+  const target = annotationParent.getTarget();
 
   return (
     <section className={`space-y-6 ${className}`}>
@@ -104,7 +107,7 @@ function TextAnnotationEditor({
             value={(target?.getX() ?? 0).toString()}
             placeholder="0"
             onCommit={(newValue) => {
-              annotation.setX(newValue);
+              annotationParent.setX(newValue);
               onCommit();
             }}
           />
@@ -115,7 +118,7 @@ function TextAnnotationEditor({
             value={(target?.getY() ?? 0).toString()}
             placeholder="0"
             onCommit={(newValue) => {
-              annotation.setY(newValue);
+              annotationParent.setY(newValue);
               onCommit();
             }}
           />
@@ -126,7 +129,7 @@ function TextAnnotationEditor({
             value={(target?.getZ() ?? 0).toString()}
             placeholder="0"
             onCommit={(newValue) => {
-              annotation.setZ(newValue);
+              annotationParent.setZ(newValue);
               onCommit();
             }}
           />

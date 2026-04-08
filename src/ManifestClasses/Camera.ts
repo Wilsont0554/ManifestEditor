@@ -1,5 +1,4 @@
 import ContentResource from "./ContentResource.ts";
-import type { IiifContentResource } from "@/types/iiif";
 
 const cameraContentResourceTypeSet = new Set([
     "OrthographicCamera",
@@ -54,17 +53,6 @@ class Camera extends ContentResource {
         this.near = near;
     }
 
-    setAllCameraValues(newCamera: Camera): void{
-        try{
-            this.setAllValues(newCamera);
-            this.near = newCamera.near;
-            this.far = newCamera.far;
-            this.fieldOfView = newCamera.fieldOfView;
-        }catch(e){
-            console.log(e);
-        }
-    }
-
     getNear(): number | undefined {
         return this.near;
     }
@@ -107,28 +95,6 @@ class Camera extends ContentResource {
 
     removeFieldOfView(): void {
         this.fieldOfView = undefined;
-    }
-
-    override toJSON(): IiifContentResource {
-        const out = this.buildBaseJson();
-
-        if (this.near !== undefined) {
-            out.near = this.near;
-        }
-
-        if (this.far !== undefined) {
-            out.far = this.far;
-        }
-
-        if (this.viewHeight !== undefined) {
-            out.viewHeight = this.viewHeight;
-        }
-
-        if (this.fieldOfView !== undefined) {
-            out.fieldOfView = this.fieldOfView;
-        }
-
-        return out;
     }
 }
 

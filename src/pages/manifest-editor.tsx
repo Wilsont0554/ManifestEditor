@@ -4,7 +4,6 @@ import {
   useRef,
   useState,
   useContext,
-  ChangeEvent,
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
@@ -14,7 +13,7 @@ import ManifestComponent from "@components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
-import { downloadJsonFile, createManifestObjectFromUpload } from "@/utils/file";
+import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import type { IiifContainerType } from "@/types/iiif";
@@ -138,23 +137,16 @@ function ManifestEditorPage() {
   function handleCreateTextAnnotation(): void {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
-    const annotation = new TextAnnotation(nextAnnotationIndex + 1);
-
+    const textAnnotation = new TextAnnotation(nextAnnotationIndex + 1);
+    const annotation = new Annotation(nextAnnotationIndex + 1, ["commenting"]);
+    
+    annotation.setContentResource(textAnnotation);
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
     setContentResourceModalView("editor");
     setIsContentResourceModalOpen(true);
     updateManifestObj(manifestObj.clone());
-  }
-
-  async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void>{
-    const uploadedManifest = event.target.files?.[0] ?? null;
-    const stringManifest = await uploadedManifest?.text();
-    const newManifest = JSON.parse(stringManifest!);
-
-   const test = createManifestObjectFromUpload(newManifest);
-   updateManifestObj(test);
   }
 
   function handleDownloadManifest(): void {
@@ -220,10 +212,6 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
-              Upload Manifest:
-              <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
-                <input type="file" accept="json" onChange={handleUploadManifest}/>
-              </div>
             </div>
           </div>
         </div>

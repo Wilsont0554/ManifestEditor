@@ -2,7 +2,6 @@ import type {
     IiifContainerType,
     IiifPointSelector,
     IiifResourceReference,
-    IiifSpecificResource,
 } from "@/types/iiif";
 
 class Target {
@@ -75,15 +74,6 @@ class Target {
 
     getZ(): number {
         return this.selector[0].z ?? 0;
-    }
-
-    toJSON(): IiifSpecificResource {
-        return {
-            id: this.id,
-            type: "SpecificResource",
-            source: this.source,
-            selector: this.selector,
-        };
     }
 }
 

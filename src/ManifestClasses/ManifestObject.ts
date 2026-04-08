@@ -2,14 +2,12 @@ import Container from './Container.ts';
 import Label from './Label.ts';
 import Camera from "./Camera.ts";
 import Light from "./Light.ts";
-import TextAnnotation from "./TextAnnotation.ts";
 import {
     builtInManifestBehaviors,
     manifestAutoAdvanceBehaviors,
     manifestOrderingBehaviors,
     manifestRepeatBehaviors,
     type IiifContainerType,
-    type IiifManifest,
     type ManifestAutoAdvanceBehavior,
     type ManifestOrderingBehavior,
     type ManifestRepeatBehavior,
@@ -20,7 +18,6 @@ const manifestOrderingBehaviorSet = new Set<string>(manifestOrderingBehaviors);
 const manifestRepeatBehaviorSet = new Set<string>(manifestRepeatBehaviors);
 const manifestAutoAdvanceBehaviorSet = new Set<string>(manifestAutoAdvanceBehaviors);
 const builtInManifestBehaviorSet = new Set<string>(builtInManifestBehaviors);
-const presentationContext = "http://iiif.io/api/presentation/4/context.json";
 const defaultManifestId = "https://example.org/iiif/manifest/1";
 const defaultManifestLabel = "Blank Manifest";
 
@@ -124,34 +121,6 @@ class ManifestObject {
         }
 
         this.summary.setLanguage(languageCode);
-    }
-
-    setAllValues(newManifest: ManifestObject): void{
-        try{
-            this.id = newManifest.id;
-            this.type = newManifest.type;
-            this.rights = newManifest.rights;
-            this.navDate = newManifest.navDate;
-            this.behavior = newManifest.behavior;
-
-            if (newManifest.label != undefined){
-                const labelCodeArray = Object.keys(newManifest.label);
-                const labelCode = labelCodeArray[0] as keyof Label;
-
-                this.setLabel((newManifest.label[labelCode][0] as unknown as string));
-                this.label!.setLanguage(labelCode);
-            }
-
-            if (newManifest.summary != undefined){
-                const summaryCodeArray = Object.keys(newManifest.summary);
-                const summaryCode = summaryCodeArray[0] as keyof Label;
-
-                this.setSummary(newManifest.summary[summaryCode][0] as unknown as string);
-                this.summary!.setLanguage(summaryCode);
-            }
-        }catch(e){
-            console.log(e);
-        }
     }
 
     getSummaryValue(): string {
@@ -309,19 +278,6 @@ class ManifestObject {
                     const resource = annotation.getContentResource();
                     const targetId = `${annotationId}/target`;
 
-                    if (annotation instanceof TextAnnotation) {
-                        annotation.setCommentTargetReference(
-                            containerId,
-                            container.getType(),
-                        );
-                        annotation.ensurePositionTarget(
-                            `${annotationId}/position`,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
                     if (resource instanceof Light) {
                         lightIndex += 1;
                         resource.setID(`${containerId}/lights/${lightIndex}`);
@@ -370,40 +326,6 @@ class ManifestObject {
                 });
             });
         });
-    }
-
-    toJSON(): IiifManifest {
-        this.synchronizeStructure();
-
-        const out: IiifManifest = {
-            "@context": presentationContext,
-            id: getEffectiveManifestId(this.id),
-            type: this.type,
-            label: this.getSerializableLabel().toJSON(),
-            items: this.items.map((item) => item.toJSON()),
-        };
-
-        if (this.summary?.hasValue()) {
-            out.summary = this.summary.toJSON();
-        }
-
-        if (this.rights) {
-            out.rights = this.rights;
-        }
-
-        if (this.navDate) {
-            out.navDate = this.navDate;
-        }
-
-        if (this.viewingDirection) {
-            out.viewingDirection = this.viewingDirection;
-        }
-
-        if (this.behavior?.length) {
-            out.behavior = this.behavior;
-        }
-
-        return out;
     }
 }
 

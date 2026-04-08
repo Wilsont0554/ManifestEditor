@@ -105,6 +105,7 @@ class Label {
     toJSON(): IiifLanguageMap {
         return this.language as unknown as IiifLanguageMap;
     }
+
 }
 
 export default Label;
