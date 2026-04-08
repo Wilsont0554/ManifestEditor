@@ -19,7 +19,7 @@ import {
   type ManifestRepeatBehavior,
   type ManifestViewingDirection,
 } from "@/types/iiif";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
 import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
@@ -27,6 +27,8 @@ import ContentResourceMediaList from "../shared/content-resource-media-list";
 import ManifestInput from "../shared/manifest-input";
 import ManifestTabBody from "../shared/manifest-tab-body";
 import TechnicalOptionGroup from "../shared/technical-option-group";
+import DropDownField from "@/components/shared/dropdown-field";
+import ManifestField from "../shared/manifest-field";
 
 const viewingDirectionOptions = manifestViewingDirections.map((value) => ({
   value,
@@ -59,13 +61,6 @@ const autoAdvanceOptions = [
   })),
 ];
 
-type TechnicalSectionId = "manifestOrdering" | "repeat" | "autoAdvance";
-
-interface OverviewBehaviorSummaryItem {
-  sectionId: TechnicalSectionId;
-  value: string;
-}
-
 interface OverviewMetadataSummaryItem {
   resourceIndex: number;
   resource: ContentResource;
@@ -87,7 +82,6 @@ function OverviewMetadataField({
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
-
       <div className="relative overflow-hidden border-b-2 border-pink-500 bg-slate-100">
         <p
           className={`px-4 py-3 text-base text-slate-900 ${
@@ -107,70 +101,8 @@ function OverviewMetadataField({
   );
 }
 
-function ChevronIcon({ isOpen }: { isOpen: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 12 8"
-      className={`h-3 w-3 text-slate-500 transition-transform ${
-        isOpen ? "rotate-180" : ""
-      }`}
-      aria-hidden="true"
-    >
-      <path
-        d="M1 1.5 6 6.5 11 1.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function OverviewTab() {
-  const { manifestObj, updateManifestObj, isFieldEdited } =
-    useContext(manifestObjContext);
-  const [openSections, setOpenSections] = useState<
-    Record<TechnicalSectionId, boolean>
-  >({
-    manifestOrdering: false,
-    repeat: false,
-    autoAdvance: false,
-  });
-  const hasEditedId = isFieldEdited("id");
-  const hasEditedLabel = isFieldEdited("label");
-  const hasEditedSummary = isFieldEdited("summary");
-  const hasEditedRights = isFieldEdited("rights");
-  const hasEditedNavDate = isFieldEdited("navDate");
-  const hasEditedContentResources = isFieldEdited("contentResources");
-  const hasEditedViewingDirection = isFieldEdited("viewingDirection");
-  const hasEditedManifestOrderingBehavior = isFieldEdited(
-    "manifestOrderingBehavior",
-  );
-  const hasEditedRepeatBehavior = isFieldEdited("repeatBehavior");
-  const hasEditedAutoAdvanceBehavior = isFieldEdited("autoAdvanceBehavior");
-  const hasEditedCustomBehaviors = isFieldEdited("customBehaviors");
-  const hasEditedCameraTechnical = isFieldEdited("cameraTechnical");
-  const hasEditedLightTechnical = isFieldEdited("lightTechnical");
-  const hasEditedMetadata = isFieldEdited("metadata");
-  const hasEditedDescriptiveFields =
-    hasEditedLabel ||
-    hasEditedSummary ||
-    hasEditedRights ||
-    hasEditedNavDate;
-  const hasEditedBuiltInBehaviorFields =
-    hasEditedManifestOrderingBehavior ||
-    hasEditedRepeatBehavior ||
-    hasEditedAutoAdvanceBehavior;
-  const hasEditedTechnicalFields =
-    hasEditedId ||
-    hasEditedCameraTechnical ||
-    hasEditedLightTechnical ||
-    hasEditedViewingDirection ||
-    hasEditedBuiltInBehaviorFields ||
-    hasEditedCustomBehaviors;
-  const behaviorSummaryItems: OverviewBehaviorSummaryItem[] = [];
+  const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const metadataSummaryItems: OverviewMetadataSummaryItem[] = manifestObj
     .getContainerObj()
     .getAnnotationPage()
@@ -191,124 +123,81 @@ function OverviewTab() {
     ({ annotation, resource }) => hasLightTechnicalChanges(annotation, resource),
   );
 
-  if (hasEditedManifestOrderingBehavior) {
-    behaviorSummaryItems.push({
-      sectionId: "manifestOrdering",
-      value: manifestObj.getManifestOrderingBehavior(),
-    });
-  }
-
-  if (hasEditedRepeatBehavior) {
-    behaviorSummaryItems.push({
-      sectionId: "repeat",
-      value: manifestObj.getRepeatBehavior(),
-    });
-  }
-
-  if (hasEditedAutoAdvanceBehavior) {
-    behaviorSummaryItems.push({
-      sectionId: "autoAdvance",
-      value: manifestObj.getAutoAdvanceBehavior(),
-    });
-  }
-
-  function commitManifestChange(): void {
-    updateManifestObj(manifestObj.clone());
-  }
-
-  function toggleSection(sectionId: TechnicalSectionId): void {
-    setOpenSections((currentSections) => ({
-      ...currentSections,
-      [sectionId]: !currentSections[sectionId],
-    }));
-  }
-
-  function openSection(sectionId: TechnicalSectionId): void {
-    setOpenSections((currentSections) => ({
-      ...currentSections,
-      [sectionId]: true,
-    }));
-  }
-
-  function handleLanguageChange(newLanguageCode: string): void {
+  function handleLanguageChange(newLanguageCode: string) {
     manifestObj.setLabelLanguage(newLanguageCode);
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleInputChange(newValue: string): void {
+  function handleInputChange(newValue: string){
     manifestObj.setLabel(newValue);
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleSummaryLanguageChange(newLanguageCode: string): void {
+  function handleSummaryLanguageChange(newLanguageCode: string) {
     manifestObj.setSummaryLanguage(newLanguageCode);
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleSummaryChange(newValue: string): void {
+  function handleSummaryChange(newValue: string) {
     manifestObj.setSummary(newValue);
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleRightsChange(newValue: string): void {
+  function handleRightsChange(newValue: string) {
     manifestObj.setRights(newValue);
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleNavDateChange(newValue: string): void {
+  function handleNavDateChange(newValue: string){
     manifestObj.setNavDate(newValue);
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleIdentifierChange(newValue: string): void {
+  function handleIdentifierChange(newValue: string) {
     manifestObj.setId(newValue);
-    commitManifestChange();
+    updateManifestObj();
   }
 
-  function handleViewingDirectionChange(newValue: string): void {
+  function handleViewingDirectionChange(newValue: string) {
     manifestObj.setViewingDirection(newValue as ManifestViewingDirection | "");
-    commitManifestChange();
+    updateManifestObj();
   }
 
-  function handleManifestOrderingChange(newValue: string): void {
+  function handleManifestOrderingChange(newValue: string) {
     manifestObj.setManifestOrderingBehavior(
       newValue as ManifestOrderingBehavior | "",
     );
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleRepeatChange(newValue: string): void {
+  function handleRepeatChange(newValue: string) {
     manifestObj.setRepeatBehavior(newValue as ManifestRepeatBehavior | "");
-    commitManifestChange();
+    updateManifestObj();
   }
 
-  function handleAutoAdvanceChange(newValue: string): void {
+  function handleAutoAdvanceChange(newValue: string) {
     manifestObj.setAutoAdvanceBehavior(
       newValue as ManifestAutoAdvanceBehavior | "",
     );
-    commitManifestChange();
-  }
+    updateManifestObj();
+  };
 
-  function handleAddCustomBehavior(value: string): boolean {
+  function handleAddCustomBehavior(value: string) {
     const wasAdded = manifestObj.addCustomBehavior(value);
-
     if (wasAdded) {
-      commitManifestChange();
+      updateManifestObj();
     }
-
     return wasAdded;
-  }
+  };
 
-  function handleRemoveCustomBehavior(value: string): void {
+  function handleRemoveCustomBehavior(value: string){
     manifestObj.removeCustomBehavior(value);
-    commitManifestChange();
+    updateManifestObj();
   }
 
   return (
     <ManifestTabBody className="pb-6">
-      {hasEditedDescriptiveFields ? (
         <section className="space-y-6">
-          {hasEditedLabel ? (
             <InputWithLanguage
               label="Label"
               languageCode={manifestObj.getLabelLanguage()}
@@ -316,142 +205,101 @@ function OverviewTab() {
               onChange={handleInputChange}
               onLanguageChange={handleLanguageChange}
             />
-          ) : null}
-
-          {hasEditedSummary ? (
-            <InputWithLanguage
-              label="Summary"
-              languageCode={manifestObj.getSummaryLanguage()}
-              value={manifestObj.getSummaryValue()}
-              onChange={handleSummaryChange}
-              onLanguageChange={handleSummaryLanguageChange}
+            {manifestObj.getSummaryValue() && 
+              <InputWithLanguage
+                label="Summary"
+                languageCode={manifestObj.getSummaryLanguage()}
+                value={manifestObj.getSummaryValue()}
+                onChange={handleSummaryChange}
+                onLanguageChange={handleSummaryLanguageChange}
               rows={3}
               textareaClassName="min-h-28"
-            />
-          ) : null}
-
-          {hasEditedRights ? (
-            <ManifestInput
-              label="Rights"
-              id="overview-manifest-rights"
-              type="text"
-              value={manifestObj.getRights()}
-              onChange={handleRightsChange}
-            />
-          ) : null}
-
-          {hasEditedNavDate ? (
-            <ManifestInput
-              label="Nav Date"
-              id="overview-manifest-nav-date"
-              type="datetime-local"
-              value={manifestObj.getNavDate()}
-              onChange={handleNavDateChange}
-              appearance="outline"
-            />
-          ) : null}
+            /> }
+            {manifestObj.getRights() && 
+              <ManifestInput
+                label="Rights"
+                id="overview-manifest-rights"
+                type="text"
+                value={manifestObj.getRights()}
+                onChange={handleRightsChange}
+              /> }
+            {manifestObj.getNavDate() &&
+              <ManifestInput
+                label="Nav Date"
+                id="overview-manifest-nav-date"
+                type="datetime-local"
+                value={manifestObj.getNavDate()}
+                onChange={handleNavDateChange}
+                appearance="outline"
+              /> }
         </section>
-      ) : null}
+        {contentResourceMediaItems.length > 0 && 
+          <ManifestField label="Media" className="space-y-4">
+            <ContentResourceMediaList items={contentResourceMediaItems} />
+          </ManifestField> }
 
-      {hasEditedContentResources && contentResourceMediaItems.length > 0 ? (
-        <section
-          className={`space-y-4 ${
-            hasEditedDescriptiveFields ? "border-t border-slate-200 pt-8" : ""
-          }`}
-        >
-          <p className="text-lg font-medium text-slate-950">Media</p>
-
-          <ContentResourceMediaList items={contentResourceMediaItems} />
-        </section>
-      ) : null}
-
-      {hasEditedMetadata ? (
-        <section
-          className={`space-y-4 ${
-            hasEditedDescriptiveFields ||
-            (hasEditedContentResources && contentResourceMediaItems.length > 0)
-              ? "border-t border-slate-200 pt-8"
-              : ""
-          }`}
-        >
-          <div className="space-y-1">
-            <p className="text-lg font-medium text-slate-950">Metadata</p>
+        {metadataSummaryItems.length > 0 && 
+          <ManifestField label="Metadata" className="space-y-4 border-t border-slate-200 pt-8">   
             <p className="text-sm leading-6 text-slate-500">
               Metadata changes from the Metadata tab are summarized here.
             </p>
-          </div>
+            <div className="space-y-4">
+              { metadataSummaryItems.map(({ resourceIndex, resource }) => (
+                <section
+                  key={`overview-metadata-resource-${resourceIndex}`}
+                  className="overflow-hidden rounded-md border border-slate-200"
+                >
+                  <div className="border-b border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[15px] font-semibold text-slate-950">
+                      Content Resource {resourceIndex + 1}
+                    </p>
+                    {resource.id ? (
+                      <p className="mt-1 text-sm text-slate-500">{resource.id}</p>
+                    ) : null}
+                  </div>
 
-          <div className="space-y-4">
-            {metadataSummaryItems.map(({ resourceIndex, resource }) => (
-              <section
-                key={`overview-metadata-resource-${resourceIndex}`}
-                className="overflow-hidden rounded-md border border-slate-200"
-              >
-                <div className="border-b border-slate-200 bg-white px-4 py-3">
-                  <p className="text-[15px] font-semibold text-slate-950">
-                    Content Resource {resourceIndex + 1}
-                  </p>
-                  {resource.id ? (
-                    <p className="mt-1 text-sm text-slate-500">{resource.id}</p>
-                  ) : null}
-                </div>
+                  <div className="divide-y divide-slate-200">
+                    {resource
+                      .getMetadata()
+                      .getAllEntries()
+                      .map((entry, entryIndex) => (
+                        <div
+                          key={`overview-metadata-entry-${resourceIndex}-${entryIndex}`}
+                          className="space-y-4 bg-white px-4 py-4"
+                        >
+                          <OverviewMetadataField
+                            label="Label"
+                            value={entry.getLabelText() || "Untitled metadata"}
+                            languageCode={entry.getLabelLanguage()}
+                          />
 
-                <div className="divide-y divide-slate-200">
-                  {resource
-                    .getMetadata()
-                    .getAllEntries()
-                    .map((entry, entryIndex) => (
-                      <div
-                        key={`overview-metadata-entry-${resourceIndex}-${entryIndex}`}
-                        className="space-y-4 bg-white px-4 py-4"
-                      >
-                        <OverviewMetadataField
-                          label="Label"
-                          value={entry.getLabelText() || "Untitled metadata"}
-                          languageCode={entry.getLabelLanguage()}
-                        />
-
-                        <OverviewMetadataField
-                          label="Value"
-                          value={entry.getValueText() || "No value"}
-                          multiline
-                        />
-                      </div>
-                    ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {hasEditedTechnicalFields ? (
-        <section
-          className={`space-y-6 ${
-            hasEditedDescriptiveFields || hasEditedMetadata
-            || (hasEditedContentResources && contentResourceMediaItems.length > 0)
-              ? "border-t border-slate-200 pt-8"
-              : ""
-          }`}
-        >
-          {hasEditedId ? (
+                          <OverviewMetadataField
+                            label="Value"
+                            value={entry.getValueText() || "No value"}
+                            multiline
+                          />
+                        </div>
+                      ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </ManifestField> }
+        <section className="space-y-6 border-t border-slate-200 pt-8">
+          { manifestObj.getId() && 
             <ManifestInput
               label="Identifier"
               id="overview-manifest-identifier"
               type="text"
               value={manifestObj.getId()}
               onChange={handleIdentifierChange}
-            />
-          ) : null}
+            /> }
 
-          {hasEditedCameraTechnical && editedCameraResourceItems.length > 0 ? (
-            <section className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-lg font-medium text-slate-950">Cameras</p>
+            { editedCameraResourceItems.length > 0 && 
+              <ManifestField label="Camera" className="space-y-4">
                 <p className="text-sm leading-6 text-slate-500">
                   Camera configuration changes from the Technical tab appear here.
                 </p>
-              </div>
 
               <div className="space-y-4">
                 {editedCameraResourceItems.map(
@@ -480,94 +328,66 @@ function OverviewTab() {
                         annotation={annotation}
                         resource={resource}
                         idPrefix={`overview-camera-${annotationIndex}`}
-                        onCommit={commitManifestChange}
+                        onCommit={updateManifestObj}
                       />
                     </section>
                   ),
                 )}
               </div>
-            </section>
-          ) : null}
+            </ManifestField> }
 
-          {hasEditedLightTechnical && editedLightResourceItems.length > 0 ? (
-            <section className="space-y-4">
-              <div className="space-y-1">
-                <p className="text-lg font-medium text-slate-950">Lights</p>
+            { editedLightResourceItems.length > 0 && 
+              <ManifestField label="Light" className="space-y-4"> 
                 <p className="text-sm leading-6 text-slate-500">
                   Light configuration changes from the Technical tab appear here.
                 </p>
-              </div>
+                <div className="space-y-4">
+                  { editedLightResourceItems.map(
+                    ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                      <section
+                        key={`overview-light-resource-${annotationIndex}`}
+                        className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                      >
+                        <div className="space-y-2">
+                          <button
+                            type="button"
+                            className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
+                          >
+                            Content Resource {resourceNumber}
+                          </button>
+                          <p className="text-sm text-slate-500">
+                            {getContentResourceDisplayTitle(
+                              annotation,
+                              resource,
+                              resourceNumber,
+                            )}
+                          </p>
+                        </div>
 
-              <div className="space-y-4">
-                {editedLightResourceItems.map(
-                  ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                    <section
-                      key={`overview-light-resource-${annotationIndex}`}
-                      className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
-                    >
-                      <div className="space-y-2">
-                        <button
-                          type="button"
-                          className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
-                        >
-                          Content Resource {resourceNumber}
-                        </button>
-                        <p className="text-sm text-slate-500">
-                          {getContentResourceDisplayTitle(
-                            annotation,
-                            resource,
-                            resourceNumber,
-                          )}
-                        </p>
-                      </div>
+                        <LightResourceTechnicalEditor
+                          annotation={annotation}
+                          resource={resource}
+                          idPrefix={`overview-light-${annotationIndex}`}
+                          onCommit={updateManifestObj}
+                        />
+                      </section>
+                    ),
+                  )}
+                </div>
+              </ManifestField> }
 
-                      <LightResourceTechnicalEditor
-                        annotation={annotation}
-                        resource={resource}
-                        idPrefix={`overview-light-${annotationIndex}`}
-                        onCommit={commitManifestChange}
-                      />
-                    </section>
-                  ),
-                )}
-              </div>
-            </section>
-          ) : null}
-
-          {hasEditedViewingDirection ? (
-            <section className="space-y-3">
-              <p className="text-lg font-medium text-slate-950">
-                Viewing direction
-              </p>
-              <TechnicalOptionGroup
-                options={viewingDirectionOptions}
-                value={manifestObj.getViewingDirection()}
-                onChange={handleViewingDirectionChange}
-                allowDeselect
-              />
-            </section>
-          ) : null}
-
-          {hasEditedBuiltInBehaviorFields ? (
-            <section className="space-y-2">
-              <p className="text-lg font-medium text-slate-950">
-                Built-in behaviors
-              </p>
-
-              {hasEditedManifestOrderingBehavior ? (
-                <section className="border-t border-slate-200">
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between gap-4 py-4 text-left"
-                    onClick={() => toggleSection("manifestOrdering")}
-                    aria-expanded={openSections.manifestOrdering}
-                  >
-                    <span className="text-[15px] font-semibold uppercase tracking-[0.02em] text-slate-500">
-                      Manifest ordering
-                    </span>
-                    <ChevronIcon isOpen={openSections.manifestOrdering} />
-                  </button>
-                  {openSections.manifestOrdering ? (
+            { manifestObj.getViewingDirection() && 
+              <ManifestField label="Viewing direction">
+                <TechnicalOptionGroup
+                  options={viewingDirectionOptions}
+                  value={manifestObj.getViewingDirection()}
+                  onChange={handleViewingDirectionChange}
+                  allowDeselect
+                />
+              </ManifestField> }
+            {manifestObj.behavior && <>
+              <ManifestField label="Behaviors">
+                <DropDownField label="Manifest ordering">
                     <div className="pb-4">
                       <TechnicalOptionGroup
                         options={manifestOrderingOptions}
@@ -575,24 +395,8 @@ function OverviewTab() {
                         onChange={handleManifestOrderingChange}
                       />
                     </div>
-                  ) : null}
-                </section>
-              ) : null}
-
-              {hasEditedRepeatBehavior ? (
-                <section className="border-t border-slate-200">
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between gap-4 py-4 text-left"
-                    onClick={() => toggleSection("repeat")}
-                    aria-expanded={openSections.repeat}
-                  >
-                    <span className="text-[15px] font-semibold uppercase tracking-[0.02em] text-slate-500">
-                      Repeat
-                    </span>
-                    <ChevronIcon isOpen={openSections.repeat} />
-                  </button>
-                  {openSections.repeat ? (
+                </DropDownField>
+                <DropDownField label="Repeat">
                     <div className="pb-4">
                       <TechnicalOptionGroup
                         options={repeatOptions}
@@ -601,24 +405,8 @@ function OverviewTab() {
                         orientation="horizontal"
                       />
                     </div>
-                  ) : null}
-                </section>
-              ) : null}
-
-              {hasEditedAutoAdvanceBehavior ? (
-                <section className="border-t border-slate-200">
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between gap-4 py-4 text-left"
-                    onClick={() => toggleSection("autoAdvance")}
-                    aria-expanded={openSections.autoAdvance}
-                  >
-                    <span className="text-[15px] font-semibold uppercase tracking-[0.02em] text-slate-500">
-                      Auto-advance
-                    </span>
-                    <ChevronIcon isOpen={openSections.autoAdvance} />
-                  </button>
-                  {openSections.autoAdvance ? (
+                </DropDownField>
+                <DropDownField label="Auto-advance">
                     <div className="pb-4">
                       <TechnicalOptionGroup
                         options={autoAdvanceOptions}
@@ -627,48 +415,30 @@ function OverviewTab() {
                         orientation="horizontal"
                       />
                     </div>
-                  ) : null}
-                </section>
-              ) : null}
-            </section>
-          ) : null}
-
-          {behaviorSummaryItems.length > 0 || hasEditedCustomBehaviors ? (
-            <section className="space-y-4">
-              <p className="text-lg font-medium text-slate-950">Behaviors</p>
-
-              {behaviorSummaryItems.length > 0 ? (
+                </DropDownField> 
+            </ManifestField>
+            <ManifestField label="Behaviors" className="space-y-4">
                 <div className="overflow-hidden border-t border-slate-200">
-                  {behaviorSummaryItems.map((item) => (
+                  {manifestObj.behavior.map((item) => (
                     <div
-                      key={`${item.sectionId}-${item.value}`}
-                      className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-4"
+                      key={item}
+                      className="border-b border-slate-200 bg-slate-50 px-4 py-4"
                     >
                       <span className="text-base text-slate-900">
-                        {item.value}
+                        {item}
                       </span>
-                      <button
-                        type="button"
-                        className="text-base font-medium text-slate-500 transition hover:text-slate-700"
-                        onClick={() => openSection(item.sectionId)}
-                      >
-                        edit -&gt;
-                      </button>
                     </div>
                   ))}
                 </div>
-              ) : null}
-
+          
               <ManifestCustomBehaviorEditor
                 behaviors={manifestObj.getCustomBehaviors()}
                 reservedBehaviors={builtInManifestBehaviors}
                 onAddBehavior={handleAddCustomBehavior}
                 onRemoveBehavior={handleRemoveCustomBehavior}
               />
-            </section>
-          ) : null}
-        </section>
-      ) : null}
+            </ManifestField> </>} 
+        </section> 
     </ManifestTabBody>
   );
 }

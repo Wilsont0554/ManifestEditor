@@ -5,6 +5,14 @@ import type {
     IiifSpecificResource,
 } from "@/types/iiif";
 
+function normalizeContainerType(type: string): IiifContainerType {
+    if (type === "Canvas" || type === "Timeline") {
+        return type;
+    }
+
+    return "Scene";
+}
+
 class Target {
     id: string;
     type: string;
@@ -75,6 +83,24 @@ class Target {
 
     getZ(): number {
         return this.selector[0].z ?? 0;
+    }
+
+    clone(): Target {
+        const source = this.source[0];
+        const selector = this.selector[0];
+        const nextTarget = new Target(
+            this.id,
+            source.id,
+            normalizeContainerType(source.type),
+        );
+
+        nextTarget.type = this.type;
+        nextTarget.setSelectorType(selector.type);
+        nextTarget.setX(selector.x ?? 0);
+        nextTarget.setY(selector.y ?? 0);
+        nextTarget.setZ(selector.z ?? 0);
+
+        return nextTarget;
     }
 
     toJSON(): IiifSpecificResource {
