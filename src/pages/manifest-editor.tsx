@@ -138,8 +138,10 @@ function ManifestEditorPage() {
   function handleCreateTextAnnotation(): void {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
-    const annotation = new TextAnnotation(nextAnnotationIndex + 1);
-
+    const textAnnotation = new TextAnnotation(nextAnnotationIndex + 1);
+    const annotation = new Annotation(nextAnnotationIndex + 1, ["commenting"]);
+    
+    annotation.setContentResource(textAnnotation);
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);

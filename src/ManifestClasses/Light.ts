@@ -94,30 +94,6 @@ class Light extends ContentResource {
             this.intensity.type = "Value";
         }
     }
-
-    toJSON(): IiifContentResource {
-        this.synchronizeDerivedIds();
-
-        const out = this.buildBaseJson();
-
-        if (this.color) {
-            out.color = this.color;
-        }
-
-        if (this.intensity) {
-            out.intensity = this.intensity;
-        }
-
-        if (this.lookAt) {
-            out.lookAt = this.lookAt;
-        }
-
-        if (this.angle !== undefined) {
-            out.angle = this.angle;
-        }
-
-        return out;
-    }
 }
 
 export type { LightIntensity };

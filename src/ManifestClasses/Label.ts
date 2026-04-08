@@ -101,10 +101,6 @@ class Label {
     hasValue() {
         return this.getValue().length > 0;
     }
-
-    toJSON(): IiifLanguageMap {
-        return this.language as unknown as IiifLanguageMap;
-    }
 }
 
 export default Label;

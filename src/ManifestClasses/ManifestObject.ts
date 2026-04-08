@@ -371,40 +371,6 @@ class ManifestObject {
             });
         });
     }
-
-    toJSON(): IiifManifest {
-        this.synchronizeStructure();
-
-        const out: IiifManifest = {
-            "@context": presentationContext,
-            id: getEffectiveManifestId(this.id),
-            type: this.type,
-            label: this.getSerializableLabel().toJSON(),
-            items: this.items.map((item) => item.toJSON()),
-        };
-
-        if (this.summary?.hasValue()) {
-            out.summary = this.summary.toJSON();
-        }
-
-        if (this.rights) {
-            out.rights = this.rights;
-        }
-
-        if (this.navDate) {
-            out.navDate = this.navDate;
-        }
-
-        if (this.viewingDirection) {
-            out.viewingDirection = this.viewingDirection;
-        }
-
-        if (this.behavior?.length) {
-            out.behavior = this.behavior;
-        }
-
-        return out;
-    }
 }
 
 export default ManifestObject;

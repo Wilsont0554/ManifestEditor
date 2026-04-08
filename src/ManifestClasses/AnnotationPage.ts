@@ -50,29 +50,6 @@ class AnnotationPage {
             annotation.getMotivation().includes("commenting"),
         );
     }
-
-    toFilteredJSON(
-        items: Annotation[],
-        idOverride?: string,
-    ): IiifAnnotationPage | null {
-        if (items.length === 0) {
-            return null;
-        }
-
-        return {
-            id: idOverride ?? this.id,
-            type: this.type,
-            items: items.map((item) => item.toJSON()),
-        };
-    }
-
-    toJSON(): IiifAnnotationPage {
-        return {
-            id: this.id,
-            type: this.type,
-            items: this.items.map((item) => item.toJSON()),
-        };
-    }
 }
 
 export default AnnotationPage;
