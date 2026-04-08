@@ -1,5 +1,4 @@
 import Annotation from "./Annotation.ts";
-import type { IiifAnnotationPage } from "@/types/iiif";
 
 class AnnotationPage {
     id: string;

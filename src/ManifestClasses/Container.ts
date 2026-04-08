@@ -19,7 +19,7 @@ function normalizeContainerType(type?: string): IiifContainerType {
 
 class Container {
     static VALID_TYPES: Set<IiifContainerType> = new Set(['Timeline', 'Canvas', 'Scene']);
-
+    
     id: string;
     type: IiifContainerType;
     items: AnnotationPage[];

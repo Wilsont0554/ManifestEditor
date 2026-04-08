@@ -419,17 +419,20 @@ function ContentResourceModal({
                   </button>
                 ))}
               </div>
-            ) : selectedTextAnnotation ? (
+            ) : selectedResource?.getType() == "TextualBody" ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Text Annotation {selectedTextAnnotationItem?.annotationNumber ?? 1}
+                  Text Annotation {selectedResourceItem?.resourceNumber ?? 1}
                 </button>
 
                 <TextAnnotationEditor
-                  annotation={selectedTextAnnotation}
+                  annotationParent={selectedAnnotation!}
+                  annotation={selectedResource}
+                  annotationParent={selectedAnnotation}
+                  annotation={selectedResource}
                   idPrefix={`text-annotation-modal-${selectedAnnotationIndex}`}
                   onCommit={commitManifestChange}
                   className="pt-5"

@@ -1,5 +1,4 @@
 import ContentResource from "./ContentResource.ts";
-import type { IiifContentResource } from "@/types/iiif";
 
 const cameraContentResourceTypeSet = new Set([
     "OrthographicCamera",
@@ -48,6 +47,17 @@ class Camera extends ContentResource {
 
     override getType(): CameraContentResourceType {
         return normalizeCameraType(super.getType());
+    }
+
+    setAllCameraValues(newCamera: Camera): void{
+        try{
+            this.setAllValues(newCamera);
+            this.near = newCamera.near;
+            this.far = newCamera.far;
+            this.fieldOfView = newCamera.fieldOfView;
+        }catch(e){
+            console.log(e);
+        }
     }
 
     setNear(near?: number): void {
