@@ -101,6 +101,19 @@ class Container {
         this.items.push(annotation);
     }
 
+    clone(): Container {
+        const nextContainer = new Container(this.id, this.type);
+
+        nextContainer.id = this.id;
+        nextContainer.type = this.type;
+        nextContainer.items = this.items.map((item) => item.clone());
+        nextContainer.duration = this.duration;
+        nextContainer.height = this.height;
+        nextContainer.width = this.width;
+
+        return nextContainer;
+    }
+
     toJSON(): IiifCanvasLike {
         const annotationPages = this.items
             .map((item) => item.toJSON())

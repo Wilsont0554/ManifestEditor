@@ -51,6 +51,15 @@ class MetadataEntry {
         return this.value.getLanguage() ?? "en";
     }
 
+    clone(): MetadataEntry {
+        const nextEntry = new MetadataEntry();
+
+        nextEntry.label = this.label.clone();
+        nextEntry.value = this.value.clone();
+
+        return nextEntry;
+    }
+
     toJSON(): IiifMetadataItem {
         return {
             label: this.label.toJSON(),
@@ -108,6 +117,14 @@ class Metadata {
 
     getEntryCount(): number {
         return this.entries.length;
+    }
+
+    clone(): Metadata {
+        const nextMetadata = new Metadata();
+
+        nextMetadata.entries = this.entries.map((entry) => entry.clone());
+
+        return nextMetadata;
     }
 
     toJSON(): IiifMetadataItem[] {

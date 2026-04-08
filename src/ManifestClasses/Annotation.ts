@@ -120,6 +120,21 @@ class Annotation {
         return this.label;
     }
 
+    clone(): Annotation {
+        const nextAnnotation = new Annotation();
+
+        nextAnnotation.id = this.id;
+        nextAnnotation.type = this.type;
+        nextAnnotation.motivation = [...this.motivation];
+        nextAnnotation.body = this.body?.clone();
+        nextAnnotation.target = this.target instanceof Target
+            ? this.target.clone()
+            : { ...this.target };
+        nextAnnotation.label = this.label?.clone();
+
+        return nextAnnotation;
+    }
+
     toJSON(): IiifAnnotation {
         const out = {
             id: this.id,

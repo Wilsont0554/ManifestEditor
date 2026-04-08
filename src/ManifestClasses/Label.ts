@@ -102,6 +102,10 @@ class Label {
         return this.getValue().length > 0;
     }
 
+    clone(): Label {
+        return new Label(this.getValue(), this.getLanguage() ?? 'en');
+    }
+
     toJSON(): IiifLanguageMap {
         return this.language as unknown as IiifLanguageMap;
     }
