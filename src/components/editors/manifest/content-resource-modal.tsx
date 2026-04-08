@@ -6,6 +6,7 @@ import {
   useRef,
 } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
+import Button from "@/components/shared/button";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
@@ -17,6 +18,7 @@ import {
 import CameraResourceTechnicalEditor from "./shared/camera-resource-technical-editor";
 import ContentResourceEditor from "./shared/content-resource-editor";
 import LightResourceTechnicalEditor from "./shared/light-resource-technical-editor";
+import SoftActionButton from "./shared/soft-action-button";
 import TextAnnotationEditor from "./shared/text-annotation-editor";
 
 export type ContentResourceModalView = "picker" | "editor";
@@ -29,7 +31,8 @@ interface ContentResourceModalProps {
   isOpen: boolean;
   view: ContentResourceModalView;
   selectedAnnotationIndex: number;
-  onClose: () => void;
+  onCancel: () => void;
+  onSave: () => void;
   onSelectType: (type: EditableContentResourceType) => void;
 }
 
@@ -210,7 +213,8 @@ function ContentResourceModal({
   isOpen,
   view,
   selectedAnnotationIndex,
-  onClose,
+  onCancel,
+  onSave,
   onSelectType,
 }: ContentResourceModalProps) {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
@@ -297,7 +301,7 @@ function ContentResourceModal({
   function handleDialogKeyDown(event: ReactKeyboardEvent<HTMLDivElement>): void {
     if (event.key === "Escape") {
       event.stopPropagation();
-      onClose();
+      onCancel();
       return;
     }
 
@@ -335,11 +339,15 @@ function ContentResourceModal({
     return null;
   }
 
+  const canSave = Boolean(
+    selectedTextAnnotation || (selectedAnnotation && selectedResource),
+  );
+
   return (
     <div className="absolute inset-0 z-30">
       <div
         className="absolute inset-0 h-full w-full bg-slate-900/35"
-        onClick={onClose}
+        onClick={onCancel}
         aria-hidden="true"
       />
 
@@ -380,7 +388,7 @@ function ContentResourceModal({
               ref={closeButtonRef}
               type="button"
               className="inline-flex h-11 w-11 items-center justify-center rounded-full text-4xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-              onClick={onClose}
+              onClick={onCancel}
               aria-label="Close content resource modal"
             >
               &times;
@@ -474,6 +482,27 @@ function ContentResourceModal({
                 No content resource is available to edit.
               </p>
             )}
+          </div>
+
+          <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-5 sm:px-7">
+            <SoftActionButton
+              type="button"
+              className="justify-center"
+              onClick={onCancel}
+            >
+              Cancel
+            </SoftActionButton>
+
+            {view === "editor" ? (
+              <Button
+                type="button"
+                className="min-w-24 justify-center"
+                onClick={onSave}
+                disabled={!canSave}
+              >
+                Save
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>

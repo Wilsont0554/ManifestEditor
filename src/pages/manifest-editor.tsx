@@ -13,6 +13,7 @@ import ManifestComponent from "@components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
+import ManifestObject from "@/ManifestClasses/ManifestObject";
 import { downloadJsonFile } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
@@ -33,6 +34,11 @@ interface ResizeState {
   startWidth: number;
 }
 
+interface ContentResourceModalSnapshot {
+  manifestObj: ManifestObject;
+  selectedMetadataAnnotationIndex: number;
+}
+
 function ManifestEditorPage() {
   const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
     useState(false);
@@ -45,7 +51,10 @@ function ManifestEditorPage() {
   const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
     useState(0);
   const resizeStateRef = useRef<ResizeState | null>(null);
-  const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
+  const contentResourceModalSnapshotRef =
+    useRef<ContentResourceModalSnapshot | null>(null);
+  const { manifestObj, updateManifestObj, setManifestObj } =
+    useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
 
   useEffect(() => {
@@ -102,7 +111,19 @@ function ManifestEditorPage() {
     updateManifestObj();
   }
 
+  function captureContentResourceModalSnapshot(): void {
+    contentResourceModalSnapshotRef.current = {
+      manifestObj: manifestObj.clone(),
+      selectedMetadataAnnotationIndex,
+    };
+  }
+
+  function clearContentResourceModalSnapshot(): void {
+    contentResourceModalSnapshotRef.current = null;
+  }
+
   function handleOpenContentResourceModal(): void {
+    captureContentResourceModalSnapshot();
     setContentResourceModalView("picker");
     setIsContentResourceModalOpen(true);
   }
@@ -110,6 +131,23 @@ function ManifestEditorPage() {
   function handleCloseContentResourceModal(): void {
     setIsContentResourceModalOpen(false);
     setContentResourceModalView("picker");
+  }
+
+  function handleCancelContentResourceModal(): void {
+    const snapshot = contentResourceModalSnapshotRef.current;
+
+    if (snapshot) {
+      setManifestObj(snapshot.manifestObj);
+      setSelectedMetadataAnnotationIndex(snapshot.selectedMetadataAnnotationIndex);
+    }
+
+    clearContentResourceModalSnapshot();
+    handleCloseContentResourceModal();
+  }
+
+  function handleSaveContentResourceModal(): void {
+    clearContentResourceModalSnapshot();
+    handleCloseContentResourceModal();
   }
 
   function handleCreateContentResource(
@@ -135,6 +173,8 @@ function ManifestEditorPage() {
   }
 
   function handleCreateTextAnnotation(): void {
+    captureContentResourceModalSnapshot();
+
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new TextAnnotation(nextAnnotationIndex + 1);
@@ -161,7 +201,8 @@ function ManifestEditorPage() {
         isOpen={isContentResourceModalOpen}
         view={contentResourceModalView}
         selectedAnnotationIndex={selectedMetadataAnnotationIndex}
-        onClose={handleCloseContentResourceModal}
+        onCancel={handleCancelContentResourceModal}
+        onSave={handleSaveContentResourceModal}
         onSelectType={handleCreateContentResource}
       />
 
@@ -205,7 +246,6 @@ function ManifestEditorPage() {
 
               <Button
                 type="button"
-                className="!bg-white! text-slate-900! ring-1 ring-slate-300 hover:bg-slate-100!"
                 onClick={handleCreateTextAnnotation}
               >
                 Add Text Annotation

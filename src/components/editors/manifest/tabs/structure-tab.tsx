@@ -2,18 +2,19 @@ import { useContext } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
 import {
   getContentResourceDisplayTitle,
-  getContentResourceItems,
+  getDisplayableContentResourceItems,
   getTextAnnotationDisplayTitle,
   getTextAnnotationItems,
 } from "@/utils/content-resource";
 import ContentResourceEditor from "../shared/content-resource-editor";
+import CollapsibleResourceCard from "../shared/collapsible-resource-card";
 import EmptyStateCard from "../shared/empty-state-card";
 import ManifestTabBody from "../shared/manifest-tab-body";
 import TextAnnotationEditor from "../shared/text-annotation-editor";
 
 function StructureTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
-  const resourceItems = getContentResourceItems(manifestObj);
+  const resourceItems = getDisplayableContentResourceItems(manifestObj);
   const textAnnotationItems = getTextAnnotationItems(manifestObj);
 
   function commitManifestChange(): void {
@@ -54,8 +55,8 @@ function StructureTab() {
         <div className="space-y-1">
           <p className="text-lg font-medium text-slate-950">Content resources</p>
           <p className="text-sm leading-6 text-slate-500">
-            Review and edit each content resource and text annotation directly
-            from the sidebar.
+            Review and edit each image or model content resource and text
+            annotation directly from the sidebar.
           </p>
         </div>
 
@@ -63,26 +64,16 @@ function StructureTab() {
           <div className="space-y-4">
             {resourceItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                <section
+                <CollapsibleResourceCard
                   key={`structure-content-resource-${annotationIndex}`}
-                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                  badgeLabel={`Content Resource ${resourceNumber}`}
+                  description={getContentResourceDisplayTitle(
+                    annotation,
+                    resource,
+                    resourceNumber,
+                  )}
+                  collapsible
                 >
-                  <div className="space-y-2">
-                    <button
-                      type="button"
-                      className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
-                    >
-                      Content Resource {resourceNumber}
-                    </button>
-                    <p className="text-sm text-slate-500">
-                      {getContentResourceDisplayTitle(
-                        annotation,
-                        resource,
-                        resourceNumber,
-                      )}
-                    </p>
-                  </div>
-
                   <ContentResourceEditor
                     annotation={annotation}
                     resource={resource}
@@ -91,14 +82,14 @@ function StructureTab() {
                     onResourceLabelSync={syncManifestLabel}
                     showMetadataAction={false}
                   />
-                </section>
+                </CollapsibleResourceCard>
               ),
             )}
           </div>
         ) : (
           <EmptyStateCard
             title="No content resources"
-            description="Add a content resource to populate editable fields here."
+            description="Add an image or model content resource to populate editable fields here."
             align="left"
             className="border border-slate-200 bg-slate-50"
             titleClassName="text-slate-950 text-lg"
