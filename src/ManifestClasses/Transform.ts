@@ -62,7 +62,7 @@ class Transform {
     }
 
     toJSON(): IiifTransForm {
-        const out = IiifTransform = {
+        const out: IiifTransForm = {
             type: this.type,
         };
 
