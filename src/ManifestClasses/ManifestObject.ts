@@ -309,19 +309,10 @@ class ManifestObject {
                     if (resource instanceof Camera) {
                         cameraIndex += 1;
                         resource.setID(`${containerId}/cameras/${cameraIndex}`);
-
-                        if (annotation.getTarget()) {
-                            annotation.ensureSpatialTarget(
-                                targetId,
-                                containerId,
-                                container.getType(),
-                            );
-                            return;
-                        }
-
-                        annotation.setTargetReference(
+                        annotation.ensureSpatialTarget(
+                            targetId,
                             containerId,
-                            container.getType() as IiifContainerType,
+                            container.getType(),
                         );
                         return;
                     }

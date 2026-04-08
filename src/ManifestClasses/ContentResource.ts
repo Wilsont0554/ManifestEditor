@@ -118,8 +118,12 @@ class ContentResource {
         return this.type === "Model";
     }
 
-    getTransfroms(): Transform[] {
+    getTransforms(): Transform[] {
         return this.transforms;
+    }
+
+    getTransfroms(): Transform[] {
+        return this.getTransforms();
     }
 
     addTransform(type: string = "RotateTransform"): Transform {
@@ -175,6 +179,24 @@ class ContentResource {
         }
 
         return out;
+    }
+
+    toAnnotationBodyJSON(): IiifContentResource | IiifSpecificResource {
+        const baseJson = this.buildBaseJson();
+
+        if (!this.isModelResource()) {
+            return baseJson;
+        }
+
+        const transforms = this.transforms
+            .filter((transform) => transform.hasValue())
+            .map((transform) => transform.toJSON());
+
+        return {
+            type: "SpecificResource",
+            source: [baseJson],
+            ...(transforms.length > 0 ? { transform: transforms } : {}),
+        };
     }
 
     toJSON(): IiifContentResource {
