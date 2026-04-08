@@ -6,13 +6,13 @@ const transformTypeSet = new Set([
     "TranslateTransform"
 ]);
 
-export type TransformType = "RotateTransform" | "ScaleTransform" | "TranslateTransfrom";
+export type TransformType = "RotateTransform" | "ScaleTransform" | "TranslateTransform";
 
 function normalizeTransformType(type: string): TransformType {
     if(type === "ScaleTransform" || type === "TranslateTransform") {
         return type;
     }
-    else return "RotateTransfrom";
+    else return "RotateTransform";
 }
 
 class Transform {
@@ -71,7 +71,7 @@ class Transform {
         }
 
         if(this.y !== undefined){
-            out.y = this.x;
+            out.y = this.y;
         }
 
         if(this.z !== undefined){
@@ -80,4 +80,5 @@ class Transform {
 
         return out;
     }
-} export default Transform;
+} 
+export default Transform;
