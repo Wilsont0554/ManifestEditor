@@ -1,4 +1,9 @@
 import ContentResource from "./ContentResource.ts";
+<<<<<<< HEAD
+=======
+import Target from "./Target.ts";
+import type { IiifAnnotation, IiifLanguageMap, IiifTextualBody } from "@/types/iiif";
+>>>>>>> 8401b52e06cd80b454e60c55b728d279ccca5b4a
 
 class TextAnnotation extends ContentResource {
     private value: string;

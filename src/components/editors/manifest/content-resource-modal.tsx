@@ -423,6 +423,8 @@ function ContentResourceModal({
                 <TextAnnotationEditor
                   annotationParent={selectedAnnotation!}
                   annotation={selectedResource}
+                  annotationParent={selectedAnnotation}
+                  annotation={selectedResource}
                   idPrefix={`text-annotation-modal-${selectedAnnotationIndex}`}
                   onCommit={commitManifestChange}
                   className="pt-5"
