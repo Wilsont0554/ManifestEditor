@@ -40,6 +40,10 @@ class Annotation {
         return this.body;
     }
 
+    removeContentResource(): void {
+        this.body = undefined;
+    }
+
     getMotivation(): string[] {
         return this.motivation;
     }

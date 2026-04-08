@@ -44,6 +44,18 @@ function ManifestEditorPage() {
     useState<ManifestTabId>("overview");
   const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
     useState(0);
+  const [githubToken, setGithubToken] = useState<string>(
+    localStorage.getItem("githubToken") || ""
+  );
+  const [gistUrl, setGistUrl] = useState<string | null>(null);
+  const [gistRawUrl, setGistRawUrl] = useState<string | null>(null);
+  const [gistId, setGistId] = useState<string | null>(null);
+  const [isCreatingGist, setIsCreatingGist] = useState(false);
+  const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [showTokenWarning, setShowTokenWarning] = useState(
+    githubToken.length === 0
+  );
   const resizeStateRef = useRef<ResizeState | null>(null);
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
@@ -153,6 +165,145 @@ function ManifestEditorPage() {
     downloadJsonFile(manifestObj, "manifest");
   }
 
+  async function handleCreateGist(): Promise<void> {
+    if (!githubToken) {
+      alert("Please enter your GitHub token to create a gist.");
+      setShowTokenWarning(true);
+      return;
+    }
+
+    setIsCreatingGist(true);
+    setGistUrl(null);
+
+    try {
+      const response = await fetch("https://api.github.com/gists", {
+        method: "POST",
+        headers: {
+          Authorization: `token ${githubToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description: "IIIF Manifest exported from Manifest Editor",
+          public: true,
+          files: {
+            "manifest.json": {
+              content: JSON.stringify(manifestObj, null, 2),
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || `GitHub API error: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      setGistId(data.id);
+      setGistUrl(data.html_url);
+      setGistRawUrl(data.files["manifest.json"].raw_url);
+    } catch (error) {
+      console.error("Failed to create gist:", error);
+      alert(
+        error instanceof Error
+          ? `Failed to create gist: ${error.message}`
+          : "Failed to create gist. Check your token and try again."
+      );
+    } finally {
+      setIsCreatingGist(false);
+    }
+  }
+
+  async function handleUpdateGist(): Promise<void> {
+    if (!githubToken) {
+      alert("Please enter your GitHub token to update the gist.");
+      setShowTokenWarning(true);
+      return;
+    }
+
+    if (!gistId) {
+      alert("No existing gist to update. Create one first.");
+      return;
+    }
+
+    if (isCreatingGist) {
+      return;
+    }
+
+    setIsCreatingGist(true);
+
+    try {
+      const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `token ${githubToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          files: {
+            "manifest.json": {
+              content: JSON.stringify(manifestObj, null, 2),
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || `GitHub API error: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      setGistUrl(data.html_url);
+      setGistRawUrl(data.files["manifest.json"].raw_url);
+    } catch (error) {
+      console.error("Failed to update gist:", error);
+      alert(
+        error instanceof Error
+          ? `Failed to update gist: ${error.message}`
+          : "Failed to update gist. Check your token and try again."
+      );
+    } finally {
+      setIsCreatingGist(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!isAutoUpdateEnabled || !gistId) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void handleUpdateGist();
+    }, 30000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isAutoUpdateEnabled, gistId, githubToken, manifestObj]);
+
+  function handleClearToken(): void {
+    setGithubToken("");
+    localStorage.removeItem("githubToken");
+    setGistUrl(null);
+    setGistRawUrl(null);
+    setGistId(null);
+    setIsAutoUpdateEnabled(false);
+    setShowTokenWarning(true);
+  }
+
+  function handleExportButtonClick(): void {
+    setIsExportModalOpen(true);
+
+    if (isAutoUpdateEnabled && gistId) {
+      void handleUpdateGist();
+    }
+  }
+
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;
@@ -174,6 +325,41 @@ function ManifestEditorPage() {
         }}
       >
         <div className="mr-auto max-w-245 space-y-4 pb-6">
+          {/* GitHub Token Security Warning */}
+          {showTokenWarning && githubToken.length === 0 && (
+            <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-yellow-900">
+                    ⚠️ GitHub Token Required for Gists
+                  </p>
+                  <p className="mt-1 text-xs text-yellow-800">
+                    To create a gist, you need a GitHub personal access token with
+                    "gist" scope. This token is stored temporarily in your browser
+                    and never sent anywhere except to GitHub's API.
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <a
+                      href="https://github.com/settings/tokens"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-yellow-900 underline hover:text-yellow-700"
+                    >
+                      Create Token on GitHub
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setShowTokenWarning(false)}
+                      className="text-xs text-yellow-700 hover:text-yellow-900"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -183,6 +369,21 @@ function ManifestEditorPage() {
               >
                 Download JSON
               </button>
+
+              <button
+                className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                type="button"
+                onClick={handleExportButtonClick}
+                title="Export manifest to GitHub Gist"
+              >
+                Export
+              </button>
+              {isAutoUpdateEnabled && gistId && (
+                <span className="w-full text-xs text-slate-500">
+                  Auto-Update enabled
+                </span>
+              )}
+
               <label htmlFor="container-type" className="sr-only">
                 Container Type
               </label>
@@ -218,6 +419,135 @@ function ManifestEditorPage() {
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <JsonEditor data={manifestPreview} />
         </div>
+
+        {/* Export Modal */}
+        {isExportModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-sm w-full mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Export to GitHub Gist
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsExportModalOpen(false)}
+                  className="text-slate-500 hover:text-slate-700 text-2xl leading-none"
+                  title="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="export-token" className="block text-xs font-medium text-slate-700 mb-2">
+                    GitHub Token
+                  </label>
+                  <input
+                    id="export-token"
+                    type="password"
+                    placeholder="Enter your GitHub token"
+                    value={githubToken}
+                    onChange={(e) => {
+                      setGithubToken(e.target.value);
+                      localStorage.setItem("githubToken", e.target.value);
+                      setShowTokenWarning(false);
+                    }}
+                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                    title="Your GitHub personal access token (not saved permanently)"
+                  />
+                  <a
+                    href="https://github.com/settings/tokens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 underline hover:text-blue-800 mt-1 inline-block"
+                    title="Open GitHub token settings page"
+                  >
+                    Get Token
+                  </a>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className="flex-1 cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="button"
+                    onClick={handleCreateGist}
+                    disabled={!githubToken || isCreatingGist || isAutoUpdateEnabled}
+                    title="Create and share manifest as a GitHub gist"
+                  >
+                    {isCreatingGist ? "Creating..." : "Create Gist"}
+                  </button>
+                  {githubToken && (
+                    <button
+                      className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                      type="button"
+                      onClick={handleClearToken}
+                      title="Clear stored token from browser"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {gistId && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="auto-update"
+                      type="checkbox"
+                      checked={isAutoUpdateEnabled}
+                      onChange={(e) => setIsAutoUpdateEnabled(e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="auto-update" className="text-sm text-slate-700">
+                      Auto-update every 30 seconds and when Export is clicked again
+                    </label>
+                  </div>
+                )}
+
+                {gistRawUrl && (
+                  <div className="border-t border-slate-200 pt-4 space-y-3">
+                    <div>
+                      <a
+                        href={gistUrl!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full block text-center rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        title="View gist on GitHub"
+                      >
+                        View Gist
+                      </a>
+                      <p className="text-xs text-slate-500 mt-1 break-all">{gistUrl}</p>
+                    </div>
+                    <div>
+                      <a
+                        href={gistRawUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full block text-center rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        title="View raw manifest JSON"
+                      >
+                        View RAW
+                      </a>
+                      <p className="text-xs text-slate-500 mt-1 break-all">{gistRawUrl}</p>
+                    </div>
+                    <div>
+                      <a
+                        href={`https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document=${encodeURIComponent(gistRawUrl)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full block text-center rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        title="View manifest in Voyager"
+                      >
+                        View in Voyager
+                      </a>
+                      <p className="text-xs text-slate-500 mt-1 break-all">{`https://smithsonian.github.io/voyager-dev/iiif/iiif_demo?document=${encodeURIComponent(gistRawUrl)}`}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {isInspectorOpen ? (
