@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   useContext,
+  ChangeEvent,
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
@@ -13,7 +14,7 @@ import ManifestComponent from "@components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
-import { downloadJsonFile } from "@/utils/file";
+import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import { manifestViewingDirections, type IiifContainerType } from "@/types/iiif";
@@ -172,10 +173,6 @@ function ManifestEditorPage() {
     updateManifestObj(manifestObj.clone());
   }
 
-  function handleDownloadManifest(): void {
-    downloadJsonFile(manifestObj, "manifest");
-  }
-
   async function handleCreateGist(): Promise<void> {
     if (!githubToken) {
       alert("Please enter your GitHub token to create a gist.");
@@ -225,6 +222,19 @@ function ManifestEditorPage() {
     } finally {
       setIsCreatingGist(false);
     }
+  }
+
+  async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void>{
+    const uploadedManifest = event.target.files?.[0] ?? null;
+    const stringManifest = await uploadedManifest?.text();
+    const newManifest = JSON.parse(stringManifest!);
+
+   const test = createManifestObjectFromUpload(newManifest);
+   updateManifestObj(test);
+  }
+
+  function handleDownloadManifest(): void {
+    downloadJsonFile(manifestObj, "manifest");
   }
 
   async function handleUpdateGist(): Promise<void> {
@@ -424,6 +434,11 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
+
+              Upload Manifest:
+              <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
+                <input type="file" accept="json" onChange={handleUploadManifest}/>
+              </div>
 
               <Button 
                 className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"

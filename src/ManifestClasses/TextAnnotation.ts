@@ -12,6 +12,16 @@ class TextAnnotation extends ContentResource {
         //this.position = new Target(`${this.id}/position`);
     }
 
+    setAllTextAnnotationValues(newTextAnnotation: TextAnnotation): void{
+        try{
+            this.setAllValues(newTextAnnotation as ContentResource);
+            this.value = newTextAnnotation.value;
+            this.language = newTextAnnotation.language;
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     setBodyValue(value: string): void {
         this.value = value;
     }

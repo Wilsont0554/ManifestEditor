@@ -127,6 +127,34 @@ class ManifestObject {
         return this.summary?.getValue() ?? '';
     }
 
+    setAllValues(newManifest: ManifestObject): void{
+        try{
+            this.id = newManifest.id;
+            this.type = newManifest.type;
+            this.rights = newManifest.rights;
+            this.navDate = newManifest.navDate;
+            this.behavior = newManifest.behavior;
+
+            if (newManifest.label != undefined){
+                const labelCodeArray = Object.keys(newManifest.label);
+                const labelCode = labelCodeArray[0] as keyof Label;
+
+                this.setLabel((newManifest.label[labelCode][0] as unknown as string));
+                this.label!.setLanguage(labelCode);
+            }
+
+            if (newManifest.summary != undefined){
+                const summaryCodeArray = Object.keys(newManifest.summary);
+                const summaryCode = summaryCodeArray[0] as keyof Label;
+
+                this.setSummary(newManifest.summary[summaryCode][0] as unknown as string);
+                this.summary!.setLanguage(summaryCode);
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     getSummaryLanguage(): string {
         return this.summary?.getLanguage() ?? 'en';
     }
