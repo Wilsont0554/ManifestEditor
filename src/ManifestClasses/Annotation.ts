@@ -24,10 +24,6 @@ class Annotation {
         this.target = new Target();
         this.createLabel("en");
     }
-
-    test(){
-        alert('test');
-    }
     
     setContentResource(contentResource: ContentResource) {
         this.body = contentResource;
