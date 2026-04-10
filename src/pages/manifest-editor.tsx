@@ -16,6 +16,7 @@ import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
 import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
+import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import { manifestViewingDirections, type IiifContainerType } from "@/types/iiif";
 import {
@@ -65,6 +66,8 @@ function ManifestEditorPage() {
     githubToken.length === 0
   );
   const [gistBaseName, setGistBaseName] = useState("manifest");
+  const [gistImportUrl, setGistImportUrl] = useState("");
+  const [isImportingGist, setIsImportingGist] = useState(false);
   const gistFilename = `${gistBaseName}.json`;
   const resizeStateRef = useRef<ResizeState | null>(null);
   const contentResourceModalSnapshotRef =
@@ -265,13 +268,133 @@ function ManifestEditorPage() {
     }
   }
 
-  async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void>{
-    const uploadedManifest = event.target.files?.[0] ?? null;
-    const stringManifest = await uploadedManifest?.text();
-    const newManifest = JSON.parse(stringManifest!);
+  function applyUploadedManifest(nextManifest: ManifestObject): void {
+    const parsedManifest = createManifestObjectFromUpload(nextManifest);
 
-   const test = createManifestObjectFromUpload(newManifest);
-   updateManifestObj(test);
+    if (parsedManifest.getLabelValue().trim() === "Blank Manifest") {
+      parsedManifest.setLabel("");
+    }
+
+    setManifestObj(parsedManifest);
+  }
+
+  function extractGistId(inputValue: string): string | null {
+    const value = inputValue.trim();
+
+    if (!value) {
+      return null;
+    }
+
+    if (/^[a-f0-9]{20,}$/i.test(value)) {
+      return value;
+    }
+
+    try {
+      const parsed = new URL(value);
+      const pathParts = parsed.pathname.split("/").filter(Boolean);
+
+      if (parsed.hostname === "gist.github.com" && pathParts.length >= 2) {
+        return pathParts[1];
+      }
+
+      if (
+        parsed.hostname === "gist.githubusercontent.com" &&
+        pathParts.length >= 2
+      ) {
+        return pathParts[1];
+      }
+    } catch {
+      return null;
+    }
+
+    return null;
+  }
+
+  async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const uploadedManifest = event.target.files?.[0] ?? null;
+
+    if (!uploadedManifest) {
+      return;
+    }
+
+    try {
+      const stringManifest = await uploadedManifest.text();
+      const nextManifest = JSON.parse(stringManifest);
+      applyUploadedManifest(nextManifest);
+    } catch (error) {
+      console.error("Failed to upload manifest:", error);
+      alert("Failed to upload manifest. Please upload a valid JSON file.");
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  async function handleUploadManifestFromGist(): Promise<void> {
+    const gistIdentifier = extractGistId(gistImportUrl);
+
+    if (!gistIdentifier) {
+      alert("Enter a valid GitHub gist URL, raw gist URL, or gist ID.");
+      return;
+    }
+
+    setIsImportingGist(true);
+
+    try {
+      const gistResponse = await fetch(`https://api.github.com/gists/${gistIdentifier}`);
+
+      if (!gistResponse.ok) {
+        throw new Error(`GitHub API error: ${gistResponse.status}`);
+      }
+
+      const gistData = await gistResponse.json();
+      const fileEntries = Object.values(gistData.files ?? {}) as Array<{
+        filename?: string;
+        raw_url?: string;
+        content?: string;
+      }>;
+
+      if (!fileEntries.length) {
+        throw new Error("This gist has no files.");
+      }
+
+      const manifestFile =
+        fileEntries.find((entry) =>
+          (entry.filename ?? "").toLowerCase().endsWith(".json")
+        ) ?? fileEntries[0];
+
+      let manifestText = manifestFile.content;
+
+      if (!manifestText && manifestFile.raw_url) {
+        const rawResponse = await fetch(manifestFile.raw_url);
+
+        if (!rawResponse.ok) {
+          throw new Error(`Unable to fetch gist file content (${rawResponse.status}).`);
+        }
+
+        manifestText = await rawResponse.text();
+      }
+
+      if (!manifestText) {
+        throw new Error("Unable to load gist file content.");
+      }
+
+      const nextManifest = JSON.parse(manifestText);
+      applyUploadedManifest(nextManifest);
+
+      setGistId(gistData.id ?? gistIdentifier);
+      setGistUrl(gistData.html_url ?? null);
+      setGistRawUrl(manifestFile.raw_url ?? null);
+      setGistImportUrl("");
+    } catch (error) {
+      console.error("Failed to import gist:", error);
+      alert(
+        error instanceof Error
+          ? `Failed to import gist: ${error.message}`
+          : "Failed to import gist. Check the link and try again."
+      );
+    } finally {
+      setIsImportingGist(false);
+    }
   }
 
   function handleDownloadManifest(): void {
@@ -479,6 +602,31 @@ function ManifestEditorPage() {
               Upload Manifest:
               <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
                 <input type="file" accept="json" onChange={handleUploadManifest}/>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <label
+                  htmlFor="gist-import-url"
+                  className="text-sm font-medium text-slate-700"
+                >
+                  Import Gist:
+                </label>
+                <input
+                  id="gist-import-url"
+                  type="text"
+                  placeholder="Paste gist URL or gist ID"
+                  value={gistImportUrl}
+                  onChange={(event) => setGistImportUrl(event.target.value)}
+                  className="min-w-65 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                />
+                <button
+                  type="button"
+                  className="cursor-pointer rounded-md bg-slate-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => void handleUploadManifestFromGist()}
+                  disabled={isImportingGist || !gistImportUrl.trim()}
+                >
+                  {isImportingGist ? "Importing..." : "Import Gist"}
+                </button>
               </div>
 
               <Button 
