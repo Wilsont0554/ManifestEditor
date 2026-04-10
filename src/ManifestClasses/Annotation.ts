@@ -21,10 +21,7 @@ class Annotation {
         this.id = `https://example.org/iiif/manifest/1/scene/1/anno/${index}`;
         this.type = "Annotation";
         this.motivation = motivation;
-        this.target = {
-            id: "https://example.org/iiif/manifest/1/scene/1",
-            type: "Scene",
-        };
+        this.target = new Target();
         this.createLabel("en");
     }
 
