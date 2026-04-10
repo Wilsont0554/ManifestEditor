@@ -343,7 +343,7 @@ function ManifestEditorPage() {
                     ⚠️ GitHub Token Required for Gists
                   </p>
                   <p className="mt-1 text-xs text-yellow-800">
-                    To create a gist, you need a GitHub personal access token with
+                    To see the manifest preview, please connect to GitHub using a personal access token with
                     "gist" scope. This token is stored temporarily in your browser
                     and never sent anywhere except to GitHub's API.
                   </p>
@@ -387,6 +387,13 @@ function ManifestEditorPage() {
               >
                 Export
               </button>
+              <button
+                className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                type="button"
+                onClick={handleUpdateGist}
+              >
+                Refresh Preview
+              </button>
               {isAutoUpdateEnabled && gistId && (
                 <span className="w-full text-xs text-slate-500">
                   Auto-Update enabled
@@ -421,29 +428,29 @@ function ManifestEditorPage() {
                 onClick={handleCreateTextAnnotation}
               >
                 Add Text Annotation
-              </Button>
-
+              </Button>              
+            </div>
+          </div>
+          
+        </div>
+        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="jsonWindow">
+              {githubToken.length > 0 ? (
+                <div className="voyagerWindow">
+                  <voyager-explorer document={gistRawUrl} id="voyager"></voyager-explorer>
+                </div>
+              ) : (null)}
+            <div className="jsonPreview">
               <Button 
                 className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
                 onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
               >
                 JSON Preview
               </Button>
-              
-            </div>
-          </div>
-          
-        </div>
-        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-           
-          <div className="voyagerWindow">
-            <voyager-explorer document={gistRawUrl} id="voyager" style={{width: "500px", height: "500px"}}></voyager-explorer>
-          </div>
-
-          <div className="jsonWindow">
               {isJSONWindowOpen ? (
-                <JsonEditor data={manifestPreview} />
-              ) : (null)}
+                  <JsonEditor className="previewTest" data={manifestPreview} />
+                ) : (null)}
+            </div>
           </div>
         </div>
         
