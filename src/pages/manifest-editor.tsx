@@ -56,6 +56,8 @@ function ManifestEditorPage() {
   const [showTokenWarning, setShowTokenWarning] = useState(
     githubToken.length === 0
   );
+  const [gistBaseName, setGistBaseName] = useState("manifest");
+  const gistFilename = `${gistBaseName}.json`;
   const resizeStateRef = useRef<ResizeState | null>(null);
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
@@ -184,7 +186,7 @@ function ManifestEditorPage() {
           description: "IIIF Manifest exported from Manifest Editor",
           public: true,
           files: {
-            "manifest.json": {
+            [gistFilename]: {
               content: JSON.stringify(manifestObj, null, 2),
             },
           },
@@ -201,7 +203,7 @@ function ManifestEditorPage() {
       const data = await response.json();
       setGistId(data.id);
       setGistUrl(data.html_url);
-      setGistRawUrl(data.files["manifest.json"].raw_url);
+      setGistRawUrl(data.files[gistFilename].raw_url);
     } catch (error) {
       console.error("Failed to create gist:", error);
       alert(
@@ -241,7 +243,7 @@ function ManifestEditorPage() {
         },
         body: JSON.stringify({
           files: {
-            "manifest.json": {
+            [gistFilename]: {
               content: JSON.stringify(manifestObj, null, 2),
             },
           },
@@ -257,7 +259,7 @@ function ManifestEditorPage() {
 
       const data = await response.json();
       setGistUrl(data.html_url);
-      setGistRawUrl(data.files["manifest.json"].raw_url);
+      setGistRawUrl(data.files[gistFilename].raw_url);
     } catch (error) {
       console.error("Failed to update gist:", error);
       alert(
@@ -463,6 +465,26 @@ function ManifestEditorPage() {
                   >
                     Get Token
                   </a>
+                </div>
+
+                <div>
+                  <label htmlFor="export-filename" className="block text-xs font-medium text-slate-700 mb-2">
+                    Filename
+                  </label>
+                  <div className="flex">
+                    <input
+                      id="export-filename"
+                      type="text"
+                      placeholder="manifest"
+                      value={gistBaseName}
+                      onChange={(e) => setGistBaseName(e.target.value)}
+                      className="flex-1 rounded-l-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                      title="Name of the file in the gist"
+                    />
+                    <span className="inline-flex items-center rounded-r-md border border-l-0 border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+                      .json
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
