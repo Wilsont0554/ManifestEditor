@@ -3,12 +3,14 @@ import ContentResource from "./ContentResource.ts";
 class TextAnnotation extends ContentResource {
     private value: string;
     private language: string;
+    private purpose: string;
     //private position: Target;
 
     constructor(index: number = 1) {
-        super(`https://example.org/iiif/manifest/1/scene/1/anno/${index}`, "TextualBody", "text/plain");
+        super(`https://example.org/iiif/manifest/1/scene/1/anno/${index}/body`, "TextualBody", "text/plain");
         this.value = "";
         this.language = "en";
+        this.purpose = "commenting";
         //this.position = new Target(`${this.id}/position`);
     }
 
