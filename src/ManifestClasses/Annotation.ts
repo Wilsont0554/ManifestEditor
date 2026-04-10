@@ -2,11 +2,10 @@ import Label from './Label.ts';
 import ContentResource from './ContentResource.ts';
 import Target from "./Target.ts";
 import type {
-    IiifAnnotation,
     IiifContainerType,
-    IiifContentResource,
     IiifResourceReference,
 } from "@/types/iiif";
+import TextAnnotation from './TextAnnotation.ts';
 
 type AnnotationTargetReference = IiifResourceReference;
 
@@ -18,10 +17,10 @@ class Annotation {
     target: AnnotationTargetReference | Target;
     label?: Label;
 
-    constructor(index: number = 1) {
+    constructor(index: number = 1, motivation: string[] = ["painting"]) {
         this.id = `https://example.org/iiif/manifest/1/scene/1/anno/${index}`;
         this.type = "Annotation";
-        this.motivation = ["painting"];
+        this.motivation = motivation;
         this.target = {
             id: "https://example.org/iiif/manifest/1/scene/1",
             type: "Scene",
@@ -29,11 +28,15 @@ class Annotation {
         this.createLabel("en");
     }
 
+    test(){
+        alert('test');
+    }
+    
     setContentResource(contentResource: ContentResource) {
         this.body = contentResource;
     }
 
-    getContentResource(_index?: number): ContentResource | undefined {
+    getContentResource(_index?: number): ContentResource | undefined | TextAnnotation {
         return this.body;
     }
 
@@ -55,6 +58,37 @@ class Annotation {
 
     setTargetReference(id: string, type: IiifContainerType): void {
         this.target = { id, type };
+    }
+
+    setAllValues(newAnnotation: Annotation): void{
+        try{
+
+            this.id = newAnnotation.id;
+            this.type = newAnnotation.type;
+            this.motivation = newAnnotation.motivation;
+            
+            const tempTarget = new Target;
+
+            if (newAnnotation.target.source != undefined){
+                tempTarget.setSource(newAnnotation.target.source[0].id, newAnnotation.target.source[0].type);
+                tempTarget.setSelectorType(newAnnotation.target.selector[0].type);
+                tempTarget.setX(newAnnotation.target.selector[0].x);
+                tempTarget.setY(newAnnotation.target.selector[0].y);
+                tempTarget.setZ(newAnnotation.target.selector[0].z);
+
+                this.setTarget(tempTarget);
+            }
+
+            if (newAnnotation.label != undefined){
+                const labelCodeArray = Object.keys(newAnnotation.label!);
+                const labelCode = labelCodeArray[0] as keyof Label;
+
+                this.setLabel(0, (newAnnotation.label[labelCode][0] as unknown as string));
+                this.label!.setLanguage(labelCode);
+            }
+        }catch(e){
+            console.log(e);
+        }
     }
 
     ensureSpatialTarget(
@@ -140,11 +174,12 @@ class Annotation {
             id: this.id,
             type: this.type,
             motivation: this.motivation,
+            body: this.body?.toJSON() as IiifContentResource,
             target: this.target instanceof Target ? this.target.toJSON() : this.target,
         } as Partial<IiifAnnotation>;
 
-        if (this.body) {
-            out.body = this.body.toJSON() as IiifContentResource;
+        if (!this.body) {
+            out.body = undefined;
         }
 
         if (this.label?.hasValue()) {

@@ -3,7 +3,6 @@ import { manifestObjContext } from "@/context/manifest-context";
 import {
   getContentResourceDisplayTitle,
   getDisplayableContentResourceItems,
-  getTextAnnotationDisplayTitle,
   getTextAnnotationItems,
 } from "@/utils/content-resource";
 import ContentResourceEditor from "../shared/content-resource-editor";
@@ -53,6 +52,7 @@ function StructureTab() {
   return (
     <ManifestTabBody className="pb-6">
       <section className="space-y-4">
+        {/* Content Resources Section */}
         <div className="space-y-1">
           <p className="text-lg font-medium text-slate-950">Content resources</p>
           <p className="text-sm leading-6 text-slate-500">
@@ -108,7 +108,8 @@ function StructureTab() {
           />
         )}
 
-        {textAnnotationItems.length > 0 ? (
+        {/* Text Annotations Section */}
+        {textAnnotationItems.length > 0 && (
           <div className="space-y-4 border-t border-slate-200 pt-6">
             <div className="space-y-1">
               <p className="text-lg font-medium text-slate-950">
@@ -121,7 +122,7 @@ function StructureTab() {
 
             <div className="space-y-4">
               {textAnnotationItems.map(
-                ({ annotation, annotationIndex, annotationNumber }) => (
+                ({ annotation, resource, annotationIndex, resourceNumber }) => (
                   <section
                     key={`structure-text-annotation-${annotationIndex}`}
                     className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
@@ -131,18 +132,20 @@ function StructureTab() {
                         type="button"
                         className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                       >
-                        Text Annotation {annotationNumber}
+                        Text Annotation {resourceNumber}
                       </button>
                       <p className="text-sm text-slate-500">
-                        {getTextAnnotationDisplayTitle(
+                        {getContentResourceDisplayTitle(
                           annotation,
-                          annotationNumber,
+                          resource,
+                          resourceNumber,
                         )}
                       </p>
                     </div>
 
                     <TextAnnotationEditor
-                      annotation={annotation}
+                      annotationParent={annotation}
+                      annotation={resource}
                       idPrefix={`structure-text-annotation-${annotationIndex}`}
                       onCommit={commitManifestChange}
                     />
@@ -151,7 +154,7 @@ function StructureTab() {
               )}
             </div>
           </div>
-        ) : null}
+        )}
       </section>
     </ManifestTabBody>
   );

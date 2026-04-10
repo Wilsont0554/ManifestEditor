@@ -2,7 +2,6 @@ import type {
     IiifContainerType,
     IiifPointSelector,
     IiifResourceReference,
-    IiifSpecificResource,
 } from "@/types/iiif";
 
 function normalizeContainerType(type: string): IiifContainerType {
