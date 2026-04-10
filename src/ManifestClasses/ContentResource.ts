@@ -107,6 +107,26 @@ class ContentResource {
     getMetadata(): Metadata {
         return this.metadata;
     }
+
+    protected cloneBaseProperties<T extends ContentResource>(target: T): T {
+        target.id = this.id;
+        target.type = this.type;
+        target.format = this.format;
+        target.height = this.height;
+        target.width = this.width;
+        target.label = this.label.clone();
+        target.duration = this.duration;
+        target.summary = this.summary?.clone();
+        target.metadata = this.metadata.clone();
+
+        return target;
+    }
+
+    clone(): ContentResource {
+        return this.cloneBaseProperties(
+            new ContentResource(this.id, this.type, this.format),
+        );
+    }
 }
 
 export default ContentResource;

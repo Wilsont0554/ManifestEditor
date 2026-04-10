@@ -96,6 +96,19 @@ class Camera extends ContentResource {
     removeFieldOfView(): void {
         this.fieldOfView = undefined;
     }
+
+    override clone(): Camera {
+        const nextCamera = this.cloneBaseProperties(
+            new Camera(this.id, this.getType()),
+        );
+
+        nextCamera.near = this.near;
+        nextCamera.far = this.far;
+        nextCamera.viewHeight = this.viewHeight;
+        nextCamera.fieldOfView = this.fieldOfView;
+
+        return nextCamera;
+    }
 }
 
 export default Camera;

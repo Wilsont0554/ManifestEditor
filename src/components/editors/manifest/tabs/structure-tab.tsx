@@ -2,11 +2,12 @@ import { useContext } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
 import {
   getContentResourceDisplayTitle,
-  getContentResourceItems,
+  getDisplayableContentResourceItems,
   getTextAnnotationDisplayTitle,
   getTextAnnotationItems,
 } from "@/utils/content-resource";
 import ContentResourceEditor from "../shared/content-resource-editor";
+import CollapsibleResourceCard from "../shared/collapsible-resource-card";
 import EmptyStateCard from "../shared/empty-state-card";
 import ManifestTabBody from "../shared/manifest-tab-body";
 import SoftActionButton from "../shared/soft-action-button";
@@ -14,11 +15,11 @@ import TextAnnotationEditor from "../shared/text-annotation-editor";
 
 function StructureTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
-  const resourceItems = getContentResourceItems(manifestObj);
+  const resourceItems = getDisplayableContentResourceItems(manifestObj);
   const textAnnotationItems = getTextAnnotationItems(manifestObj);
 
   function commitManifestChange(): void {
-    updateManifestObj(manifestObj.clone());
+    updateManifestObj();
   }
 
   function syncManifestLabel({
@@ -55,18 +56,24 @@ function StructureTab() {
         <div className="space-y-1">
           <p className="text-lg font-medium text-slate-950">Content resources</p>
           <p className="text-sm leading-6 text-slate-500">
-            Review and edit each content resource and text annotation directly
-            from the sidebar.
+            Review and edit each image or model content resource and text
+            annotation directly from the sidebar.
           </p>
         </div>
 
         {resourceItems.length > 0 ? (
           <div className="space-y-4">
             {resourceItems.map(
-              ({ annotation, resource, annotationIndex, resourceNumber }) => (   
-                <section
+              ({ annotation, resource, annotationIndex, resourceNumber }) => (
+                <CollapsibleResourceCard
                   key={`structure-content-resource-${annotationIndex}`}
-                  className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
+                  badgeLabel={`Content Resource ${resourceNumber}`}
+                  description={getContentResourceDisplayTitle(
+                    annotation,
+                    resource,
+                    resourceNumber,
+                  )}
+                  collapsible
                 >
                     {resource.getType() != "TextualBody" ? (
                     <div>
@@ -94,15 +101,6 @@ function StructureTab() {
                       onResourceLabelSync={syncManifestLabel}
                       showMetadataAction={false}
                     />
-                    <SoftActionButton
-                    className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
-                    onClick={() => {
-                      manifestObj.getContainerObj().getAnnotationPage().removeAnnotation(annotationIndex);
-                      commitManifestChange();
-                    }}
-                  >
-                    Remove Content Resource
-                  </SoftActionButton>
                   </div>
                     ) : (
                     <div>
@@ -151,16 +149,25 @@ function StructureTab() {
                         </div>
                       </div>
                     </div>)
-                }
                   
-                </section>
+                }
+                <SoftActionButton
+                    className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                    onClick={() => {
+                      manifestObj.getContainerObj().getAnnotationPage().removeAnnotation(annotationIndex);
+                      commitManifestChange();
+                    }}
+                  >
+                    Remove Content Resource
+                  </SoftActionButton>
+              </CollapsibleResourceCard>                  
               ),
             )}
           </div>
         ) : (
           <EmptyStateCard
             title="No content resources"
-            description="Add a content resource to populate editable fields here."
+            description="Add an image or model content resource to populate editable fields here."
             align="left"
             className="border border-slate-200 bg-slate-50"
             titleClassName="text-slate-950 text-lg"

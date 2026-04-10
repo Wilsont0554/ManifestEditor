@@ -49,6 +49,16 @@ class AnnotationPage {
             annotation.getMotivation().includes("commenting"),
         );
     }
+
+    clone(): AnnotationPage {
+        const nextAnnotationPage = new AnnotationPage();
+
+        nextAnnotationPage.id = this.id;
+        nextAnnotationPage.type = this.type;
+        nextAnnotationPage.items = this.items.map((item) => item.clone());
+
+        return nextAnnotationPage;
+    }
 }
 
 export default AnnotationPage;
