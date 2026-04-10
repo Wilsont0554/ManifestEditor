@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   useContext,
+  useMemo,
   ChangeEvent,
 } from "react";
 import { JsonEditor } from "json-edit-react";
@@ -61,6 +62,7 @@ function ManifestEditorPage() {
   const [gistId, setGistId] = useState<string | null>(null);
   const [isCreatingGist, setIsCreatingGist] = useState(false);
   const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [showTokenWarning, setShowTokenWarning] = useState(
     githubToken.length === 0
@@ -75,6 +77,13 @@ function ManifestEditorPage() {
   const { manifestObj, updateManifestObj, setManifestObj } =
     useContext(manifestObjContext);
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
+  const liveViewerManifestUrl = useMemo(
+    () =>
+      `data:application/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(manifestObj, null, 2),
+      )}`,
+    [manifestObj],
+  );
 
   useEffect(() => {
     const scriptTag = document.createElement('script');
@@ -82,7 +91,7 @@ function ManifestEditorPage() {
     scriptTag.addEventListener('load', () => setIsInspectorOpen(!isInspectorOpen));
     document.body.appendChild(scriptTag);
   }, []);
-   
+
 
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
@@ -321,6 +330,7 @@ function ManifestEditorPage() {
       const stringManifest = await uploadedManifest.text();
       const nextManifest = JSON.parse(stringManifest);
       applyUploadedManifest(nextManifest);
+      setIsImportModalOpen(false);
     } catch (error) {
       console.error("Failed to upload manifest:", error);
       alert("Failed to upload manifest. Please upload a valid JSON file.");
@@ -385,6 +395,7 @@ function ManifestEditorPage() {
       setGistUrl(gistData.html_url ?? null);
       setGistRawUrl(manifestFile.raw_url ?? null);
       setGistImportUrl("");
+      setIsImportModalOpen(false);
     } catch (error) {
       console.error("Failed to import gist:", error);
       alert(
@@ -557,6 +568,15 @@ function ManifestEditorPage() {
               </button>
 
               <button
+                className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                type="button"
+                onClick={() => setIsImportModalOpen(true)}
+                title="Import manifest from file or GitHub Gist"
+              >
+                Import
+              </button>
+
+              <button
                 className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
                 type="button"
                 onClick={handleExportButtonClick}
@@ -599,36 +619,6 @@ function ManifestEditorPage() {
                 Add Text Annotation
               </Button>
 
-              Upload Manifest:
-              <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
-                <input type="file" accept="json" onChange={handleUploadManifest}/>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <label
-                  htmlFor="gist-import-url"
-                  className="text-sm font-medium text-slate-700"
-                >
-                  Import Gist:
-                </label>
-                <input
-                  id="gist-import-url"
-                  type="text"
-                  placeholder="Paste gist URL or gist ID"
-                  value={gistImportUrl}
-                  onChange={(event) => setGistImportUrl(event.target.value)}
-                  className="min-w-65 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
-                />
-                <button
-                  type="button"
-                  className="cursor-pointer rounded-md bg-slate-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-                  onClick={() => void handleUploadManifestFromGist()}
-                  disabled={isImportingGist || !gistImportUrl.trim()}
-                >
-                  {isImportingGist ? "Importing..." : "Import Gist"}
-                </button>
-              </div>
-
               <Button 
                 className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
                 onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
@@ -643,7 +633,12 @@ function ManifestEditorPage() {
         <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
            
           <div className="voyagerWindow">
-            <voyager-explorer document={gistRawUrl} id="voyager" style={{width: "500px", height: "500px"}}></voyager-explorer>
+            <voyager-explorer
+              key={liveViewerManifestUrl}
+              document={liveViewerManifestUrl}
+              id="voyager"
+              style={{ width: "500px", height: "500px" }}
+            ></voyager-explorer>
           </div>
 
           <div className="jsonWindow">
@@ -654,6 +649,69 @@ function ManifestEditorPage() {
         </div>
         
         {/* Export Modal */}
+        {isImportModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-md w-full mx-4">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Import Manifest
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsImportModalOpen(false)}
+                  className="text-2xl leading-none text-slate-500 hover:text-slate-700"
+                  title="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="mb-2 text-xs font-medium text-slate-700">
+                    Upload Manifest File
+                  </p>
+                  <div className="rounded-md border border-slate-300 bg-white px-3 py-2">
+                    <input
+                      type="file"
+                      accept=".json,application/json"
+                      onChange={handleUploadManifest}
+                      className="w-full text-sm text-slate-700"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 pt-4">
+                  <label
+                    htmlFor="gist-import-url"
+                    className="mb-2 block text-xs font-medium text-slate-700"
+                  >
+                    Import from GitHub Gist
+                  </label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      id="gist-import-url"
+                      type="text"
+                      placeholder="Paste gist URL or gist ID"
+                      value={gistImportUrl}
+                      onChange={(event) => setGistImportUrl(event.target.value)}
+                      className="min-w-65 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
+                    />
+                    <button
+                      type="button"
+                      className="cursor-pointer rounded-md bg-slate-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={() => void handleUploadManifestFromGist()}
+                      disabled={isImportingGist || !gistImportUrl.trim()}
+                    >
+                      {isImportingGist ? "Importing..." : "Import Gist"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {isExportModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-sm w-full mx-4">
