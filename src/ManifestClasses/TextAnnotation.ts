@@ -65,6 +65,23 @@ class TextAnnotation extends Annotation {
         this.position.setZ(z);
     }
 
+    override clone(): TextAnnotation {
+        const nextAnnotation = new TextAnnotation();
+
+        nextAnnotation.id = this.id;
+        nextAnnotation.type = this.type;
+        nextAnnotation.motivation = [...this.motivation];
+        nextAnnotation.target = this.target instanceof Target
+            ? this.target.clone()
+            : { ...this.target };
+        nextAnnotation.label = this.label?.clone();
+        nextAnnotation.bodyValue = this.bodyValue;
+        nextAnnotation.bodyLanguage = this.bodyLanguage;
+        nextAnnotation.position = this.position.clone();
+
+        return nextAnnotation;
+    }
+
     override toJSON(): IiifAnnotation {
         const body: IiifTextualBody = {
             id: `${this.id}/body`,
