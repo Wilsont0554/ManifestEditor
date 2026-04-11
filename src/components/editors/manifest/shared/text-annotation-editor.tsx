@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import ManifestField from "./manifest-field";
+import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 
 interface NumericDraftInputProps {
   id: string;
@@ -94,7 +95,7 @@ function TextAnnotationEditor({
         textareaClassName="min-h-28"
       />
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <p className="text-base font-semibold text-slate-950">Position</p>
 
         <div className="grid gap-4 sm:grid-cols-3">
@@ -131,6 +132,12 @@ function TextAnnotationEditor({
             }}
           />
         </div>
+
+        <SpatialCoordinatePreview
+          x={target?.getX() ?? 0}
+          y={target?.getY() ?? 0}
+          z={target?.getZ() ?? 0}
+        />
       </section>
     </section>
   );

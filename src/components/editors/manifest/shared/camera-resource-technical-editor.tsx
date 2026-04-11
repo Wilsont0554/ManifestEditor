@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type Annotation from "@/ManifestClasses/Annotation";
 import type Camera from "@/ManifestClasses/Camera";
 import ManifestField from "./manifest-field";
+import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 import TechnicalOptionGroup from "./technical-option-group";
 import {
   cameraContentResourceTypes,
@@ -95,6 +96,21 @@ function CameraResourceTechnicalEditor({
 }: CameraResourceTechnicalEditorProps) {
   const cameraType = resource.getType();
   const target = annotation.getTarget();
+  const coordinatePreviewDetails = [
+    {
+      label: "Type",
+      value: getCameraContentResourceTypeLabel(cameraType),
+    },
+    cameraType === "OrthographicCamera"
+      ? {
+          label: "View Height",
+          value: (resource.getViewHeight() ?? 0).toString(),
+        }
+      : {
+          label: "Field Of View",
+          value: `${resource.getFieldOfView() ?? 0}\u00b0`,
+        },
+  ];
 
   function handleCameraTypeChange(newValue: string): void {
     resource.setType(newValue as SupportedCameraContentResourceType);
@@ -181,7 +197,7 @@ function CameraResourceTechnicalEditor({
         />
       )}
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <p className="text-base font-semibold text-slate-950">Position</p>
 
         <div className="grid gap-4 sm:grid-cols-3">
@@ -221,6 +237,13 @@ function CameraResourceTechnicalEditor({
             }}
           />
         </div>
+
+        <SpatialCoordinatePreview
+          x={target?.getX() ?? 0}
+          y={target?.getY() ?? 0}
+          z={target?.getZ() ?? 0}
+          details={coordinatePreviewDetails}
+        />
       </section>
     </section>
   );
