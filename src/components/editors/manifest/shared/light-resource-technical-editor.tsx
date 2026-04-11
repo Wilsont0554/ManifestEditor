@@ -25,6 +25,21 @@ interface NumericDraftInputProps {
   min?: number;
   max?: number;
   step?: number;
+  clampDraftToRange?: boolean;
+}
+
+function clampNumber(value: number, min?: number, max?: number): number {
+  let nextValue = value;
+
+  if (min !== undefined) {
+    nextValue = Math.max(nextValue, min);
+  }
+
+  if (max !== undefined) {
+    nextValue = Math.min(nextValue, max);
+  }
+
+  return nextValue;
 }
 
 function NumericDraftInput({
@@ -37,6 +52,7 @@ function NumericDraftInput({
   min,
   max,
   step,
+  clampDraftToRange = false,
 }: NumericDraftInputProps) {
   const [draftValue, setDraftValue] = useState(value);
 
@@ -58,18 +74,28 @@ function NumericDraftInput({
         className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
         onChange={(event) => {
           const nextValue = event.target.value;
-          setDraftValue(nextValue);
 
           if (!nextValue.trim()) {
-            onCommit(allowBlank ? undefined : 0);
+            setDraftValue(nextValue);
+            onCommit(allowBlank ? undefined : clampNumber(0, min, max));
             return;
           }
 
           const parsedValue = Number(nextValue);
 
           if (!Number.isNaN(parsedValue)) {
-            onCommit(parsedValue);
+            const normalizedValue = clampNumber(parsedValue, min, max);
+
+            setDraftValue(
+              clampDraftToRange && normalizedValue !== parsedValue
+                ? normalizedValue.toString()
+                : nextValue,
+            );
+            onCommit(normalizedValue);
+            return;
           }
+
+          setDraftValue(nextValue);
         }}
         onBlur={() => {
           if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
@@ -97,7 +123,11 @@ function LightIntensityInput({
   value,
   onCommit,
 }: LightIntensityInputProps) {
-  const sliderValue = value ?? DEFAULT_LIGHT_INTENSITY;
+  const sliderValue = clampNumber(
+    value ?? DEFAULT_LIGHT_INTENSITY,
+    LIGHT_INTENSITY_MIN,
+    LIGHT_INTENSITY_MAX,
+  );
   const sliderPercentage = Math.round(sliderValue * 100);
 
   return (
@@ -128,10 +158,6 @@ function LightIntensityInput({
             </span>
           </div>
 
-          <p className="text-xs leading-5 text-slate-500">
-            {value === undefined
-              }
-          </p>
         </div>
       </ManifestField>
 
@@ -144,6 +170,7 @@ function LightIntensityInput({
         step={LIGHT_INTENSITY_STEP}
         placeholder={DEFAULT_LIGHT_INTENSITY.toString()}
         allowBlank
+        clampDraftToRange
         onCommit={onCommit}
       />
     </section>
@@ -221,7 +248,15 @@ function LightResourceTechnicalEditor({
             if (newValue === undefined) {
               resource.removeIntensity();
             } else {
-              resource.setIntensity("Value", newValue, "relative");
+              resource.setIntensity(
+                "Value",
+                clampNumber(
+                  newValue,
+                  LIGHT_INTENSITY_MIN,
+                  LIGHT_INTENSITY_MAX,
+                ),
+                "relative",
+              );
             }
 
             onCommit();
