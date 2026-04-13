@@ -22,6 +22,7 @@ import LightResourceTechnicalEditor from "../shared/light-resource-technical-edi
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
 import ManifestInput from "../shared/manifest-input";
 import ManifestTabBody from "../shared/manifest-tab-body";
+import SoftActionButton from "../shared/soft-action-button";
 import ManifestField from "../shared/manifest-field";
 import TechnicalOptionGroup from "../shared/technical-option-group";
 import DropDownField from "@/components/shared/dropdown-field";
@@ -108,6 +109,14 @@ function TechnicalTab() {
     updateManifestObj();
   }
 
+  function handleRemoveResource(annotationIndex: number): void {
+    manifestObj
+      .getContainerObj()
+      .getAnnotationPage()
+      .removeAnnotation(annotationIndex);
+    updateManifestObj();
+  }
+
   return (
     <ManifestTabBody className="pb-6">
       <ManifestInput
@@ -147,6 +156,14 @@ function TechnicalTab() {
                     idPrefix={`technical-camera-${annotationIndex}`}
                     onCommit={updateManifestObj}
                   />
+                  <div className="pt-3">
+                    <SoftActionButton
+                      className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                      onClick={() => handleRemoveResource(annotationIndex)}
+                    >
+                      Remove Content Resource
+                    </SoftActionButton>
+                  </div>
                 </CollapsibleResourceCard>
               ),
             )}
@@ -183,6 +200,14 @@ function TechnicalTab() {
                     idPrefix={`technical-light-${annotationIndex}`}
                     onCommit={updateManifestObj}
                   />
+                  <div className="pt-3">
+                    <SoftActionButton
+                      className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                      onClick={() => handleRemoveResource(annotationIndex)}
+                    >
+                      Remove Content Resource
+                    </SoftActionButton>
+                  </div>
                 </CollapsibleResourceCard>
               ),
             )}

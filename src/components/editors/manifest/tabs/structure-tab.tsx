@@ -85,7 +85,7 @@ function StructureTab() {
                   />
 
                   <SoftActionButton
-                    className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                    className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50 mt-3"
                     onClick={() => {
                       manifestObj.getContainerObj().getAnnotationPage().removeAnnotation(annotationIndex);
                       commitManifestChange();
