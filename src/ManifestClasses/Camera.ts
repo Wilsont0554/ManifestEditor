@@ -49,6 +49,17 @@ class Camera extends ContentResource {
         return normalizeCameraType(super.getType());
     }
 
+    setAllCameraValues(newCamera: Camera): void{
+        try{
+            this.setAllValues(newCamera);
+            this.near = newCamera.near;
+            this.far = newCamera.far;
+            this.fieldOfView = newCamera.fieldOfView;
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     setNear(near?: number): void {
         this.near = near;
     }

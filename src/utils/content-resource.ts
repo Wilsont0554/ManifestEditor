@@ -241,6 +241,16 @@ export function hasLightTechnicalChanges(
   );
 }
 
+export function hasContentResourceUrl(resource: ContentResource): boolean {
+  try{  
+    return resource.id.trim().length > 0;
+  }
+  catch(e){
+    console.log(e);
+    return false;
+  }
+}
+
 export function getDisplayableContentResourceItems(
   manifestObj: ManifestObject,
 ): ContentResourceItem[] {

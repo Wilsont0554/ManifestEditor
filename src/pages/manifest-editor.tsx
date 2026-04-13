@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   useContext,
+  ChangeEvent,
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
@@ -14,7 +15,7 @@ import type { ManifestTabId } from "@components/editors/manifest/manifest-compon
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
-import { downloadJsonFile } from "@/utils/file";
+import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import { type IiifContainerType } from "@/types/iiif";
@@ -60,14 +61,6 @@ function ManifestEditorPage() {
   const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
 
   useEffect(() => {
-    const scriptTag = document.createElement('script');
-    scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js"
-    scriptTag.addEventListener('load', () => setIsInspectorOpen(!isInspectorOpen));
-    document.body.appendChild(scriptTag);
-  }, []);
-   
-
-  useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
       if (!resizeStateRef.current) {
         return;
@@ -100,7 +93,6 @@ function ManifestEditorPage() {
       window.removeEventListener("mouseup", handlePointerUp);
     };
   }, []);
-
 
   function handleResizeStart(event: ReactMouseEvent<HTMLButtonElement>): void {
     resizeStateRef.current = {
@@ -200,6 +192,15 @@ function ManifestEditorPage() {
     updateManifestObj();
   }
 
+  async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void>{
+    const uploadedManifest = event.target.files?.[0] ?? null;
+    const stringManifest = await uploadedManifest?.text();
+    const newManifest = JSON.parse(stringManifest!);
+
+   const test = createManifestObjectFromUpload(newManifest);
+   setManifestObj(test);
+  }
+
   function handleDownloadManifest(): void {
     downloadJsonFile(manifestObj, "manifest");
   }
@@ -225,6 +226,8 @@ function ManifestEditorPage() {
           paddingRight: inspectorDockPadding,
         }}
       >
+        <div className="mr-auto max-w-245 space-y-4 pb-6">
+
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -234,7 +237,7 @@ function ManifestEditorPage() {
               >
                 Download JSON
               </button>
-              
+
               <label htmlFor="container-type" className="sr-only">
                 Container Type
               </label>
@@ -264,6 +267,11 @@ function ManifestEditorPage() {
                 Add Text Annotation
               </Button>
 
+              Upload Manifest:
+              <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
+                <input type="file" accept="json" onChange={handleUploadManifest}/>
+              </div>
+
               <Button 
                 className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
                 onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
@@ -273,12 +281,18 @@ function ManifestEditorPage() {
               
             </div>
           </div>
-           <div className="jsonWindow">
+          
+        </div>
+        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="jsonWindow">
               {isJSONWindowOpen ? (
                 <JsonEditor data={manifestPreview} />
               ) : (null)}
           </div>
         </div>
+        
+      </div>
+      
           
 
       {isInspectorOpen ? (
