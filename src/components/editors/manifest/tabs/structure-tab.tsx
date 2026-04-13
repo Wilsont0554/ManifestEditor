@@ -21,34 +21,6 @@ function StructureTab() {
     updateManifestObj();
   }
 
-  function syncManifestLabel({
-    previousValue,
-    previousLanguageCode,
-    value,
-    languageCode,
-  }: {
-    previousValue: string;
-    previousLanguageCode: string;
-    value: string;
-    languageCode: string;
-  }): void {
-    const currentManifestLabel = manifestObj.getLabelValue().trim();
-    const currentManifestLabelLanguage = manifestObj.getLabelLanguage();
-    const isManifestLabelBlank =
-      currentManifestLabel.length === 0 ||
-      currentManifestLabel === "Blank Manifest";
-    const matchesPreviousResourceLabel =
-      currentManifestLabel === previousValue.trim() &&
-      currentManifestLabelLanguage === previousLanguageCode;
-
-    if (!value.trim() || (!isManifestLabelBlank && !matchesPreviousResourceLabel)) {
-      return;
-    }
-
-    manifestObj.setLabel(value);
-    manifestObj.setLabelLanguage(languageCode);
-  }
-
   return (
     <ManifestTabBody className="pb-6">
       <section className="space-y-4">
@@ -80,7 +52,6 @@ function StructureTab() {
                     resource={resource}
                     idPrefix={`structure-content-resource-${annotationIndex}`}
                     onCommit={commitManifestChange}
-                    onResourceLabelSync={syncManifestLabel}
                     showMetadataAction={false}
                   />
 
