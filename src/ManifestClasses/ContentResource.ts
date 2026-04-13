@@ -154,6 +154,7 @@ class ContentResource {
         target.duration = this.duration;
         target.summary = this.summary?.clone();
         target.metadata = this.metadata.clone();
+        target.transforms = this.transforms.map((transform) => transform.clone());
 
         return target;
     }
