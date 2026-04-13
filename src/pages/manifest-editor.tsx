@@ -84,6 +84,21 @@ function ManifestEditorPage() {
       )}`,
     [manifestObj],
   );
+  const [voyagerUrl, setVoyagerUrl] = useState(liveViewerManifestUrl);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setVoyagerUrl((currentUrl) =>
+        currentUrl === liveViewerManifestUrl
+          ? currentUrl
+          : liveViewerManifestUrl,
+      );
+    }, 2000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [liveViewerManifestUrl]);
 
   useEffect(() => {
     const scriptTag = document.createElement('script');
@@ -633,10 +648,12 @@ function ManifestEditorPage() {
            
           <div className="voyagerWindow">
             <voyager-explorer
-              key={liveViewerManifestUrl}
-              document={liveViewerManifestUrl}
+              key={voyagerUrl}
+              document={voyagerUrl}
               id="voyager"
               style={{ width: "500px", height: "500px" }}
+              prompt={false}
+              controls={false}
             ></voyager-explorer>
           </div>
 
