@@ -25,6 +25,21 @@ interface NumericDraftInputProps {
   min?: number;
   max?: number;
   step?: number;
+  clampDraftToRange?: boolean;
+}
+
+function clampNumber(value: number, min?: number, max?: number): number {
+  let nextValue = value;
+
+  if (min !== undefined) {
+    nextValue = Math.max(nextValue, min);
+  }
+
+  if (max !== undefined) {
+    nextValue = Math.min(nextValue, max);
+  }
+
+  return nextValue;
 }
 
 function NumericDraftInput({
@@ -37,6 +52,7 @@ function NumericDraftInput({
   min,
   max,
   step,
+  clampDraftToRange = false,
 }: NumericDraftInputProps) {
   const [draftValue, setDraftValue] = useState(value);
 
@@ -58,18 +74,28 @@ function NumericDraftInput({
         className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
         onChange={(event) => {
           const nextValue = event.target.value;
-          setDraftValue(nextValue);
 
           if (!nextValue.trim()) {
-            onCommit(allowBlank ? undefined : 0);
+            setDraftValue(nextValue);
+            onCommit(allowBlank ? undefined : clampNumber(0, min, max));
             return;
           }
 
           const parsedValue = Number(nextValue);
 
           if (!Number.isNaN(parsedValue)) {
-            onCommit(parsedValue);
+            const normalizedValue = clampNumber(parsedValue, min, max);
+
+            setDraftValue(
+              clampDraftToRange && normalizedValue !== parsedValue
+                ? normalizedValue.toString()
+                : nextValue,
+            );
+            onCommit(normalizedValue);
+            return;
           }
+
+          setDraftValue(nextValue);
         }}
         onBlur={() => {
           if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
@@ -78,6 +104,76 @@ function NumericDraftInput({
         }}
       />
     </ManifestField>
+  );
+}
+
+const DEFAULT_LIGHT_INTENSITY = 0.50;
+const LIGHT_INTENSITY_MIN = 0.00;
+const LIGHT_INTENSITY_MAX = 1.00;
+const LIGHT_INTENSITY_STEP = 0.01;
+
+interface LightIntensityInputProps {
+  idPrefix: string;
+  value: number | undefined;
+  onCommit: (newValue: number | undefined) => void;
+}
+
+function LightIntensityInput({
+  idPrefix,
+  value,
+  onCommit,
+}: LightIntensityInputProps) {
+  const sliderValue = clampNumber(
+    value ?? DEFAULT_LIGHT_INTENSITY,
+    LIGHT_INTENSITY_MIN,
+    LIGHT_INTENSITY_MAX,
+  );
+  const sliderPercentage = Math.round(sliderValue * 100);
+
+  return (
+    <section className="space-y-3">
+      <ManifestField
+        label="Intensity"
+        htmlFor={`${idPrefix}-slider`}
+        className="space-y-3"
+      >
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <input
+              id={`${idPrefix}-slider`}
+              type="range"
+              min={LIGHT_INTENSITY_MIN}
+              max={LIGHT_INTENSITY_MAX}
+              step={LIGHT_INTENSITY_STEP}
+              value={sliderValue}
+              className="h-2 w-full cursor-pointer accent-pink-500"
+              onChange={(event) => {
+                const nextValue = Number(event.target.value);
+
+                onCommit(nextValue);
+              }}
+            />
+            <span className="min-w-12 text-right text-sm font-semibold text-slate-700">
+              {sliderPercentage}%
+            </span>
+          </div>
+
+        </div>
+      </ManifestField>
+
+      <NumericDraftInput
+        id={`${idPrefix}-value`}
+        label="Exact intensity"
+        value={value?.toString() ?? ""}
+        min={LIGHT_INTENSITY_MIN}
+        max={LIGHT_INTENSITY_MAX}
+        step={LIGHT_INTENSITY_STEP}
+        placeholder={DEFAULT_LIGHT_INTENSITY.toString()}
+        allowBlank
+        clampDraftToRange
+        onCommit={onCommit}
+      />
+    </section>
   );
 }
 
@@ -145,20 +241,22 @@ function LightResourceTechnicalEditor({
           />
         </ManifestField>
 
-        <NumericDraftInput
-          id={`${idPrefix}-intensity`}
-          label="Intensity"
-          value={intensity?.value.toString() ?? ""}
-          min={0}
-          max={1}
-          step={0.1}
-          placeholder="0.5"
-          allowBlank
+        <LightIntensityInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={intensity?.value}
           onCommit={(newValue) => {
             if (newValue === undefined) {
               resource.removeIntensity();
             } else {
-              resource.setIntensity("Value", newValue, "relative");
+              resource.setIntensity(
+                "Value",
+                clampNumber(
+                  newValue,
+                  LIGHT_INTENSITY_MIN,
+                  LIGHT_INTENSITY_MAX,
+                ),
+                "relative",
+              );
             }
 
             onCommit();
