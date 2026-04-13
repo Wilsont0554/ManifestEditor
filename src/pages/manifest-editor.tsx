@@ -47,7 +47,7 @@ function ManifestEditorPage() {
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
-  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(true);
+  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(false);
 
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
@@ -103,7 +103,7 @@ function ManifestEditorPage() {
   useEffect(() => {
     const scriptTag = document.createElement('script');
     scriptTag.src = "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js"
-    scriptTag.addEventListener('load', () => setIsInspectorOpen(!isInspectorOpen));
+    scriptTag.addEventListener('load', () => setIsInspectorOpen(true));
     document.body.appendChild(scriptTag);
   }, []);
 
