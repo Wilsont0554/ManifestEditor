@@ -160,46 +160,6 @@ class ContentResource {
         );
     }
 
-    protected buildBaseJson(): IiifContentResource {
-        const out: IiifContentResource = {
-            id: this.id,
-            type: this.type,
-        };
-
-        if (this.format) {
-            out.format = this.format;
-        }
-
-        if (this.label.hasValue()) {
-            out.label = this.label.toJSON();
-        }
-
-        if (this.metadata.getEntryCount() > 0) {
-            out.metadata = this.metadata.toJSON();
-        }
-
-        if (this.height !== undefined) {
-            out.height = this.height;
-        }
-
-        if (this.width !== undefined) {
-            out.width = this.width;
-        }
-
-        if (this.duration !== undefined) {
-            out.duration = this.duration;
-        }
-
-        if (this.summary?.hasValue()) {
-            out.summary = this.summary.toJSON();
-        }
-
-        return out;
-    }
-
-    toJSON(): IiifContentResource {
-        return this.buildBaseJson();
-    }
 }
 
 export default ContentResource;

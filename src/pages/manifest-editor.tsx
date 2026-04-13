@@ -92,7 +92,6 @@ function ManifestEditorPage() {
     document.body.appendChild(scriptTag);
   }, []);
 
-
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {
       if (!resizeStateRef.current) {

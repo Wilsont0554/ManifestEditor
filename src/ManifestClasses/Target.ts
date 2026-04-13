@@ -102,14 +102,6 @@ class Target {
         return nextTarget;
     }
 
-    toJSON(): IiifSpecificResource {
-        return {
-            id: this.id,
-            type: "SpecificResource",
-            source: this.source,
-            selector: this.selector,
-        };
-    }
 }
 
 export default Target;

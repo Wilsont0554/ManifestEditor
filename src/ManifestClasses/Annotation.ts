@@ -165,26 +165,6 @@ class Annotation {
 
         return nextAnnotation;
     }
-
-    toJSON(): IiifAnnotation {
-        const out = {
-            id: this.id,
-            type: this.type,
-            motivation: this.motivation,
-            body: this.body?.toJSON() as IiifContentResource,
-            target: this.target instanceof Target ? this.target.toJSON() : this.target,
-        } as Partial<IiifAnnotation>;
-
-        if (!this.body) {
-            out.body = undefined;
-        }
-
-        if (this.label?.hasValue()) {
-            out.label = this.label.toJSON();
-        }
-
-        return out as IiifAnnotation;
-    }
 }
 
 export default Annotation;
