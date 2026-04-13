@@ -65,9 +65,12 @@ function StructureTab() {
           <div className="space-y-4">
             {resourceItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                <CollapsibleResourceCard
+                <div> 
+                  {resource.getType() != "TextualBody" ? (
+                  <div>
+                  <CollapsibleResourceCard
+                  badgeLabel="Content Resource"
                   key={`structure-content-resource-${annotationIndex}`}
-                  badgeLabel={`Content Resource ${resourceNumber}`}
                   description={getContentResourceDisplayTitle(
                     annotation,
                     resource,
@@ -75,23 +78,15 @@ function StructureTab() {
                   )}
                   collapsible
                 >
-                    {resource.getType() != "TextualBody" ? (
-                    <div>
-                      <div className="space-y-2">
-                      <button
-                        type="button"
-                        className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
-                      >
-                        Content Resource {resourceNumber}
-                      </button>
-                      <p className="text-sm text-slate-500">
-                        {getContentResourceDisplayTitle(
-                          annotation,
-                          resource,
-                          resourceNumber,
-                        )}
-                      </p>
-                    </div>
+                    <div className="space-y-2">
+                    <p className="text-sm text-slate-500">
+                      {getContentResourceDisplayTitle(
+                        annotation,
+                        resource,
+                        resourceNumber,
+                      )}
+                    </p>
+                  </div>
 
                     <ContentResourceEditor
                       annotation={annotation}
@@ -101,9 +96,29 @@ function StructureTab() {
                       onResourceLabelSync={syncManifestLabel}
                       showMetadataAction={false}
                     />
+                    <SoftActionButton
+                    className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                    onClick={() => {
+                      manifestObj.getContainerObj().getAnnotationPage().removeAnnotation(annotationIndex);
+                      commitManifestChange();
+                    }}
+                  >
+                    Remove Content Resource
+                </SoftActionButton>
+                  </CollapsibleResourceCard>
                   </div>
                     ) : (
                     <div>
+                      <CollapsibleResourceCard
+                  badgeLabel="Text Annotation"
+                  key={`structure-content-resource-${annotationIndex}`}
+                  description={getContentResourceDisplayTitle(
+                    annotation,
+                    resource,
+                    resourceNumber,
+                  )}
+                  collapsible
+                >
                       <div className="space-y-4 border-t border-slate-200 pt-6">
                         <div className="space-y-1">
                           <p className="text-lg font-medium text-slate-950">
@@ -115,8 +130,6 @@ function StructureTab() {
                         </div>
 
                         <div className="space-y-4">
-                          {textAnnotationItems.map(
-                          ({ annotation, resource, annotationIndex, resourceNumber }) => (
                               <section
                                 key={`structure-text-annotation-${annotationIndex}`}
                                 className="space-y-5 rounded-xl border border-slate-200 bg-white p-5"
@@ -144,14 +157,9 @@ function StructureTab() {
                                   onCommit={commitManifestChange}
                                 />
                               </section>
-                            ),
-                          )}
                         </div>
                       </div>
-                    </div>)
-                  
-                }
-                <SoftActionButton
+                      <SoftActionButton
                     className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
                     onClick={() => {
                       manifestObj.getContainerObj().getAnnotationPage().removeAnnotation(annotationIndex);
@@ -159,8 +167,12 @@ function StructureTab() {
                     }}
                   >
                     Remove Content Resource
-                  </SoftActionButton>
-              </CollapsibleResourceCard>                  
+                </SoftActionButton>
+                    </CollapsibleResourceCard>
+                    </div>)
+                  
+                }
+              </div>                 
               ),
             )}
           </div>
