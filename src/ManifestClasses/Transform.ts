@@ -67,6 +67,16 @@ class Transform {
         return (this.x ?? 0) !== 0 || (this.y ?? 0) !== 0 || (this.z ?? 0) !== 0;
     }
 
+    clone(): Transform {
+        const nextTransform = new Transform(this.type);
+
+        nextTransform.x = this.x;
+        nextTransform.y = this.y;
+        nextTransform.z = this.z;
+
+        return nextTransform;
+    }
+
     toJSON(): IiifTransForm {
         const out: IiifTransForm = {
             type: this.type,
