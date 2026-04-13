@@ -1,6 +1,10 @@
 import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
-import type { IiifContentResource } from "@/types/iiif";
+import Transform from './Transform.ts';
+import type { 
+    IiifContentResource,
+    IiifSpecificResource
+ } from "@/types/iiif";
 
 class ContentResource {
     id: string;
@@ -12,6 +16,7 @@ class ContentResource {
     duration?: number;
     summary?: Label;
     metadata: Metadata;
+    transforms: Transform[];
 
     constructor(id: string, type: string, format?: string) {
         this.id = id;
@@ -19,6 +24,7 @@ class ContentResource {
         this.format = format;
         this.label = this.createLabel("en");
         this.metadata = new Metadata();
+        this.transforms = [];
     }
 
     /*---------------------------------------------------
@@ -108,6 +114,36 @@ class ContentResource {
         return this.metadata;
     }
 
+    isModelResource(): boolean {
+        return this.type === "Model";
+    }
+
+    getTransforms(): Transform[] {
+        return this.transforms;
+    }
+
+    getTransfroms(): Transform[] {
+        return this.getTransforms();
+    }
+
+    addTransform(type: string = "RotateTransform"): Transform {
+        const nextTransform = new Transform(Transform.isTransformType(type) ? type: "RotateTransform");
+        this.transforms.push(nextTransform);
+        return nextTransform;
+    }
+
+    removeTransform(index: number): void {
+        if(index < 0 || index >= this.transforms.length) {
+            return;
+        }
+
+        this.transforms.splice(index, 1);
+    }
+
+    clearTransforms(): void {
+        this.transforms = [];
+    }
+
     protected cloneBaseProperties<T extends ContentResource>(target: T): T {
         target.id = this.id;
         target.type = this.type;
@@ -118,6 +154,7 @@ class ContentResource {
         target.duration = this.duration;
         target.summary = this.summary?.clone();
         target.metadata = this.metadata.clone();
+        target.transforms = this.transforms.map((transform) => transform.clone());
 
         return target;
     }
@@ -163,6 +200,24 @@ class ContentResource {
         }
 
         return out;
+    }
+
+    toAnnotationBodyJSON(): IiifContentResource | IiifSpecificResource {
+        const baseJson = this.buildBaseJson();
+
+        if (!this.isModelResource()) {
+            return baseJson;
+        }
+
+        const transforms = this.transforms
+            .filter((transform) => transform.hasValue())
+            .map((transform) => transform.toJSON());
+
+        return {
+            type: "SpecificResource",
+            source: [baseJson],
+            ...(transforms.length > 0 ? { transform: transforms } : {}),
+        };
     }
 
     toJSON(): IiifContentResource {

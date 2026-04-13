@@ -6,6 +6,7 @@ import type {
     IiifContainerType,
     IiifContentResource,
     IiifResourceReference,
+    IiifSpecificResource
 } from "@/types/iiif";
 
 type AnnotationTargetReference = IiifResourceReference;
@@ -140,12 +141,9 @@ class Annotation {
             id: this.id,
             type: this.type,
             motivation: this.motivation,
+            body: this.body?.toAnnotationBodyJSON() as IiifContentResource | IiifSpecificResource,
             target: this.target instanceof Target ? this.target.toJSON() : this.target,
         } as Partial<IiifAnnotation>;
-
-        if (this.body) {
-            out.body = this.body.toJSON() as IiifContentResource;
-        }
 
         if (this.label?.hasValue()) {
             out.label = this.label.toJSON();
