@@ -62,26 +62,22 @@ class Annotation {
 
             this.id = newAnnotation.id;
             this.type = newAnnotation.type;
-            this.motivation = newAnnotation.motivation;
-            
-            const tempTarget = new Target;
+            this.motivation = [...newAnnotation.motivation];
 
-            if (newAnnotation.target.source != undefined){
-                tempTarget.setSource(newAnnotation.target.source[0].id, newAnnotation.target.source[0].type);
-                tempTarget.setSelectorType(newAnnotation.target.selector[0].type);
-                tempTarget.setX(newAnnotation.target.selector[0].x);
-                tempTarget.setY(newAnnotation.target.selector[0].y);
-                tempTarget.setZ(newAnnotation.target.selector[0].z);
-
-                this.setTarget(tempTarget);
+            if (newAnnotation.target instanceof Target){
+                this.setTarget(newAnnotation.target.clone());
+            } else {
+                const targetType: IiifContainerType =
+                    newAnnotation.target.type === "Canvas" ||
+                    newAnnotation.target.type === "Timeline"
+                        ? newAnnotation.target.type
+                        : "Scene";
+                this.setTargetReference(newAnnotation.target.id, targetType);
             }
 
             if (newAnnotation.label != undefined){
-                const labelCodeArray = Object.keys(newAnnotation.label!);
-                const labelCode = labelCodeArray[0] as keyof Label;
-
-                this.setLabel(0, (newAnnotation.label[labelCode][0] as unknown as string));
-                this.label!.setLanguage(labelCode);
+                this.setLabel(0, newAnnotation.label.getValue());
+                this.label!.setLanguage(newAnnotation.label.getLanguage() ?? 'en');
             }
         }catch(e){
             console.log(e);
