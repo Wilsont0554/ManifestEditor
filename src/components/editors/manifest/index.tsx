@@ -14,6 +14,7 @@ import NavPlaceTab from "./tabs/nav-place-tab";
 import OverviewTab from "./tabs/overview-tab";
 import StructureTab from "./tabs/structure-tab";
 import TechnicalTab from "./tabs/technical-tab";
+import JsonTab from "./tabs/json-tab";
 
 interface ManifestComponentProps {
   width: number;
@@ -69,6 +70,10 @@ function ManifestComponent({
 
   if (activeTab === "nav-place") {
     tabContent = <NavPlaceTab />;
+  }
+
+  if (activeTab === "json-tab") {
+    tabContent = <JsonTab />;
   }
 
   useEffect(() => {

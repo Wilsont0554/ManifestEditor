@@ -440,17 +440,6 @@ function ManifestEditorPage() {
                   <voyager-explorer document={gistRawUrl} id="voyager"></voyager-explorer>
                 </div>
               ) : (null)}
-            <div className="jsonPreview">
-              <Button 
-                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
-                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
-              >
-                JSON Preview
-              </Button>
-              {isJSONWindowOpen ? (
-                  <JsonEditor className="previewTest" data={manifestPreview} />
-                ) : (null)}
-            </div>
           </div>
         </div>
         
