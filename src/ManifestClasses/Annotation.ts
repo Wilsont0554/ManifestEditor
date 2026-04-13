@@ -4,6 +4,7 @@ import Target from "./Target.ts";
 import type {
     IiifContainerType,
     IiifResourceReference,
+    IiifSpecificResource
 } from "@/types/iiif";
 import TextAnnotation from './TextAnnotation.ts';
 

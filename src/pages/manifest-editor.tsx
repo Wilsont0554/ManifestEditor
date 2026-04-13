@@ -164,7 +164,7 @@ function ManifestEditorPage() {
       createDefaultContentResource(type, nextAnnotationIndex),
     );
 
-    if (type === "Light") {
+    if (type === "Light" || type === "Camera") {
       annotation.ensureSpatialTarget();
     }
 
