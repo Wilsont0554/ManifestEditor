@@ -253,15 +253,10 @@ export function hasLightTechnicalChanges(
   );
 }
 
-export function hasContentResourceUrl(resource: ContentResource): boolean {
-  return resource.id.trim().length > 0;
-}
-
 export function getDisplayableContentResourceItems(
   manifestObj: ManifestObject,
 ): ContentResourceItem[] {
   return getContentResourceItems(manifestObj).filter(({ resource }) =>
-    hasContentResourceUrl(resource) &&
     !(resource instanceof Light) &&
     !(resource instanceof Camera),
   );

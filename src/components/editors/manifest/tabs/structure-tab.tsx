@@ -10,6 +10,7 @@ import ContentResourceEditor from "../shared/content-resource-editor";
 import CollapsibleResourceCard from "../shared/collapsible-resource-card";
 import EmptyStateCard from "../shared/empty-state-card";
 import ManifestTabBody from "../shared/manifest-tab-body";
+import SoftActionButton from "../shared/soft-action-button";
 import TextAnnotationEditor from "../shared/text-annotation-editor";
 
 function StructureTab() {
@@ -82,6 +83,16 @@ function StructureTab() {
                     onResourceLabelSync={syncManifestLabel}
                     showMetadataAction={false}
                   />
+
+                  <SoftActionButton
+                    className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                    onClick={() => {
+                      manifestObj.getContainerObj().getAnnotationPage().removeAnnotation(annotationIndex);
+                      commitManifestChange();
+                    }}
+                  >
+                    Remove Content Resource
+                  </SoftActionButton>
                 </CollapsibleResourceCard>
               ),
             )}
