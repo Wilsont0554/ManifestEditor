@@ -93,7 +93,7 @@ function ManifestEditorPage() {
           ? currentUrl
           : liveViewerManifestUrl,
       );
-    }, 2000);
+    }, 250);
 
     return () => {
       window.clearInterval(intervalId);
@@ -648,12 +648,11 @@ function ManifestEditorPage() {
            
           <div className="voyagerWindow">
             <voyager-explorer
+              prompt="false"
               key={voyagerUrl}
               document={voyagerUrl}
               id="voyager"
               style={{ width: "500px", height: "500px" }}
-              prompt={false}
-              controls={false}
             ></voyager-explorer>
           </div>
 
