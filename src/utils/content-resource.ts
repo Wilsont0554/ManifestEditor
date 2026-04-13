@@ -244,7 +244,7 @@ export function hasLightTechnicalChanges(
     (target.getX() !== 0 || target.getY() !== 0 || target.getZ() !== 0);
 
   return (
-    resource.getType() !== "AmbientLight" ||
+    resource.getType() !== undefined ||
     resource.getColor() !== undefined ||
     resource.getIntensity() !== undefined ||
     resource.getLookAtId().trim().length > 0 ||
@@ -253,15 +253,10 @@ export function hasLightTechnicalChanges(
   );
 }
 
-export function hasContentResourceUrl(resource: ContentResource): boolean {
-  return resource.id.trim().length > 0;
-}
-
 export function getDisplayableContentResourceItems(
   manifestObj: ManifestObject,
 ): ContentResourceItem[] {
   return getContentResourceItems(manifestObj).filter(({ resource }) =>
-    hasContentResourceUrl(resource) &&
     !(resource instanceof Light) &&
     !(resource instanceof Camera),
   );

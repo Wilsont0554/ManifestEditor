@@ -5,7 +5,7 @@ import type {
     IiifResourceReference,
 } from "@/types/iiif";
 
-interface LightIntensity extends IiifQuantity {}
+type LightIntensity = IiifQuantity;
 
 class Light extends ContentResource {
     color?: string;
@@ -79,6 +79,21 @@ class Light extends ContentResource {
         if (this.intensity) {
             this.intensity.type = "Value";
         }
+    }
+
+    override clone(): Light {
+        const nextLight = this.cloneBaseProperties(
+            new Light(this.id, this.type),
+        );
+
+        nextLight.color = this.color;
+        nextLight.intensity = this.intensity
+            ? { ...this.intensity }
+            : undefined;
+        nextLight.lookAt = this.lookAt ? { ...this.lookAt } : undefined;
+        nextLight.angle = this.angle;
+
+        return nextLight;
     }
 
     toJSON(): IiifContentResource {

@@ -60,10 +60,19 @@ class ManifestObject {
     clone(): ManifestObject {
         this.synchronizeStructure();
 
-        return Object.assign(
-            Object.create(Object.getPrototypeOf(this)),
-            this
-        ) as ManifestObject;
+        const nextManifestObj = new ManifestObject(this.getContainerObj().getType());
+
+        nextManifestObj.id = this.id;
+        nextManifestObj.type = this.type;
+        nextManifestObj.items = this.items.map((item) => item.clone());
+        nextManifestObj.label = this.label?.clone();
+        nextManifestObj.summary = this.summary?.clone();
+        nextManifestObj.rights = this.rights;
+        nextManifestObj.navDate = this.navDate;
+        nextManifestObj.viewingDirection = this.viewingDirection;
+        nextManifestObj.behavior = this.behavior ? [...this.behavior] : undefined;
+
+        return nextManifestObj;
     }
     
     addContainer(container: Container): void {
