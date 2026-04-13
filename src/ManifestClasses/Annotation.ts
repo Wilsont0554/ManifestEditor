@@ -145,10 +145,6 @@ class Annotation {
             target: this.target instanceof Target ? this.target.toJSON() : this.target,
         } as Partial<IiifAnnotation>;
 
-        if (this.body) {
-            out.body = this.body.toJSON() as IiifContentResource;
-        }
-
         if (this.label?.hasValue()) {
             out.label = this.label.toJSON();
         }
