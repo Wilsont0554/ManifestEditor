@@ -40,11 +40,16 @@ interface ContentResourceModalSnapshot {
   selectedMetadataAnnotationIndex: number;
 }
 
+const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
+const TEMP_MODAL_TYPES: EditableContentResourceType[] = ["Light", "Camera"];
+
 function ManifestEditorPage() {
   const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
     useState(false);
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
+  const [contentResourceModalTypes, setContentResourceModalTypes] =
+    useState<EditableContentResourceType[]>(ASSET_MODAL_TYPES);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(false);
 
@@ -169,6 +174,14 @@ function ManifestEditorPage() {
 
   function handleOpenContentResourceModal(): void {
     captureContentResourceModalSnapshot();
+    setContentResourceModalTypes(ASSET_MODAL_TYPES);
+    setContentResourceModalView("picker");
+    setIsContentResourceModalOpen(true);
+  }
+
+  function handleOpenTempModal(): void {
+    captureContentResourceModalSnapshot();
+    setContentResourceModalTypes(TEMP_MODAL_TYPES);
     setContentResourceModalView("picker");
     setIsContentResourceModalOpen(true);
   }
@@ -518,6 +531,7 @@ function ManifestEditorPage() {
         isOpen={isContentResourceModalOpen}
         view={contentResourceModalView}
         selectedAnnotationIndex={selectedMetadataAnnotationIndex}
+        allowedTypes={contentResourceModalTypes}
         onCancel={handleCancelContentResourceModal}
         onSave={handleSaveContentResourceModal}
         onSelectType={handleCreateContentResource}
@@ -578,6 +592,13 @@ function ManifestEditorPage() {
                 onClick={handleOpenContentResourceModal}
               >
                 Create Asset
+              </Button>
+
+              <Button
+                type="button"
+                onClick={handleOpenTempModal}
+              >
+                Add temp
               </Button>
 
               <Button
