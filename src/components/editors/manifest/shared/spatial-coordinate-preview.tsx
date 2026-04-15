@@ -41,17 +41,17 @@ function formatCoordinate(value: number): string {
   return Object.is(roundedValue, -0) ? "0" : roundedValue.toString();
 }
 
-function getFloorExtent(x: number, y: number): number {
+function getFloorExtent(x: number, z: number): number {
   return Math.max(
     MIN_PREVIEW_EXTENT,
-    Math.ceil(Math.max(Math.abs(x), Math.abs(y), 1)),
+    Math.ceil(Math.max(Math.abs(x), Math.abs(z), 1)),
   );
 }
 
-function getHeightExtent(z: number): number {
+function getHeightExtent(y: number): number {
   return Math.max(
     MIN_PREVIEW_EXTENT,
-    Math.ceil(Math.max(Math.abs(z), 1)),
+    Math.ceil(Math.max(Math.abs(y), 1)),
   );
 }
 
@@ -88,10 +88,23 @@ function projectPoint(point: Point3D, yaw: number, pitch: number): Point2D {
   };
 }
 
-function toSvgPointList(points: Point3D[], yaw: number, pitch: number): string {
+function mapWorldPointToPreview(point: Point3D): Point3D {
+  // The viewer math expects the vertical axis in `z`, but the manifest uses `y` as height.
+  return {
+    x: point.x,
+    y: point.z,
+    z: point.y,
+  };
+}
+
+function projectWorldPoint(point: Point3D, yaw: number, pitch: number): Point2D {
+  return projectPoint(mapWorldPointToPreview(point), yaw, pitch);
+}
+
+function toWorldSvgPointList(points: Point3D[], yaw: number, pitch: number): string {
   return points
     .map((point) => {
-      const projectedPoint = projectPoint(point, yaw, pitch);
+      const projectedPoint = projectWorldPoint(point, yaw, pitch);
 
       return `${projectedPoint.x},${projectedPoint.y}`;
     })
@@ -132,29 +145,29 @@ function SpatialCoordinatePreview({
     yaw: number;
     pitch: number;
   } | null>(null);
-  const floorExtent = getFloorExtent(x, y);
-  const heightExtent = getHeightExtent(z);
+  const floorExtent = getFloorExtent(x, z);
+  const heightExtent = getHeightExtent(y);
   const detailItems = details?.filter((item) => item.value.trim().length > 0) ?? [];
   const scaleSummary = `Auto scale: floor +/-${floorExtent}, height +/-${heightExtent}`;
-  const origin = projectPoint({ x: 0, y: 0, z: 0 }, yaw, pitch);
-  const floorPoint = projectPoint({
+  const origin = projectWorldPoint({ x: 0, y: 0, z: 0 }, yaw, pitch);
+  const floorPoint = projectWorldPoint({
     x: normalizeCoordinate(x, floorExtent),
-    y: normalizeCoordinate(y, floorExtent),
-    z: 0,
+    y: 0,
+    z: normalizeCoordinate(z, floorExtent),
   }, yaw, pitch);
-  const point = projectPoint({
+  const point = projectWorldPoint({
     x: normalizeCoordinate(x, floorExtent),
-    y: normalizeCoordinate(y, floorExtent),
-    z: normalizeCoordinate(z, heightExtent),
+    y: normalizeCoordinate(y, heightExtent),
+    z: normalizeCoordinate(z, floorExtent),
   }, yaw, pitch);
-  const axisXEnd = projectPoint({ x: 1.25, y: 0, z: 0 }, yaw, pitch);
-  const axisYEnd = projectPoint({ x: 0, y: 1.25, z: 0 }, yaw, pitch);
-  const axisZEnd = projectPoint({ x: 0, y: 0, z: 1.25 }, yaw, pitch);
+  const axisXEnd = projectWorldPoint({ x: 1.25, y: 0, z: 0 }, yaw, pitch);
+  const axisYEnd = projectWorldPoint({ x: 0, y: 1.25, z: 0 }, yaw, pitch);
+  const axisZEnd = projectWorldPoint({ x: 0, y: 0, z: 1.25 }, yaw, pitch);
   const floorOutline = [
-    { x: -1, y: -1, z: 0 },
-    { x: 1, y: -1, z: 0 },
-    { x: 1, y: 1, z: 0 },
-    { x: -1, y: 1, z: 0 },
+    { x: -1, y: 0, z: -1 },
+    { x: 1, y: 0, z: -1 },
+    { x: 1, y: 0, z: 1 },
+    { x: -1, y: 0, z: 1 },
   ];
 
   function handlePointerDown(
@@ -221,7 +234,7 @@ function SpatialCoordinatePreview({
           </button>
         </div>
         <p className="text-xs font-medium text-slate-500">
-          Drag to rotate. Floor uses X/Y and height uses Z.
+          Drag to rotate. Floor uses X/Z and height uses Y.
         </p>
         {detailItems.length > 0 ? (
           <div className="flex flex-wrap gap-2">
@@ -262,7 +275,7 @@ function SpatialCoordinatePreview({
         </defs>
 
         <polygon
-          points={toSvgPointList(floorOutline, yaw, pitch)}
+          points={toWorldSvgPointList(floorOutline, yaw, pitch)}
           className="fill-slate-50 stroke-slate-300"
           strokeWidth="2"
         />
@@ -270,18 +283,18 @@ function SpatialCoordinatePreview({
         {FLOOR_GRID_MARKERS.map((marker) => (
           <g key={`grid-${marker}`}>
             <polyline
-              points={toSvgPointList([
-                { x: -1, y: marker, z: 0 },
-                { x: 1, y: marker, z: 0 },
+              points={toWorldSvgPointList([
+                { x: -1, y: 0, z: marker },
+                { x: 1, y: 0, z: marker },
               ], yaw, pitch)}
               className={marker === 0 ? "stroke-slate-300" : "stroke-slate-200"}
               strokeWidth={marker === 0 ? "1.75" : "1"}
               fill="none"
             />
             <polyline
-              points={toSvgPointList([
-                { x: marker, y: -1, z: 0 },
-                { x: marker, y: 1, z: 0 },
+              points={toWorldSvgPointList([
+                { x: marker, y: 0, z: -1 },
+                { x: marker, y: 0, z: 1 },
               ], yaw, pitch)}
               className={marker === 0 ? "stroke-slate-300" : "stroke-slate-200"}
               strokeWidth={marker === 0 ? "1.75" : "1"}
@@ -320,8 +333,8 @@ function SpatialCoordinatePreview({
         <line
           x1={floorPoint.x}
           y1={floorPoint.y}
-          x2={axisZEnd.x + (floorPoint.x - origin.x)}
-          y2={axisZEnd.y + (floorPoint.y - origin.y)}
+          x2={axisYEnd.x + (floorPoint.x - origin.x)}
+          y2={axisYEnd.y + (floorPoint.y - origin.y)}
           className="stroke-slate-300"
           strokeWidth="2"
           markerEnd="url(#spatial-axis-arrow)"
