@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   useContext,
+  ChangeEvent,
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
@@ -14,10 +15,10 @@ import type { ManifestTabId } from "@components/editors/manifest/manifest-compon
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
-import { downloadJsonFile } from "@/utils/file";
+import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import type { IiifContainerType } from "@/types/iiif";
+import { type IiifContainerType } from "@/types/iiif";
 import {
   createDefaultContentResource,
   type EditableContentResourceType,
@@ -45,6 +46,8 @@ function ManifestEditorPage() {
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(true);
+
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
@@ -177,14 +180,25 @@ function ManifestEditorPage() {
 
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
-    const annotation = new TextAnnotation(nextAnnotationIndex + 1);
-
+    const textAnnotation = new TextAnnotation(nextAnnotationIndex + 1);
+    const annotation = new Annotation(nextAnnotationIndex + 1, ["commenting"]);
+    
+    annotation.setContentResource(textAnnotation);
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
     setContentResourceModalView("editor");
     setIsContentResourceModalOpen(true);
     updateManifestObj();
+  }
+
+  async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void>{
+    const uploadedManifest = event.target.files?.[0] ?? null;
+    const stringManifest = await uploadedManifest?.text();
+    const newManifest = JSON.parse(stringManifest!);
+
+   const test = createManifestObjectFromUpload(newManifest);
+   setManifestObj(test);
   }
 
   function handleDownloadManifest(): void {
@@ -213,6 +227,7 @@ function ManifestEditorPage() {
         }}
       >
         <div className="mr-auto max-w-245 space-y-4 pb-6">
+
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
               <button
@@ -222,6 +237,7 @@ function ManifestEditorPage() {
               >
                 Download JSON
               </button>
+
               <label htmlFor="container-type" className="sr-only">
                 Container Type
               </label>
@@ -250,13 +266,34 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
+
+              Upload Manifest:
+              <div className="!bg-white uploadManifest !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100">
+                <input type="file" accept="json" onChange={handleUploadManifest}/>
+              </div>
+
+              <Button 
+                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
+                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
+              >
+                JSON Preview
+              </Button>
+              
             </div>
           </div>
+          
         </div>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <JsonEditor data={manifestPreview} />
+        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="jsonWindow">
+              {isJSONWindowOpen ? (
+                <JsonEditor data={manifestPreview} />
+              ) : (null)}
+          </div>
         </div>
+        
       </div>
+      
+          
 
       {isInspectorOpen ? (
         <ManifestComponent
@@ -286,6 +323,8 @@ function ManifestEditorPage() {
           </div>
         </div>
       )}
+
+
     </section>
   );
 }
