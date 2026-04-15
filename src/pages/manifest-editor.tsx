@@ -19,7 +19,7 @@ import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file"
 import Annotation from "@/ManifestClasses/Annotation";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import { manifestViewingDirections, type IiifContainerType } from "@/types/iiif";
+import { manifestViewingDirections } from "@/types/iiif";
 import {
   createDefaultContentResource,
   type EditableContentResourceType,
@@ -29,7 +29,6 @@ const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
-type ContainerType = IiifContainerType;
 
 interface ResizeState {
   startX: number;
@@ -155,11 +154,6 @@ function ManifestEditorPage() {
   function handleResetInspector(): void {
     setInspectorWidth(DEFAULT_INSPECTOR_WIDTH);
     setIsInspectorOpen(true);
-  }
-
-  function onContainerTypeChange(newType: ContainerType): void {
-    manifestObj.getContainerObj().setType(newType);
-    updateManifestObj();
   }
 
   function captureContentResourceModalSnapshot(): void {
@@ -595,21 +589,6 @@ function ManifestEditorPage() {
                   Auto-Update enabled
                 </span>
               )}
-
-              <label htmlFor="container-type" className="sr-only">
-                Container Type
-              </label>
-
-              <select
-                id="container-type"
-                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
-                value={manifestObj.getContainerObj().getType() as ContainerType}
-                onChange={(e) => onContainerTypeChange(e.target.value as ContainerType)}
-              >
-                <option value="Canvas">Canvas</option>
-                <option value="Scene">Scene</option>
-                <option value="Timeline">Timeline</option>
-              </select>
 
               <Button
                 type="button"
