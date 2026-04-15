@@ -40,12 +40,15 @@ class TextAnnotation extends ContentResource {
         return this.language;
     }
 
+
     override clone(): TextAnnotation {
         const nextAnnotation = new TextAnnotation();
 
         nextAnnotation.id = this.id;
         nextAnnotation.type = this.type;
+        nextAnnotation.label = this.label?.clone();
         nextAnnotation.value = this.value;
+        nextAnnotation.language = this.language;
 
         return nextAnnotation;
     }

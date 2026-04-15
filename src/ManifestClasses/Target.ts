@@ -101,7 +101,6 @@ class Target {
 
         return nextTarget;
     }
-
 }
 
 export default Target;
