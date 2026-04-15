@@ -55,3 +55,35 @@
 .manifest-tab-panel-scroll {
   scrollbar-gutter: stable;
 }
+
+.uploadManifest{
+  padding: 1vh;
+  border-radius: 1vh;
+}
+
+.uploadManifest{
+  padding: 1vh;
+  border-radius: 1vh;
+}
+
+.mainWindow{
+  display: flex;
+  gap: 5vw;
+}
+
+.jsonWindow{
+  flex-shrink: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.round{
+  border-radius: 0.75vh;
+}
+
+.voyagerWindow{
+  position: relative;
+  width: 100vw;
+  height: 75vh;
+}

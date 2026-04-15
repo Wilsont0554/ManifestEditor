@@ -1,6 +1,10 @@
 import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
-import type { IiifContentResource } from "@/types/iiif";
+import Transform from './Transform.ts';
+import type { 
+    IiifContentResource,
+    IiifSpecificResource
+ } from "@/types/iiif";
 
 class ContentResource {
     id: string;
@@ -12,6 +16,7 @@ class ContentResource {
     duration?: number;
     summary?: Label;
     metadata: Metadata;
+    transforms: Transform[];
 
     constructor(id: string, type: string, format?: string) {
         this.id = id;
@@ -19,6 +24,7 @@ class ContentResource {
         this.format = format;
         this.label = this.createLabel("en");
         this.metadata = new Metadata();
+        this.transforms = [];
     }
 
     /*---------------------------------------------------
@@ -59,6 +65,31 @@ class ContentResource {
         }
 
         this.summary.changeLabelTest(summary);
+    }
+
+    setAllValues(newContentResource: ContentResource): void{
+        try{
+            this.id = newContentResource.id;
+            this.type = newContentResource.type;
+            this.format = newContentResource.format;
+            this.height = newContentResource.height;
+            this.width = newContentResource.width;
+            this.duration = newContentResource.duration;
+            this.summary = newContentResource.summary?.clone();
+            
+
+            if (newContentResource.label != undefined){
+                this.setLabel(0, newContentResource.label.getValue());
+                this.label.setLanguage(newContentResource.label.getLanguage() ?? 'en');
+            }
+
+            if (newContentResource.metadata != undefined){
+                this.metadata = newContentResource.metadata.clone();
+            }
+        }catch(e){
+            console.log(e);
+        }
+
     }
 
     /*---------------------------------------------------
@@ -108,6 +139,36 @@ class ContentResource {
         return this.metadata;
     }
 
+    isModelResource(): boolean {
+        return this.type === "Model";
+    }
+
+    getTransforms(): Transform[] {
+        return this.transforms;
+    }
+
+    getTransfroms(): Transform[] {
+        return this.getTransforms();
+    }
+
+    addTransform(type: string = "RotateTransform"): Transform {
+        const nextTransform = new Transform(Transform.isTransformType(type) ? type: "RotateTransform");
+        this.transforms.push(nextTransform);
+        return nextTransform;
+    }
+
+    removeTransform(index: number): void {
+        if(index < 0 || index >= this.transforms.length) {
+            return;
+        }
+
+        this.transforms.splice(index, 1);
+    }
+
+    clearTransforms(): void {
+        this.transforms = [];
+    }
+
     protected cloneBaseProperties<T extends ContentResource>(target: T): T {
         target.id = this.id;
         target.type = this.type;
@@ -118,6 +179,7 @@ class ContentResource {
         target.duration = this.duration;
         target.summary = this.summary?.clone();
         target.metadata = this.metadata.clone();
+        target.transforms = this.transforms.map((transform) => transform.clone());
 
         return target;
     }
@@ -126,47 +188,6 @@ class ContentResource {
         return this.cloneBaseProperties(
             new ContentResource(this.id, this.type, this.format),
         );
-    }
-
-    protected buildBaseJson(): IiifContentResource {
-        const out: IiifContentResource = {
-            id: this.id,
-            type: this.type,
-        };
-
-        if (this.format) {
-            out.format = this.format;
-        }
-
-        if (this.label.hasValue()) {
-            out.label = this.label.toJSON();
-        }
-
-        if (this.metadata.getEntryCount() > 0) {
-            out.metadata = this.metadata.toJSON();
-        }
-
-        if (this.height !== undefined) {
-            out.height = this.height;
-        }
-
-        if (this.width !== undefined) {
-            out.width = this.width;
-        }
-
-        if (this.duration !== undefined) {
-            out.duration = this.duration;
-        }
-
-        if (this.summary?.hasValue()) {
-            out.summary = this.summary.toJSON();
-        }
-
-        return out;
-    }
-
-    toJSON(): IiifContentResource {
-        return this.buildBaseJson();
     }
 }
 

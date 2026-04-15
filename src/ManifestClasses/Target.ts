@@ -2,7 +2,6 @@ import type {
     IiifContainerType,
     IiifPointSelector,
     IiifResourceReference,
-    IiifSpecificResource,
 } from "@/types/iiif";
 
 function normalizeContainerType(type: string): IiifContainerType {
@@ -101,15 +100,6 @@ class Target {
         nextTarget.setZ(selector.z ?? 0);
 
         return nextTarget;
-    }
-
-    toJSON(): IiifSpecificResource {
-        return {
-            id: this.id,
-            type: "SpecificResource",
-            source: this.source,
-            selector: this.selector,
-        };
     }
 }
 
