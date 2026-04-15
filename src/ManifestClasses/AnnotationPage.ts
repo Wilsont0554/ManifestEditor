@@ -1,3 +1,4 @@
+import { IiifAnnotationPage } from "@/types/iiif.ts";
 import Annotation from "./Annotation.ts";
 
 class AnnotationPage {
@@ -49,6 +50,20 @@ class AnnotationPage {
             annotation.getMotivation().includes("commenting"),
         );
     }
+    toFilteredJSON(
+        items: Annotation[],
+        idOverride?: string,
+    ): IiifAnnotationPage | null {
+        if (items.length === 0) {
+            return null;
+        }
+
+        return {
+            id: idOverride ?? this.id,
+            type: this.type,
+            items: items.map((item) => item.toJSON()),
+        };
+    }
 
     clone(): AnnotationPage {
         const nextAnnotationPage = new AnnotationPage();
@@ -58,6 +73,14 @@ class AnnotationPage {
         nextAnnotationPage.items = this.items.map((item) => item.clone());
 
         return nextAnnotationPage;
+    }
+
+    toJSON(): IiifAnnotationPage {
+        return {
+            id: this.id,
+            type: this.type,
+            items: this.items.map((item) => item.toJSON()),
+        };
     }
 }
 

@@ -1,3 +1,4 @@
+import { IiifContentResource } from "@/types/iiif.ts";
 import ContentResource from "./ContentResource.ts";
 
 const cameraContentResourceTypeSet = new Set([
@@ -119,6 +120,28 @@ class Camera extends ContentResource {
         nextCamera.fieldOfView = this.fieldOfView;
 
         return nextCamera;
+    }
+
+    override toJSON(): IiifContentResource {
+        const out = this.buildBaseJson();
+
+        if (this.near !== undefined) {
+            out.near = this.near;
+        }
+
+        if (this.far !== undefined) {
+            out.far = this.far;
+        }
+
+        if (this.viewHeight !== undefined) {
+            out.viewHeight = this.viewHeight;
+        }
+
+        if (this.fieldOfView !== undefined) {
+            out.fieldOfView = this.fieldOfView;
+        }
+
+        return out;
     }
 }
 

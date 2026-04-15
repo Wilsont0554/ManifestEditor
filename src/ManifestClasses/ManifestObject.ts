@@ -4,6 +4,7 @@ import Camera from "./Camera.ts";
 import Light from "./Light.ts";
 import {
     builtInManifestBehaviors,
+    IiifManifest,
     manifestAutoAdvanceBehaviors,
     manifestOrderingBehaviors,
     manifestRepeatBehaviors,
@@ -20,6 +21,7 @@ const manifestAutoAdvanceBehaviorSet = new Set<string>(manifestAutoAdvanceBehavi
 const builtInManifestBehaviorSet = new Set<string>(builtInManifestBehaviors);
 const defaultManifestId = "https://example.org/iiif/manifest/1";
 const defaultManifestLabel = "Blank Manifest";
+const presentationContext = "http://iiif.io/api/presentation/4/context.json";
 
 function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '');
@@ -348,6 +350,39 @@ class ManifestObject {
                 });
             });
         });
+    }
+    toJSON(): IiifManifest {
+        this.synchronizeStructure();
+
+        const out: IiifManifest = {
+            "@context": presentationContext,
+            id: getEffectiveManifestId(this.id),
+            type: this.type,
+            label: this.getSerializableLabel().toJSON(),
+            items: this.items.map((item) => item.toJSON()),
+        };
+
+        if (this.summary?.hasValue()) {
+            out.summary = this.summary.toJSON();
+        }
+
+        if (this.rights) {
+            out.rights = this.rights;
+        }
+
+        if (this.navDate) {
+            out.navDate = this.navDate;
+        }
+
+        if (this.viewingDirection) {
+            out.viewingDirection = this.viewingDirection;
+        }
+
+        if (this.behavior?.length) {
+            out.behavior = this.behavior;
+        }
+
+        return out;
     }
 }
 

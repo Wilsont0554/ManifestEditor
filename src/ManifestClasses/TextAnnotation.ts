@@ -1,3 +1,4 @@
+import { IiifAnnotation, IiifLanguageMap, IiifTextualBody } from "@/types/iiif.ts";
 import ContentResource from "./ContentResource.ts";
 
 class TextAnnotation extends ContentResource {
@@ -51,6 +52,37 @@ class TextAnnotation extends ContentResource {
         nextAnnotation.language = this.language;
 
         return nextAnnotation;
+    }
+
+    override toJSON(): IiifAnnotation {
+        const body: IiifTextualBody = {
+            id: `${this.id}/body`,
+            type: "TextualBody",
+            value: this.value,
+            format: "text/plain",
+            language: this.language,
+            purpose: "commenting",
+        };
+
+        const fallbackLabel: IiifLanguageMap | undefined = this.value.trim()
+            ? {
+                [this.language]: [this.value],
+            }
+            : undefined;
+
+        const out = {
+            id: this.id,
+            type: this.type,
+            body,
+        } as Partial<IiifAnnotation>;
+
+        if (this.label?.hasValue()) {
+            out.label = this.label.toJSON();
+        } else if (fallbackLabel) {
+            out.label = fallbackLabel;
+        }
+
+        return out as IiifAnnotation;
     }
 }
 

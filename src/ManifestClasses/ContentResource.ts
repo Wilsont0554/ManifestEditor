@@ -189,6 +189,65 @@ class ContentResource {
             new ContentResource(this.id, this.type, this.format),
         );
     }
+
+    protected buildBaseJson(): IiifContentResource {
+        const out: IiifContentResource = {
+            id: this.id,
+            type: this.type,
+        };
+
+        if (this.format) {
+            out.format = this.format;
+        }
+
+        if (this.label.hasValue()) {
+            out.label = this.label.toJSON();
+        }
+
+        if (this.metadata.getEntryCount() > 0) {
+            out.metadata = this.metadata.toJSON();
+        }
+
+        if (this.height !== undefined) {
+            out.height = this.height;
+        }
+
+        if (this.width !== undefined) {
+            out.width = this.width;
+        }
+
+        if (this.duration !== undefined) {
+            out.duration = this.duration;
+        }
+
+        if (this.summary?.hasValue()) {
+            out.summary = this.summary.toJSON();
+        }
+
+        return out;
+    }
+
+    toAnnotationBodyJSON(): IiifContentResource | IiifSpecificResource {
+        const baseJson = this.buildBaseJson();
+
+        if (!this.isModelResource()) {
+            return baseJson;
+        }
+
+        const transforms = this.transforms
+            .filter((transform) => transform.hasValue())
+            .map((transform) => transform.toJSON());
+
+        return {
+            type: "SpecificResource",
+            source: [baseJson],
+            ...(transforms.length > 0 ? { transform: transforms } : {}),
+        };
+    }
+
+    toJSON(): IiifContentResource {
+        return this.buildBaseJson();
+    }
 }
 
 export default ContentResource;

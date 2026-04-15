@@ -2,6 +2,7 @@ import Label from './Label.ts';
 import ContentResource from './ContentResource.ts';
 import Target from "./Target.ts";
 import type {
+    IiifAnnotation,
     IiifContainerType,
     IiifResourceReference,
     IiifSpecificResource
@@ -161,6 +162,21 @@ class Annotation {
         nextAnnotation.label = this.label?.clone();
 
         return nextAnnotation;
+    }
+    toJSON(): IiifAnnotation {
+        const out = {
+            id: this.id,
+            type: this.type,
+            motivation: this.motivation,
+            body: this.body?.toAnnotationBodyJSON() as IiifContentResource | IiifSpecificResource,
+            target: this.target instanceof Target ? this.target.toJSON() : this.target,
+        } as Partial<IiifAnnotation>;
+
+        if (this.label?.hasValue()) {
+            out.label = this.label.toJSON();
+        }
+
+        return out as IiifAnnotation;
     }
 }
 
