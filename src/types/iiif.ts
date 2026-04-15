@@ -92,11 +92,24 @@ export interface IiifPointSelector {
   instant?: number;
 }
 
+export interface IiifTransform {
+  id?: string;
+  type: "RotateTransform" | "ScaleTransform" | "TranslateTransform";
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+export type IiifTransForm = IiifTransform;
+
+export type IiifSelector = IiifPointSelector | IiifTransform;
+
 export interface IiifSpecificResource {
   id?: string;
   type: "SpecificResource";
-  source: IiifResourceReference[];
-  selector: IiifPointSelector[];
+  source: Array<IiifResourceReference | IiifContentResource>;
+  selector?: IiifPointSelector[];
+  transform?: IiifTransform[];
 }
 
 export interface IiifTextualBody {
@@ -106,7 +119,6 @@ export interface IiifTextualBody {
   format?: string;
   language?: string;
   purpose?: string;
-  position?: IiifSpecificResource;
 }
 
 export interface IiifContentResource {
@@ -133,7 +145,7 @@ export interface IiifAnnotation {
   id: string;
   type: string;
   motivation: string[];
-  body: IiifContentResource | IiifTextualBody;
+  body: IiifContentResource | IiifTextualBody | IiifSpecificResource;
   target: IiifResourceReference | IiifSpecificResource;
   label?: IiifLanguageMap;
 }

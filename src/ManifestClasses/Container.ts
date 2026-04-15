@@ -19,7 +19,7 @@ function normalizeContainerType(type?: string): IiifContainerType {
 
 class Container {
     static VALID_TYPES: Set<IiifContainerType> = new Set(['Timeline', 'Canvas', 'Scene']);
-
+    
     id: string;
     type: IiifContainerType;
     items: AnnotationPage[];
@@ -112,29 +112,6 @@ class Container {
         nextContainer.width = this.width;
 
         return nextContainer;
-    }
-
-    toJSON(): IiifCanvasLike {
-        const annotationPages = this.items
-            .map((item) => item.toJSON())
-            .filter((item): item is IiifAnnotationPage => item.items.length > 0);
-
-        const out: IiifCanvasLike = {
-            id: this.id,
-            type: this.type,
-            items: annotationPages,
-        };
-
-        if (this.type === "Timeline" && this.duration !== undefined) {
-            out.duration = this.duration;
-        }
-
-        if (this.type === "Canvas" && this.height !== undefined && this.width !== undefined) {
-            out.height = this.height;
-            out.width = this.width;
-        }
-
-        return out;
     }
 }
 

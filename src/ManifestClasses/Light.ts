@@ -17,6 +17,21 @@ class Light extends ContentResource {
         super(id, type, undefined);
     }
 
+    setAllLightValues(newLight: Light): void{
+        try{
+            this.setAllValues(newLight as ContentResource);
+            this.color = newLight.color;
+            this.angle = newLight.angle;
+
+            this.setIntensity(newLight.intensity?.type as string, Number(newLight.intensity?.value), newLight.intensity?.unit as string);
+            if (newLight.lookAt?.id != undefined){
+                this.setLookAt(newLight.lookAt?.id as string);
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     getColor(): string | undefined {
         return this.color;
     }
@@ -94,30 +109,6 @@ class Light extends ContentResource {
         nextLight.angle = this.angle;
 
         return nextLight;
-    }
-
-    toJSON(): IiifContentResource {
-        this.synchronizeDerivedIds();
-
-        const out = this.buildBaseJson();
-
-        if (this.color) {
-            out.color = this.color;
-        }
-
-        if (this.intensity) {
-            out.intensity = this.intensity;
-        }
-
-        if (this.lookAt) {
-            out.lookAt = this.lookAt;
-        }
-
-        if (this.angle !== undefined) {
-            out.angle = this.angle;
-        }
-
-        return out;
     }
 }
 
