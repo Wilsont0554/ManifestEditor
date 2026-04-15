@@ -75,23 +75,16 @@ class ContentResource {
             this.height = newContentResource.height;
             this.width = newContentResource.width;
             this.duration = newContentResource.duration;
+            this.summary = newContentResource.summary?.clone();
             
 
             if (newContentResource.label != undefined){
-                const labelCodeArray = Object.keys(newContentResource.label);
-                const labelCode = labelCodeArray[0] as keyof Label;
-
-
-                this.setLabel(0, (newContentResource.label[labelCode]![0] as keyof Label));
-                this.label.setLanguage(labelCode);
+                this.setLabel(0, newContentResource.label.getValue());
+                this.label.setLanguage(newContentResource.label.getLanguage() ?? 'en');
             }
 
             if (newContentResource.metadata != undefined){
-                for (let i = 0 ; i < newContentResource.metadata.length; i++){
-                    const metadataCodeArray = Object.keys(newContentResource.metadata[i].label);
-                    const metadataCode = metadataCodeArray[0] as keyof Label;
-                    this.metadata.addEntry(newContentResource.metadata[i].label[metadataCode], newContentResource.metadata[i].value[metadataCode],  metadataCode)
-                }
+                this.metadata = newContentResource.metadata.clone();
             }
         }catch(e){
             console.log(e);
