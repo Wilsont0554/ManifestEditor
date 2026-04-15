@@ -37,7 +37,6 @@ interface ContentResourceEditorProps {
   resource: ContentResource;
   idPrefix: string;
   onCommit: () => void;
-  onResourceLabelSync?: (payload: ResourceLabelSyncPayload) => void;
   className?: string;
   showTypeSelector?: boolean;
   showMetadataAction?: boolean;
@@ -107,7 +106,6 @@ function ContentResourceEditor({
   resource,
   idPrefix,
   onCommit,
-  onResourceLabelSync,
   className = "",
   showTypeSelector = true,
   showMetadataAction = true,
@@ -165,30 +163,16 @@ function ContentResourceEditor({
   }
 
   function handleResourceLabelChange(newValue: string): void {
-    const previousValue = getResourceLabel();
     const languageCode = getResourceLabelLanguage();
 
     resource.changeLabel(0, newValue, languageCode);
-    onResourceLabelSync?.({
-      previousValue,
-      previousLanguageCode: languageCode,
-      value: newValue,
-      languageCode,
-    });
     onCommit();
   }
 
   function handleResourceLabelLanguageChange(newLanguageCode: string): void {
-    const previousValue = getResourceLabel();
-    const previousLanguageCode = getResourceLabelLanguage();
+    const currentValue = getResourceLabel();
 
-    resource.changeLabel(0, previousValue, newLanguageCode);
-    onResourceLabelSync?.({
-      previousValue,
-      previousLanguageCode,
-      value: previousValue,
-      languageCode: newLanguageCode,
-    });
+    resource.changeLabel(0, currentValue, newLanguageCode);
     onCommit();
   }
 

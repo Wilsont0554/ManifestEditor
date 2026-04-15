@@ -23,7 +23,6 @@ import TextAnnotationEditor from "./shared/text-annotation-editor";
 
 export type ContentResourceModalView = "picker" | "editor";
 
-const DEFAULT_MANIFEST_LABEL = "Blank Manifest";
 const dialogTitleId = "content-resource-modal-title";
 const dialogDescriptionId = "content-resource-modal-description";
 
@@ -270,34 +269,6 @@ function ContentResourceModal({
     updateManifestObj();
   }
 
-  function syncManifestLabel({
-    previousValue,
-    previousLanguageCode,
-    value,
-    languageCode,
-  }: {
-    previousValue: string;
-    previousLanguageCode: string;
-    value: string;
-    languageCode: string;
-  }): void {
-    const currentManifestLabel = manifestObj.getLabelValue().trim();
-    const currentManifestLabelLanguage = manifestObj.getLabelLanguage();
-    const isManifestLabelBlank =
-      currentManifestLabel.length === 0 ||
-      currentManifestLabel === DEFAULT_MANIFEST_LABEL;
-    const matchesPreviousResourceLabel =
-      currentManifestLabel === previousValue.trim() &&
-      currentManifestLabelLanguage === previousLanguageCode;
-
-    if (!value.trim() || (!isManifestLabelBlank && !matchesPreviousResourceLabel)) {
-      return;
-    }
-
-    manifestObj.setLabel(value);
-    manifestObj.setLabelLanguage(languageCode);
-  }
-
   function handleDialogKeyDown(event: ReactKeyboardEvent<HTMLDivElement>): void {
     if (event.key === "Escape") {
       event.stopPropagation();
@@ -419,7 +390,7 @@ function ContentResourceModal({
                   </button>
                 ))}
               </div>
-            ) : selectedResource?.getType() == "TextualBody" ? (
+            ) : selectedAnnotation && selectedTextAnnotation ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
@@ -429,10 +400,8 @@ function ContentResourceModal({
                 </button>
 
                 <TextAnnotationEditor
-                  annotationParent={selectedAnnotation!}
-                  annotation={selectedResource}
                   annotationParent={selectedAnnotation}
-                  annotation={selectedResource}
+                  annotation={selectedTextAnnotation}
                   idPrefix={`text-annotation-modal-${selectedAnnotationIndex}`}
                   onCommit={commitManifestChange}
                   className="pt-5"
@@ -452,7 +421,6 @@ function ContentResourceModal({
                   resource={selectedResource}
                   idPrefix={`content-resource-modal-${selectedAnnotationIndex}`}
                   onCommit={commitManifestChange}
-                  onResourceLabelSync={syncManifestLabel}
                   className="pt-5"
                   showTypeSelector={false}
                   showMetadataAction={false}
