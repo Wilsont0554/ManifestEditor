@@ -567,23 +567,6 @@ function ManifestEditorPage() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-                type="button"
-                onClick={() => setIsImportModalOpen(true)}
-                title="Import manifest from file or GitHub Gist"
-              >
-                Import
-              </button>
-
-              <button
-                className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                type="button"
-                onClick={handleExportButtonClick}
-                title="Export manifest to GitHub Gist"
-              >
-                Export
-              </button>
               {isAutoUpdateEnabled && gistId && (
                 <span className="w-full text-xs text-slate-500">
                   Auto-Update enabled
@@ -594,7 +577,7 @@ function ManifestEditorPage() {
                 type="button"
                 onClick={handleOpenContentResourceModal}
               >
-                Add Content Resource
+                Create Asset
               </Button>
 
               <Button
@@ -751,7 +734,7 @@ function ManifestEditorPage() {
                     href="https://github.com/settings/tokens"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 underline hover:text-blue-800 mt-1 inline-block"
+                    className="text-xs text-rose-600 underline hover:text-rose-800 mt-1 inline-block"
                     title="Open GitHub token settings page"
                   >
                     Get Token
@@ -780,7 +763,7 @@ function ManifestEditorPage() {
 
                 <div className="flex flex-wrap gap-2">
                   <button
-                    className="flex-1 cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 cursor-pointer rounded-md bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                     onClick={handleCreateGist}
                     disabled={!githubToken || isCreatingGist || isAutoUpdateEnabled}
@@ -807,7 +790,7 @@ function ManifestEditorPage() {
                       type="checkbox"
                       checked={isAutoUpdateEnabled}
                       onChange={(e) => setIsAutoUpdateEnabled(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
                     />
                     <label htmlFor="auto-update" className="text-sm text-slate-700">
                       Auto-update every 30 seconds and when Export is clicked again
@@ -871,6 +854,8 @@ function ManifestEditorPage() {
           onSelectedMetadataAnnotationIndexChange={
             setSelectedMetadataAnnotationIndex
           }
+          onImportClick={() => setIsImportModalOpen(true)}
+          onExportClick={handleExportButtonClick}
           onClose={() => setIsInspectorOpen(false)}
           onReset={handleResetInspector}
           onResizeStart={handleResizeStart}

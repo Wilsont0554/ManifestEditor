@@ -12,7 +12,7 @@ import LinkingTab from "./tabs/linking-tab";
 import MetadataTab from "./tabs/metadata-tab";
 import NavPlaceTab from "./tabs/nav-place-tab";
 import OverviewTab from "./tabs/overview-tab";
-import StructureTab from "./tabs/structure-tab";
+import AssetsTab from "./tabs/assets-tab";
 import TechnicalTab from "./tabs/technical-tab";
 
 interface ManifestComponentProps {
@@ -21,6 +21,8 @@ interface ManifestComponentProps {
   onActiveTabChange: (tab: ManifestTabId) => void;
   selectedMetadataAnnotationIndex: number;
   onSelectedMetadataAnnotationIndexChange: (index: number) => void;
+  onImportClick: () => void;
+  onExportClick: () => void;
   onClose: () => void;
   onReset: () => void;
   onResizeStart: (event: ReactMouseEvent<HTMLButtonElement>) => void;
@@ -32,6 +34,8 @@ function ManifestComponent({
   onActiveTabChange,
   selectedMetadataAnnotationIndex,
   onSelectedMetadataAnnotationIndexChange,
+  onImportClick,
+  onExportClick,
   onClose,
   onReset,
   onResizeStart,
@@ -64,7 +68,7 @@ function ManifestComponent({
   }
 
   if (activeTab === "structure") {
-    tabContent = <StructureTab />;
+    tabContent = <AssetsTab />;
   }
 
   if (activeTab === "nav-place") {
@@ -156,14 +160,32 @@ function ManifestComponent({
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
             Manifest
           </p>
-          <button
-            type="button"
-            className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
-            onClick={onClose}
-            aria-label="Close inspector"
-          >
-            &times;
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+              onClick={onImportClick}
+              title="Import manifest from file or GitHub Gist"
+            >
+              Import
+            </button>
+            <button
+              type="button"
+              className="rounded-md bg-rose-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-rose-700"
+              onClick={onExportClick}
+              title="Export manifest"
+            >
+              Export
+            </button>
+            <button
+              type="button"
+              className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
+              onClick={onClose}
+              aria-label="Close inspector"
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
         <div className="border-b border-slate-200 px-4 py-3">

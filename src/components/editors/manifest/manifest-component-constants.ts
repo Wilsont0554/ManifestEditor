@@ -7,7 +7,7 @@ export const MANIFEST_TABS = [
   { id: "metadata", label: "Metadata" },
   { id: "technical", label: "Technical" },
   { id: "linking", label: "Linking" },
-  { id: "structure", label: "Structure" },
+  { id: "structure", label: "Assets" },
   { id: "nav-place", label: "Nav place" },
 ]
 
