@@ -12,7 +12,6 @@ import Light from "@/ManifestClasses/Light";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import {
   getContentResourceItems,
-  getTextAnnotationItems,
   type EditableContentResourceType,
 } from "@/utils/content-resource";
 import CameraResourceTechnicalEditor from "./shared/camera-resource-technical-editor";
@@ -30,6 +29,7 @@ interface ContentResourceModalProps {
   isOpen: boolean;
   view: ContentResourceModalView;
   selectedAnnotationIndex: number;
+  allowedTypes?: EditableContentResourceType[];
   onCancel: () => void;
   onSave: () => void;
   onSelectType: (type: EditableContentResourceType) => void;
@@ -212,6 +212,7 @@ function ContentResourceModal({
   isOpen,
   view,
   selectedAnnotationIndex,
+  allowedTypes,
   onCancel,
   onSave,
   onSelectType,
@@ -225,7 +226,6 @@ function ContentResourceModal({
     .getAnnotationPage()
     .getAllAnnotations();
   const contentResourceItems = getContentResourceItems(manifestObj);
-  const textAnnotationItems = getTextAnnotationItems(manifestObj);
   const selectedAnnotation =
     view === "editor"
       ? annotations[selectedAnnotationIndex] ?? null
@@ -239,14 +239,10 @@ function ContentResourceModal({
           (item) => item.annotationIndex === selectedAnnotationIndex,
         ) ?? null
       : null;
-  const selectedTextAnnotationItem = selectedTextAnnotation
-    ? textAnnotationItems.find(
-        (item) => item.annotationIndex === selectedAnnotationIndex,
-      ) ?? null
-    : null;
   const contentResourceOptions = baseContentResourceOptions.filter(
     (option) =>
-      (option.value !== "Light" && option.value !== "Camera") || isSceneContainer,
+      ((option.value !== "Light" && option.value !== "Camera") || isSceneContainer) &&
+      (!allowedTypes || allowedTypes.includes(option.value)),
   );
 
   useEffect(() => {
