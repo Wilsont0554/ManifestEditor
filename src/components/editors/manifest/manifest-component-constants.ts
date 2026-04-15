@@ -5,7 +5,7 @@ export const MANIFEST_TABS = [
   { id: "overview", label: "Overview" },
   { id: "descriptive", label: "Descriptive" },
   { id: "metadata", label: "Metadata" },
-  { id: "technical", label: "Technical" },
+  { id: "technical", label: "Environment" },
   { id: "linking", label: "Linking" },
   { id: "structure", label: "Assets" },
   { id: "nav-place", label: "Nav place" },

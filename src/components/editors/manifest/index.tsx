@@ -13,7 +13,7 @@ import MetadataTab from "./tabs/metadata-tab";
 import NavPlaceTab from "./tabs/nav-place-tab";
 import OverviewTab from "./tabs/overview-tab";
 import AssetsTab from "./tabs/assets-tab";
-import TechnicalTab from "./tabs/technical-tab";
+import EnvironmentTab from "./tabs/environment-tab";
 
 interface ManifestComponentProps {
   width: number;
@@ -60,7 +60,7 @@ function ManifestComponent({
   }
 
   if (activeTab === "technical") {
-    tabContent = <TechnicalTab />;
+    tabContent = <EnvironmentTab />;
   }
 
   if (activeTab === "linking") {

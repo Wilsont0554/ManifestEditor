@@ -58,7 +58,7 @@ const autoAdvanceOptions = [
   })),
 ];
 
-function TechnicalTab() {
+function EnvironmentTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const cameraResourceItems = getCameraContentResourceItems(manifestObj);
   const lightResourceItems = getLightContentResourceItems(manifestObj);
@@ -269,4 +269,4 @@ function TechnicalTab() {
   );
 }
 
-export default TechnicalTab;
+export default EnvironmentTab;

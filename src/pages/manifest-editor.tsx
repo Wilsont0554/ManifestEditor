@@ -598,7 +598,7 @@ function ManifestEditorPage() {
                 type="button"
                 onClick={handleOpenTempModal}
               >
-                Add temp
+                Create Environment
               </Button>
 
               <Button
