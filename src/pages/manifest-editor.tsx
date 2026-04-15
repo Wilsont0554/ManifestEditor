@@ -574,14 +574,6 @@ function ManifestEditorPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
               <button
-                className="cursor-pointer text-sm font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900"
-                type="button"
-                onClick={handleDownloadManifest}
-              >
-                Download JSON
-              </button>
-
-              <button
                 className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
                 type="button"
                 onClick={() => setIsImportModalOpen(true)}
@@ -732,7 +724,7 @@ function ManifestEditorPage() {
             <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-sm w-full mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-slate-900">
-                  Export to GitHub Gist
+                  Export Manifest
                 </h2>
                 <button
                   type="button"
@@ -745,6 +737,20 @@ function ManifestEditorPage() {
               </div>
 
               <div className="space-y-4">
+                <button
+                  className="w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+                  type="button"
+                  onClick={handleDownloadManifest}
+                  title="Download manifest as JSON"
+                >
+                  Download JSON
+                </button>
+
+                <div className="border-t border-slate-200 pt-4">
+                  <p className="text-xs font-medium text-slate-700 mb-2">
+                    Export to GitHub Gist
+                  </p>
+
                 <div>
                   <label htmlFor="export-token" className="block text-xs font-medium text-slate-700 mb-2">
                     GitHub Token
@@ -870,6 +876,7 @@ function ManifestEditorPage() {
                     </div>
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </div>
