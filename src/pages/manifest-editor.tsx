@@ -7,7 +7,6 @@ import {
   useMemo,
   ChangeEvent,
 } from "react";
-import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
   type ContentResourceModalView,
 } from "@components/editors/manifest/content-resource-modal";
@@ -51,7 +50,6 @@ function ManifestEditorPage() {
   const [contentResourceModalTypes, setContentResourceModalTypes] =
     useState<EditableContentResourceType[]>(ASSET_MODAL_TYPES);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
-  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(false);
 
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
@@ -80,7 +78,6 @@ function ManifestEditorPage() {
     useRef<ContentResourceModalSnapshot | null>(null);
   const { manifestObj, updateManifestObj, setManifestObj } =
     useContext(manifestObjContext);
-  const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
   const liveViewerManifestUrl = useMemo(
     () =>
       `data:application/json;charset=utf-8,${encodeURIComponent(
@@ -607,13 +604,6 @@ function ManifestEditorPage() {
               >
                 Add Text Annotation
               </Button>
-
-              <Button 
-                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
-                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
-              >
-                JSON Preview
-              </Button>
               
             </div>
           </div>
@@ -629,12 +619,6 @@ function ManifestEditorPage() {
               id="voyager"
               style={{ width: "500px", height: "500px" }}
             ></voyager-explorer>
-          </div>
-
-          <div className="jsonWindow">
-              {isJSONWindowOpen ? (
-                <JsonEditor data={manifestPreview} />
-              ) : (null)}
           </div>
         </div>
         

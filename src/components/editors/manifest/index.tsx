@@ -8,6 +8,7 @@ import {
   type ManifestTabId,
 } from "./manifest-component-constants";
 import DescriptiveTab from "./tabs/descriptive-tab";
+import JsonPreviewTab from "./tabs/json-preview-tab";
 import LinkingTab from "./tabs/linking-tab";
 import MetadataTab from "./tabs/metadata-tab";
 import NavPlaceTab from "./tabs/nav-place-tab";
@@ -61,6 +62,10 @@ function ManifestComponent({
 
   if (activeTab === "technical") {
     tabContent = <EnvironmentTab />;
+  }
+
+  if (activeTab === "json-preview") {
+    tabContent = <JsonPreviewTab />;
   }
 
   if (activeTab === "linking") {

@@ -9,6 +9,7 @@ export const MANIFEST_TABS = [
   { id: "linking", label: "Linking" },
   { id: "structure", label: "Assets" },
   { id: "nav-place", label: "Nav place" },
+  { id: "json-preview", label: "JSON Preview" },
 ]
 
 export type ManifestTabId = (typeof MANIFEST_TABS)[number]["id"];
