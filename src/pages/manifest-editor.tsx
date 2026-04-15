@@ -1,11 +1,12 @@
 import {
   type MouseEvent as ReactMouseEvent,
   useEffect,
+  useEffectEvent,
   useRef,
   useState,
   useContext,
   useMemo,
-  ChangeEvent,
+  type ChangeEvent,
 } from "react";
 import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
@@ -30,6 +31,7 @@ const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
 type ContainerType = IiifContainerType;
+const containerTypes: ContainerType[] = ["Canvas", "Scene", "Timeline"];
 
 interface ResizeState {
   startX: number;
@@ -40,6 +42,8 @@ interface ContentResourceModalSnapshot {
   manifestObj: ManifestObject;
   selectedMetadataAnnotationIndex: number;
 }
+
+type ToolbarMenuId = "add" | "file" | null;
 
 function ManifestEditorPage() {
   const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
@@ -64,14 +68,17 @@ function ManifestEditorPage() {
   const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [showTokenWarning, setShowTokenWarning] = useState(
+  const [, setShowTokenWarning] = useState(
     githubToken.length === 0
   );
   const [gistBaseName, setGistBaseName] = useState("manifest");
   const [gistImportUrl, setGistImportUrl] = useState("");
   const [isImportingGist, setIsImportingGist] = useState(false);
+  const [isQuickStartDismissed, setIsQuickStartDismissed] = useState(false);
+  const [openToolbarMenu, setOpenToolbarMenu] = useState<ToolbarMenuId>(null);
   const gistFilename = `${gistBaseName}.json`;
   const resizeStateRef = useRef<ResizeState | null>(null);
+  const toolbarMenuRef = useRef<HTMLDivElement | null>(null);
   const contentResourceModalSnapshotRef =
     useRef<ContentResourceModalSnapshot | null>(null);
   const { manifestObj, updateManifestObj, setManifestObj } =
@@ -481,19 +488,23 @@ function ManifestEditorPage() {
     }
   }
 
+  const handleAutoUpdateGist = useEffectEvent(() => {
+    void handleUpdateGist();
+  });
+
   useEffect(() => {
     if (!isAutoUpdateEnabled || !gistId) {
       return undefined;
     }
 
     const intervalId = window.setInterval(() => {
-      void handleUpdateGist();
+      handleAutoUpdateGist();
     }, 30000);
 
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [isAutoUpdateEnabled, gistId, githubToken, manifestObj]);
+  }, [isAutoUpdateEnabled, gistId]);
 
   function handleClearToken(): void {
     setGithubToken("");
@@ -513,12 +524,63 @@ function ManifestEditorPage() {
     }
   }
 
+  function handleToolbarMenuToggle(menuId: Exclude<ToolbarMenuId, null>): void {
+    setOpenToolbarMenu((currentMenu) => (currentMenu === menuId ? null : menuId));
+  }
+
+  const container = manifestObj.getContainerObj();
+  const annotationPage = container.getAnnotationPage();
+  const manifestLabel = manifestObj.getLabelValue().trim();
+  const manifestTitle =
+    manifestLabel.length > 0 ? manifestLabel : "Untitled Manifest";
+  const pageTitle = "Workspace";
+  const toolbarButtonClassName =
+    "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300";
+  const toolbarMenuButtonClassName =
+    "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300";
+  const toolbarMenuPanelClassName =
+    "absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_18px_40px_rgba(15,23,42,0.12)]";
+  const toolbarMenuItemClassName =
+    "flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-950";
+  const hasStageContent = annotationPage.getAllAnnotations().length > 0;
+
+  useEffect(() => {
+    if (hasStageContent) {
+      setIsQuickStartDismissed(false);
+    }
+  }, [hasStageContent]);
+
+  useEffect(() => {
+    function handleToolbarMenuPointerDown(event: MouseEvent): void {
+      if (
+        toolbarMenuRef.current &&
+        !toolbarMenuRef.current.contains(event.target as Node)
+      ) {
+        setOpenToolbarMenu(null);
+      }
+    }
+
+    function handleToolbarMenuEscape(event: KeyboardEvent): void {
+      if (event.key === "Escape") {
+        setOpenToolbarMenu(null);
+      }
+    }
+
+    window.addEventListener("mousedown", handleToolbarMenuPointerDown);
+    window.addEventListener("keydown", handleToolbarMenuEscape);
+
+    return () => {
+      window.removeEventListener("mousedown", handleToolbarMenuPointerDown);
+      window.removeEventListener("keydown", handleToolbarMenuEscape);
+    };
+  }, []);
+
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;
 
   return (
-    <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-slate-100">
+    <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f8fafc_42%,_#eef2f7_100%)]">
       <ContentResourceModal
         isOpen={isContentResourceModalOpen}
         view={contentResourceModalView}
@@ -534,98 +596,261 @@ function ManifestEditorPage() {
           paddingRight: inspectorDockPadding,
         }}
       >
-        <div className="mr-auto max-w-245 space-y-4 pb-6">
+        <div className="mx-auto max-w-[1600px] space-y-5 pb-6">
+          <section className="overflow-visible rounded-[28px] border border-slate-200/80 bg-white/95 shadow-[0_16px_36px_rgba(15,23,42,0.07)]">
+            <div
+              ref={toolbarMenuRef}
+              className="flex flex-col gap-5 p-5 sm:p-6 xl:flex-row xl:items-start xl:justify-between"
+            >
+              <div className="flex flex-col gap-3">
+                <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+                  {pageTitle}
+                </h1>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                className="cursor-pointer text-sm font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900"
-                type="button"
-                onClick={handleDownloadManifest}
-              >
-                Download JSON
-              </button>
+                <div>
+                  <label htmlFor="container-type" className="sr-only">
+                    Container Type
+                  </label>
+                  <div className="inline-flex flex-wrap gap-1 rounded-full border border-slate-200 bg-slate-50 p-1.5 shadow-sm">
+                    {containerTypes.map((containerType) => {
+                      const isActive = container.getType() === containerType;
 
-              <button
-                className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-                type="button"
-                onClick={() => setIsImportModalOpen(true)}
-                title="Import manifest from file or GitHub Gist"
-              >
-                Import
-              </button>
+                      return (
+                        <button
+                          key={containerType}
+                          id={containerType === "Canvas" ? "container-type" : undefined}
+                          type="button"
+                          className={`rounded-full px-4 py-2.5 text-sm font-medium transition ${
+                            isActive
+                              ? "bg-slate-950 text-white shadow-sm"
+                              : "text-slate-600 hover:bg-white hover:text-slate-950"
+                          }`}
+                          onClick={() => onContainerTypeChange(containerType)}
+                          aria-pressed={isActive}
+                        >
+                          {containerType}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
-              <button
-                className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                type="button"
-                onClick={handleExportButtonClick}
-                title="Export manifest to GitHub Gist"
-              >
-                Export
-              </button>
-              {isAutoUpdateEnabled && gistId && (
-                <span className="w-full text-xs text-slate-500">
-                  Auto-Update enabled
-                </span>
-              )}
+              <div className="flex flex-wrap items-center gap-2 xl:pt-1">
+                <div className="relative">
+                  <Button
+                    type="button"
+                    className="rounded-full !bg-rose-600 px-5 hover:!bg-rose-700 focus-visible:!ring-rose-300"
+                    onClick={() => handleToolbarMenuToggle("add")}
+                    aria-expanded={openToolbarMenu === "add"}
+                    aria-haspopup="menu"
+                  >
+                    + Add
+                  </Button>
 
-              <label htmlFor="container-type" className="sr-only">
-                Container Type
-              </label>
+                  {openToolbarMenu === "add" ? (
+                    <div className={toolbarMenuPanelClassName}>
+                      <button
+                        type="button"
+                        className={toolbarMenuItemClassName}
+                        onClick={() => {
+                          handleOpenContentResourceModal();
+                          setOpenToolbarMenu(null);
+                        }}
+                      >
+                        Add Content Resource
+                      </button>
+                      <button
+                        type="button"
+                        className={toolbarMenuItemClassName}
+                        onClick={() => {
+                          handleCreateTextAnnotation();
+                          setOpenToolbarMenu(null);
+                        }}
+                      >
+                        Add Text Annotation
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
 
-              <select
-                id="container-type"
-                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
-                value={manifestObj.getContainerObj().getType() as ContainerType}
-                onChange={(e) => onContainerTypeChange(e.target.value as ContainerType)}
-              >
-                <option value="Canvas">Canvas</option>
-                <option value="Scene">Scene</option>
-                <option value="Timeline">Timeline</option>
-              </select>
+                <div className="relative">
+                  <button
+                    className={toolbarMenuButtonClassName}
+                    type="button"
+                    onClick={() => handleToolbarMenuToggle("file")}
+                    aria-expanded={openToolbarMenu === "file"}
+                    aria-haspopup="menu"
+                  >
+                    File
+                  </button>
 
-              <Button
-                type="button"
-                onClick={handleOpenContentResourceModal}
-              >
-                Add Content Resource
-              </Button>
-
-              <Button
-                type="button"
-                onClick={handleCreateTextAnnotation}
-              >
-                Add Text Annotation
-              </Button>
-
-              <Button 
-                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
-                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
-              >
-                JSON Preview
-              </Button>
-              
+                  {openToolbarMenu === "file" ? (
+                    <div className={toolbarMenuPanelClassName}>
+                      <button
+                        type="button"
+                        className={toolbarMenuItemClassName}
+                        onClick={() => {
+                          handleDownloadManifest();
+                          setOpenToolbarMenu(null);
+                        }}
+                      >
+                        Download JSON
+                      </button>
+                      <button
+                        type="button"
+                        className={toolbarMenuItemClassName}
+                        onClick={() => {
+                          setIsImportModalOpen(true);
+                          setOpenToolbarMenu(null);
+                        }}
+                      >
+                        Import
+                      </button>
+                      <button
+                        type="button"
+                        className={toolbarMenuItemClassName}
+                        onClick={() => {
+                          handleExportButtonClick();
+                          setOpenToolbarMenu(null);
+                        }}
+                      >
+                        Export
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
-          </div>
-          
-        </div>
-        <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-           
-          <div className="voyagerWindow">
-            <voyager-explorer
-              prompt="false"
-              key={voyagerUrl}
-              document={voyagerUrl}
-              id="voyager"
-              style={{ width: "500px", height: "500px" }}
-            ></voyager-explorer>
-          </div>
+          </section>
 
-          <div className="jsonWindow">
-              {isJSONWindowOpen ? (
-                <JsonEditor data={manifestPreview} />
-              ) : (null)}
-          </div>
+          <section className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/90 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+            <div className="border-b border-slate-200/80 px-5 py-4 sm:px-6">
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+                Voyager Stage
+              </h2>
+            </div>
+
+            <div className="space-y-4 p-4 sm:p-5">
+              <div className="rounded-[26px] border border-slate-200 bg-slate-950 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-2 pb-3 text-sm text-slate-300">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-white/10 px-3 py-1 font-medium text-white">
+                      {manifestTitle}
+                    </span>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-slate-300">
+                      {container.getType()}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      className="rounded-full border border-white/10 bg-white/10 px-3 py-1 font-medium text-white transition hover:bg-white/15"
+                      type="button"
+                      onClick={() =>
+                        setIsJSONWindowOpen((currentValue) => !currentValue)
+                      }
+                    >
+                      {isJSONWindowOpen ? "Close JSON" : "Open JSON"}
+                    </button>
+                    <button
+                      className="rounded-full border border-white/10 bg-white/10 px-3 py-1 font-medium text-white transition hover:bg-white/15"
+                      type="button"
+                      onClick={() =>
+                        setIsInspectorOpen((currentValue) => !currentValue)
+                      }
+                    >
+                      {isInspectorOpen ? "Hide editor" : "Show editor"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="relative mt-3 min-h-[clamp(32rem,72vh,52rem)] overflow-hidden rounded-[22px] border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(51,65,85,0.9),_rgba(2,6,23,0.98))]">
+                  {!hasStageContent && !isQuickStartDismissed ? (
+                    <div className="pointer-events-none absolute left-5 top-5 z-10 max-w-sm rounded-[24px] border border-white/10 bg-slate-950/70 p-5 shadow-xl backdrop-blur">
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-200">
+                          Quick Start
+                        </p>
+                        <button
+                          type="button"
+                          className="pointer-events-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl leading-none text-slate-300 transition hover:bg-white/10 hover:text-white"
+                          onClick={() => setIsQuickStartDismissed(true)}
+                          aria-label="Dismiss quick start"
+                          title="Close"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                      <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+                        Build out the first scene
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Add a content resource to anchor the stage, or drop in a text
+                        annotation to test positioning and metadata flows.
+                      </p>
+                      <div className="pointer-events-auto mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          className="rounded-full bg-rose-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-400"
+                          onClick={handleOpenContentResourceModal}
+                        >
+                          Add resource
+                        </button>
+                        <button
+                          type="button"
+                          className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20"
+                          onClick={handleCreateTextAnnotation}
+                        >
+                          Add text annotation
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="absolute inset-0">
+                    <voyager-explorer
+                      prompt="false"
+                      key={voyagerUrl}
+                      document={voyagerUrl}
+                      id="voyager"
+                      style={{ width: "100%", height: "100%" }}
+                    ></voyager-explorer>
+                  </div>
+
+                  {isJSONWindowOpen ? (
+                    <div className="absolute inset-0 z-20 bg-slate-950/45 p-3 backdrop-blur-[2px] sm:p-4">
+                      <section className="flex h-full flex-col overflow-hidden rounded-[20px] border border-white/10 bg-white/95 shadow-2xl">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-5">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-rose-600">
+                              Manifest JSON
+                            </p>
+                            <h3 className="mt-1 text-lg font-semibold text-slate-950">
+                              In-stage preview
+                            </h3>
+                          </div>
+
+                          <button
+                            className={toolbarButtonClassName}
+                            type="button"
+                            onClick={() => setIsJSONWindowOpen(false)}
+                          >
+                            Hide JSON
+                          </button>
+                        </div>
+
+                        <div className="min-h-0 flex-1 overflow-auto p-3 sm:p-4">
+                          <JsonEditor data={manifestPreview} />
+                        </div>
+                      </section>
+                    </div>
+                  ) : null}
+
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         
         {/* Export Modal */}
