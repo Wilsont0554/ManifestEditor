@@ -15,7 +15,7 @@ import ManifestComponent from "@components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
-import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file";
+import { downloadJsonFile, createManifestObjectFromUpload, serializeManifestForExport  } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
@@ -76,13 +76,20 @@ function ManifestEditorPage() {
     useRef<ContentResourceModalSnapshot | null>(null);
   const { manifestObj, updateManifestObj, setManifestObj } =
     useContext(manifestObjContext);
-  const manifestPreview = JSON.parse(JSON.stringify(manifestObj)) as object;
+
+  const serializedManifest = useMemo(
+    () => serializeManifestForExport(manifestObj),
+    [manifestObj],
+  );
+
+  const manifestPreview = serializedManifest;
+
   const liveViewerManifestUrl = useMemo(
     () =>
       `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(manifestObj, null, 2),
+        JSON.stringify(serializedManifest, null, 2),
       )}`,
-    [manifestObj],
+    [serializedManifest],
   );
   const [voyagerUrl, setVoyagerUrl] = useState(liveViewerManifestUrl);
 
@@ -261,7 +268,7 @@ function ManifestEditorPage() {
           public: true,
           files: {
             [gistFilename]: {
-              content: JSON.stringify(manifestObj, null, 2),
+              content: JSON.stringify(serializedManifest, null, 2),
             },
           },
         }),
@@ -422,8 +429,8 @@ function ManifestEditorPage() {
   }
 
   function handleDownloadManifest(): void {
-    downloadJsonFile(manifestObj, "manifest");
-  }
+  downloadJsonFile(serializedManifest, "manifest");
+}
 
   async function handleUpdateGist(): Promise<void> {
     if (!githubToken) {
@@ -453,7 +460,7 @@ function ManifestEditorPage() {
         body: JSON.stringify({
           files: {
             [gistFilename]: {
-              content: JSON.stringify(manifestObj, null, 2),
+              content: JSON.stringify(serializedManifest, null, 2),
             },
           },
         }),
