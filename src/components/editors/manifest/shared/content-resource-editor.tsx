@@ -4,12 +4,14 @@ import type Annotation from "@/ManifestClasses/Annotation";
 import Camera from "@/ManifestClasses/Camera";
 import type ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
+import { transformTypes } from "@/ManifestClasses/Transform";
 import {
   contentResourceTypeToFormat,
 } from "@/utils/content-resource";
 import ManifestField from "./manifest-field";
 import ManifestInput from "./manifest-input";
 import SoftActionButton from "./soft-action-button";
+import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 import TechnicalOptionGroup from "./technical-option-group";
 
 const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
@@ -18,6 +20,11 @@ const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
     label: value,
   }),
 );
+
+const transformTypeOptions = transformTypes.map((value) => ({
+  value,
+  label: value.replace("Transform", ""),
+}));
 
 interface ResourceLabelSyncPayload {
   previousValue: string;
@@ -107,6 +114,8 @@ function ContentResourceEditor({
 }: ContentResourceEditorProps) {
   const isLightResource = resource instanceof Light;
   const isCameraResource = resource instanceof Camera;
+  const isModelResource = resource.isModelResource();
+  const transforms = resource.getTransforms();
   const shouldShowTypeSelector =
     showTypeSelector && !isLightResource && !isCameraResource;
   const target = annotation.getTarget();
@@ -132,9 +141,15 @@ function ContentResourceEditor({
       return;
     }
 
+    const previousType = resource.getType();
     const editableType = nextType as keyof typeof contentResourceTypeToFormat;
     resource.setType(editableType);
     resource.setFormat(contentResourceTypeToFormat[editableType]);
+
+    if (previousType === "Model" && editableType !== "Model") {
+      resource.clearTransforms();
+    }
+
     onCommit();
   }
 
@@ -218,7 +233,7 @@ function ContentResourceEditor({
       />
 
       {!isLightResource && !isCameraResource ? (
-        <section className="space-y-3">
+        <section className="space-y-4">
           <p className="text-base font-semibold text-slate-950">Position</p>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -258,6 +273,115 @@ function ContentResourceEditor({
               }}
             />
           </div>
+
+          <SpatialCoordinatePreview
+            x={target?.getX() ?? 0}
+            y={target?.getY() ?? 0}
+            z={target?.getZ() ?? 0}
+          />
+        </section>
+      ) : null}
+
+      {isModelResource ? (
+        <section className="space-y-4 rounded-xl border border-dashed border-pink-200 bg-white p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="space-y-1">
+              <p className="text-base font-semibold text-slate-950">Transforms</p>
+              <p className="text-sm leading-6 text-slate-500">
+                Add optional rotate, scale, or translate transforms for this
+                model.
+              </p>
+            </div>
+
+            <SoftActionButton
+              onClick={() => {
+                resource.addTransform("TranslateTransform");
+                onCommit();
+              }}
+            >
+              Add Transform
+            </SoftActionButton>
+          </div>
+
+          {transforms.map((transform, index) => (
+            <section
+              key={`${idPrefix}-transform-${index}`}
+              className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4"
+            >
+              <ManifestField
+                label="Transform Type"
+                htmlFor={`${idPrefix}-transform-${index}-type`}
+                className="space-y-2"
+              >
+                <select
+                  id={`${idPrefix}-transform-${index}-type`}
+                  value={transform.getType()}
+                  className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
+                  onChange={(event) => {
+                    transform.setType(event.target.value);
+                    onCommit();
+                  }}
+                >
+                  {transformTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </ManifestField>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                <NumericDraftInput
+                  id={`${idPrefix}-transform-${index}-x`}
+                  label="X"
+                  value={(transform.getX() ?? 0).toString()}
+                  step={0.1}
+                  placeholder="0"
+                  onCommit={(newValue) => {
+                    transform.setX(newValue);
+                    onCommit();
+                  }}
+                />
+
+                <NumericDraftInput
+                  id={`${idPrefix}-transform-${index}-y`}
+                  label="Y"
+                  value={(transform.getY() ?? 0).toString()}
+                  step={0.1}
+                  placeholder="0"
+                  onCommit={(newValue) => {
+                    transform.setY(newValue);
+                    onCommit();
+                  }}
+                />
+
+                <NumericDraftInput
+                  id={`${idPrefix}-transform-${index}-z`}
+                  label="Z"
+                  value={(transform.getZ() ?? 0).toString()}
+                  step={0.1}
+                  placeholder="0"
+                  onCommit={(newValue) => {
+                    transform.setZ(newValue);
+                    onCommit();
+                  }}
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="text-sm font-medium text-rose-600 transition hover:text-rose-700"
+                  onClick={() => {
+                    resource.removeTransform(index);
+                    onCommit();
+                  }}
+                >
+                  Remove Transform
+                </button>
+              </div>
+            </section>
+          ))}
         </section>
       ) : null}
 

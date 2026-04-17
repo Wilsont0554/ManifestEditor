@@ -14,10 +14,11 @@ import ManifestComponent from "@components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import Button from "@components/shared/button";
-import { downloadJsonFile, createManifestObjectFromUpload  } from "@/utils/file";
+import { downloadJsonFile, createManifestObjectFromUpload, serializeManifestForExport  } from "@/utils/file";
 import Annotation from "@/ManifestClasses/Annotation";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
+import { type IiifContainerType } from "@/types/iiif";
 import { manifestViewingDirections } from "@/types/iiif";
 import {
   createDefaultContentResource,
@@ -78,12 +79,20 @@ function ManifestEditorPage() {
     useRef<ContentResourceModalSnapshot | null>(null);
   const { manifestObj, updateManifestObj, setManifestObj } =
     useContext(manifestObjContext);
+
+  const serializedManifest = useMemo(
+    () => serializeManifestForExport(manifestObj),
+    [manifestObj],
+  );
+
+  const manifestPreview = serializedManifest;
+
   const liveViewerManifestUrl = useMemo(
     () =>
       `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(manifestObj, null, 2),
+        JSON.stringify(serializedManifest, null, 2),
       )}`,
-    [manifestObj],
+    [serializedManifest],
   );
   const [voyagerUrl, setVoyagerUrl] = useState(liveViewerManifestUrl);
 
@@ -141,7 +150,6 @@ function ManifestEditorPage() {
       window.removeEventListener("mouseup", handlePointerUp);
     };
   }, []);
-
 
   function handleResizeStart(event: ReactMouseEvent<HTMLButtonElement>): void {
     resizeStateRef.current = {
@@ -216,7 +224,7 @@ function ManifestEditorPage() {
       createDefaultContentResource(type, nextAnnotationIndex),
     );
 
-    if (type === "Light") {
+    if (type === "Light" || type === "Camera") {
       annotation.ensureSpatialTarget();
     }
 
@@ -266,7 +274,7 @@ function ManifestEditorPage() {
           public: true,
           files: {
             [gistFilename]: {
-              content: JSON.stringify(manifestObj, null, 2),
+              content: JSON.stringify(serializedManifest, null, 2),
             },
           },
         }),
@@ -427,8 +435,8 @@ function ManifestEditorPage() {
   }
 
   function handleDownloadManifest(): void {
-    downloadJsonFile(manifestObj, "manifest");
-  }
+  downloadJsonFile(serializedManifest, "manifest");
+}
 
   async function handleUpdateGist(): Promise<void> {
     if (!githubToken) {
@@ -458,7 +466,7 @@ function ManifestEditorPage() {
         body: JSON.stringify({
           files: {
             [gistFilename]: {
-              content: JSON.stringify(manifestObj, null, 2),
+              content: JSON.stringify(serializedManifest, null, 2),
             },
           },
         }),
@@ -541,40 +549,6 @@ function ManifestEditorPage() {
         }}
       >
         <div className="mr-auto max-w-245 space-y-4 pb-6">
-          {/* GitHub Token Security Warning */}
-          {showTokenWarning && githubToken.length === 0 && (
-            <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-4 shadow-sm">
-              <div className="flex items-start gap-3">
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-yellow-900">
-                    ⚠️ GitHub Token Required for Gists
-                  </p>
-                  <p className="mt-1 text-xs text-yellow-800">
-                    To create a gist, you need a GitHub personal access token with
-                    "gist" scope. This token is stored temporarily in your browser
-                    and never sent anywhere except to GitHub's API.
-                  </p>
-                  <div className="mt-3 flex gap-2">
-                    <a
-                      href="https://github.com/settings/tokens"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-medium text-yellow-900 underline hover:text-yellow-700"
-                    >
-                      Create Token on GitHub
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => setShowTokenWarning(false)}
-                      className="text-xs text-yellow-700 hover:text-yellow-900"
-                    >
-                      Dismiss
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
@@ -850,6 +824,8 @@ function ManifestEditorPage() {
         )}
       </div>
       
+          
+
       {isInspectorOpen ? (
         <ManifestComponent
           width={inspectorWidth}
