@@ -32,6 +32,7 @@ class Light extends ContentResource {
         }
     }
 
+
     getColor(): string | undefined {
         return this.color;
     }
