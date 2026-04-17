@@ -58,7 +58,7 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
       
       const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
 
-      if (uploadedResource!.type == "Model"){
+      if (uploadedResource!.type == "Model" || uploadedResource!.type == "SpecificResource"){
         tempContentResource = new ContentResource("", "", "");
         tempContentResource!.setAllValues(uploadedResource!);
       }
@@ -75,7 +75,7 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
         tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
       }
       else{
-        console.log('test');
+        console.log('Format not recognized');
       }
 
       const tempAnnotation = new Annotation(nextAnnotationIndex + 1);

@@ -69,22 +69,43 @@ class ContentResource {
 
     setAllValues(newContentResource: ContentResource): void{
         try{
+
+            if (newContentResource.type == "SpecificResource"){
+                if (newContentResource.transform != undefined){
+                    for (let i = 0; i < newContentResource.transform.length; i++){
+                        const tempTransform = new Transform(newContentResource.transform[i].type)
+                        tempTransform.setX(newContentResource.transform[i].x);
+                        tempTransform.setY(newContentResource.transform[i].y);
+                        tempTransform.setZ(newContentResource.transform[i].z);
+                        this.transforms.push(tempTransform);
+                    }
+                }
+                console.log(newContentResource)
+                newContentResource = newContentResource.source[0];
+                console.log(newContentResource);
+            }
+
             this.id = newContentResource.id;
             this.type = newContentResource.type;
             this.format = newContentResource.format;
             this.height = newContentResource.height;
             this.width = newContentResource.width;
             this.duration = newContentResource.duration;
-            this.summary = newContentResource.summary?.clone();
             
-
             if (newContentResource.label != undefined){
-                this.setLabel(0, newContentResource.label.getValue());
-                this.label.setLanguage(newContentResource.label.getLanguage() ?? 'en');
+                const labelCodeArray = Object.keys(newContentResource.label);
+                const labelCode = labelCodeArray[0] as keyof Label;
+
+                this.setLabel(0, (newContentResource.label[labelCode]![0] as keyof Label));
+                this.label.setLanguage(labelCode);
             }
 
             if (newContentResource.metadata != undefined){
-                this.metadata = newContentResource.metadata.clone();
+                for (let i = 0 ; i < newContentResource.metadata.length; i++){
+                    const metadataCodeArray = Object.keys(newContentResource.metadata[i].label);
+                    const metadataCode = metadataCodeArray[0] as keyof Label;
+                    this.metadata.addEntry(newContentResource.metadata[i].label[metadataCode], newContentResource.metadata[i].value[metadataCode],  metadataCode)
+                }
             }
         }catch(e){
             console.log(e);
