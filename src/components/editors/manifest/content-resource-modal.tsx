@@ -234,7 +234,7 @@ function ContentResourceModal({
       : null;
   const selectedResource = selectedAnnotation?.getContentResource() ?? null;
   const selectedTextAnnotation =
-    selectedAnnotation instanceof TextAnnotation ? selectedAnnotation : null;
+    selectedResource instanceof TextAnnotation ? selectedAnnotation : null;
   const selectedResourceItem =
     selectedAnnotation && selectedResource
       ? contentResourceItems.find(
@@ -412,7 +412,7 @@ function ContentResourceModal({
 
                 <TextAnnotationEditor
                   annotationParent={selectedAnnotation}
-                  annotation={selectedTextAnnotation}
+                  annotation={selectedResource}
                   idPrefix={`text-annotation-modal-${selectedAnnotationIndex}`}
                   onCommit={commitManifestChange}
                   className="pt-5"
