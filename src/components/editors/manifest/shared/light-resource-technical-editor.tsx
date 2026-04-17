@@ -3,6 +3,7 @@ import type Annotation from "@/ManifestClasses/Annotation";
 import type Light from "@/ManifestClasses/Light";
 import ManifestField from "./manifest-field";
 import ManifestInput from "./manifest-input";
+import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 import TechnicalOptionGroup from "./technical-option-group";
 import {
   getLightContentResourceTypeLabel,
@@ -193,6 +194,20 @@ function LightResourceTechnicalEditor({
   const lightType = resource.getType() as LightContentResourceType;
   const intensity = resource.getIntensity();
   const target = annotation.getTarget();
+  const coordinatePreviewDetails = [
+    {
+      label: "Type",
+      value: getLightContentResourceTypeLabel(lightType),
+    },
+    ...(lightType === "SpotLight" && resource.getAngle() !== undefined
+      ? [
+          {
+            label: "Angle",
+            value: `${resource.getAngle()}\u00b0`,
+          },
+        ]
+      : []),
+  ];
 
   function handleLightTypeChange(newValue: string): void {
     const nextType = newValue as LightContentResourceType;
@@ -300,7 +315,7 @@ function LightResourceTechnicalEditor({
         />
       ) : null}
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <p className="text-base font-semibold text-slate-950">Coordinates</p>
 
         <div className="grid gap-4 sm:grid-cols-3">
@@ -340,6 +355,13 @@ function LightResourceTechnicalEditor({
             }}
           />
         </div>
+
+        <SpatialCoordinatePreview
+          x={target?.getX() ?? 0}
+          y={target?.getY() ?? 0}
+          z={target?.getZ() ?? 0}
+          details={coordinatePreviewDetails}
+        />
       </section>
     </section>
   );

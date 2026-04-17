@@ -11,6 +11,7 @@ import {
 import ManifestField from "./manifest-field";
 import ManifestInput from "./manifest-input";
 import SoftActionButton from "./soft-action-button";
+import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 import TechnicalOptionGroup from "./technical-option-group";
 
 const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
@@ -232,7 +233,7 @@ function ContentResourceEditor({
       />
 
       {!isLightResource && !isCameraResource ? (
-        <section className="space-y-3">
+        <section className="space-y-4">
           <p className="text-base font-semibold text-slate-950">Position</p>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -272,6 +273,12 @@ function ContentResourceEditor({
               }}
             />
           </div>
+
+          <SpatialCoordinatePreview
+            x={target?.getX() ?? 0}
+            y={target?.getY() ?? 0}
+            z={target?.getZ() ?? 0}
+          />
         </section>
       ) : null}
 
