@@ -24,7 +24,7 @@ import {
   createDefaultContentResource,
   type EditableContentResourceType,
 } from "@/utils/content-resource";
-
+import CreateBar from "@/components/shared/createBar/CreateBar";
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
@@ -550,37 +550,13 @@ function ManifestEditorPage() {
       >
         <div className="mr-auto max-w-245 space-y-4 pb-6">
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="flex flex-wrap items-center gap-3">
-              {isAutoUpdateEnabled && gistId && (
-                <span className="w-full text-xs text-slate-500">
-                  Auto-Update enabled
-                </span>
-              )}
-
-              <Button
-                type="button"
-                onClick={handleOpenContentResourceModal}
-              >
-                Create Asset
-              </Button>
-
-              <Button
-                type="button"
-                onClick={handleOpenTempModal}
-              >
-                Create Environment
-              </Button>
-
-              <Button
-                type="button"
-                onClick={handleCreateTextAnnotation}
-              >
-                Add Text Annotation
-              </Button>
-              
-            </div>
-          </div>
+            <CreateBar
+              isAutoUpdateEnabled={isAutoUpdateEnabled}
+              gistId={gistId}
+              handleOpenContentResourceModal={handleOpenContentResourceModal}
+              handleOpenTempModal={handleOpenTempModal}
+              handleCreateTextAnnotation={handleCreateTextAnnotation}
+              ></CreateBar>
           
         </div>
         <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
