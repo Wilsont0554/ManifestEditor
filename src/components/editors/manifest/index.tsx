@@ -11,7 +11,6 @@ import DescriptiveTab from "./tabs/descriptive-tab";
 import JsonPreviewTab from "./tabs/json-preview-tab";
 import LinkingTab from "./tabs/linking-tab";
 import MetadataTab from "./tabs/metadata-tab";
-import NavPlaceTab from "./tabs/nav-place-tab";
 import OverviewTab from "./tabs/overview-tab";
 import AssetsTab from "./tabs/assets-tab";
 import EnvironmentTab from "./tabs/environment-tab";
@@ -74,10 +73,6 @@ function ManifestComponent({
 
   if (activeTab === "structure") {
     tabContent = <AssetsTab />;
-  }
-
-  if (activeTab === "nav-place") {
-    tabContent = <NavPlaceTab />;
   }
 
   useEffect(() => {
@@ -168,7 +163,7 @@ function ManifestComponent({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+              className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-s font-semibold text-rose-700 transition hover:bg-rose-100"
               onClick={onImportClick}
               title="Import manifest from file or GitHub Gist"
             >
@@ -176,7 +171,7 @@ function ManifestComponent({
             </button>
             <button
               type="button"
-              className="rounded-md bg-rose-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-rose-700"
+              className="rounded-md bg-rose-600 px-2.5 py-1 text-s font-semibold text-white transition hover:bg-rose-700"
               onClick={onExportClick}
               title="Export manifest"
             >

@@ -6,9 +6,7 @@ export const MANIFEST_TABS = [
   { id: "descriptive", label: "Descriptive" },
   { id: "metadata", label: "Metadata" },
   { id: "technical", label: "Environment" },
-  { id: "linking", label: "Linking" },
   { id: "structure", label: "Assets" },
-  { id: "nav-place", label: "Nav place" },
   { id: "json-preview", label: "JSON Preview" },
 ]
 
