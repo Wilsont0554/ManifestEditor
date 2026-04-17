@@ -30,6 +30,7 @@ interface ContentResourceModalProps {
   isOpen: boolean;
   view: ContentResourceModalView;
   selectedAnnotationIndex: number;
+  allowedTypes?: EditableContentResourceType[];
   onCancel: () => void;
   onSave: () => void;
   onSelectType: (type: EditableContentResourceType) => void;
@@ -212,6 +213,7 @@ function ContentResourceModal({
   isOpen,
   view,
   selectedAnnotationIndex,
+  allowedTypes,
   onCancel,
   onSave,
   onSelectType,
@@ -244,10 +246,19 @@ function ContentResourceModal({
         (item) => item.annotationIndex === selectedAnnotationIndex,
       ) ?? null
     : null;
-  const contentResourceOptions = baseContentResourceOptions.filter(
-    (option) =>
-      (option.value !== "Light" && option.value !== "Camera") || isSceneContainer,
-  );
+  const contentResourceOptions = baseContentResourceOptions.filter((option) => {
+    const isSceneOnlyOption = option.value === "Light" || option.value === "Camera";
+
+    if (isSceneOnlyOption && !isSceneContainer) {
+      return false;
+    }
+
+    if (!allowedTypes || allowedTypes.length === 0) {
+      return true;
+    }
+
+    return allowedTypes.includes(option.value);
+  });
 
   useEffect(() => {
     if (!isOpen) {

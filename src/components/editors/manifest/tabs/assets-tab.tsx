@@ -12,7 +12,7 @@ import ManifestTabBody from "../shared/manifest-tab-body";
 import SoftActionButton from "../shared/soft-action-button";
 import TextAnnotationEditor from "../shared/text-annotation-editor";
 
-function StructureTab() {
+function AssetsTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const resourceItems = getDisplayableContentResourceItems(manifestObj);
   const textAnnotationItems = getTextAnnotationItems(manifestObj);
@@ -162,4 +162,4 @@ function StructureTab() {
   );
 }
 
-export default StructureTab;
+export default AssetsTab;

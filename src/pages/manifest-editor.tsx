@@ -7,7 +7,6 @@ import {
   useMemo,
   ChangeEvent,
 } from "react";
-import { JsonEditor } from "json-edit-react";
 import ContentResourceModal, {
   type ContentResourceModalView,
 } from "@components/editors/manifest/content-resource-modal";
@@ -20,6 +19,7 @@ import Annotation from "@/ManifestClasses/Annotation";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import { type IiifContainerType } from "@/types/iiif";
+import { manifestViewingDirections } from "@/types/iiif";
 import {
   createDefaultContentResource,
   type EditableContentResourceType,
@@ -29,7 +29,6 @@ const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
-type ContainerType = IiifContainerType;
 
 interface ResizeState {
   startX: number;
@@ -41,13 +40,17 @@ interface ContentResourceModalSnapshot {
   selectedMetadataAnnotationIndex: number;
 }
 
+const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
+const TEMP_MODAL_TYPES: EditableContentResourceType[] = ["Light", "Camera"];
+
 function ManifestEditorPage() {
   const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
     useState(false);
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
+  const [contentResourceModalTypes, setContentResourceModalTypes] =
+    useState<EditableContentResourceType[]>(ASSET_MODAL_TYPES);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
-  const [isJSONWindowOpen, setIsJSONWindowOpen] = useState(false);
 
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
@@ -163,11 +166,6 @@ function ManifestEditorPage() {
     setIsInspectorOpen(true);
   }
 
-  function onContainerTypeChange(newType: ContainerType): void {
-    manifestObj.getContainerObj().setType(newType);
-    updateManifestObj();
-  }
-
   function captureContentResourceModalSnapshot(): void {
     contentResourceModalSnapshotRef.current = {
       manifestObj: manifestObj.clone(),
@@ -181,6 +179,14 @@ function ManifestEditorPage() {
 
   function handleOpenContentResourceModal(): void {
     captureContentResourceModalSnapshot();
+    setContentResourceModalTypes(ASSET_MODAL_TYPES);
+    setContentResourceModalView("picker");
+    setIsContentResourceModalOpen(true);
+  }
+
+  function handleOpenTempModal(): void {
+    captureContentResourceModalSnapshot();
+    setContentResourceModalTypes(TEMP_MODAL_TYPES);
     setContentResourceModalView("picker");
     setIsContentResourceModalOpen(true);
   }
@@ -530,6 +536,7 @@ function ManifestEditorPage() {
         isOpen={isContentResourceModalOpen}
         view={contentResourceModalView}
         selectedAnnotationIndex={selectedMetadataAnnotationIndex}
+        allowedTypes={contentResourceModalTypes}
         onCancel={handleCancelContentResourceModal}
         onSave={handleSaveContentResourceModal}
         onSelectType={handleCreateContentResource}
@@ -545,57 +552,24 @@ function ManifestEditorPage() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                className="cursor-pointer text-sm font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900"
-                type="button"
-                onClick={handleDownloadManifest}
-              >
-                Download JSON
-              </button>
-
-              <button
-                className="cursor-pointer rounded-md bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-                type="button"
-                onClick={() => setIsImportModalOpen(true)}
-                title="Import manifest from file or GitHub Gist"
-              >
-                Import
-              </button>
-
-              <button
-                className="cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                type="button"
-                onClick={handleExportButtonClick}
-                title="Export manifest to GitHub Gist"
-              >
-                Export
-              </button>
               {isAutoUpdateEnabled && gistId && (
                 <span className="w-full text-xs text-slate-500">
                   Auto-Update enabled
                 </span>
               )}
 
-              <label htmlFor="container-type" className="sr-only">
-                Container Type
-              </label>
-
-              <select
-                id="container-type"
-                className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:shadow-[0_0_0_3px_rgba(148,163,184,0.25)]"
-                value={manifestObj.getContainerObj().getType() as ContainerType}
-                onChange={(e) => onContainerTypeChange(e.target.value as ContainerType)}
-              >
-                <option value="Canvas">Canvas</option>
-                <option value="Scene">Scene</option>
-                <option value="Timeline">Timeline</option>
-              </select>
-
               <Button
                 type="button"
                 onClick={handleOpenContentResourceModal}
               >
-                Add Content Resource
+                Create Asset
+              </Button>
+
+              <Button
+                type="button"
+                onClick={handleOpenTempModal}
+              >
+                Create Environment
               </Button>
 
               <Button
@@ -603,13 +577,6 @@ function ManifestEditorPage() {
                 onClick={handleCreateTextAnnotation}
               >
                 Add Text Annotation
-              </Button>
-
-              <Button 
-                className="!bg-white round !text-slate-900 ring-1 ring-slate-300 hover:!bg-slate-100"
-                onClick={() => {setIsJSONWindowOpen(!isJSONWindowOpen)}}
-              >
-                JSON Preview
               </Button>
               
             </div>
@@ -626,12 +593,6 @@ function ManifestEditorPage() {
               id="voyager"
               style={{ width: "500px", height: "500px" }}
             ></voyager-explorer>
-          </div>
-
-          <div className="jsonWindow">
-              {isJSONWindowOpen ? (
-                <JsonEditor data={manifestPreview} />
-              ) : (null)}
           </div>
         </div>
         
@@ -704,7 +665,7 @@ function ManifestEditorPage() {
             <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-sm w-full mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-slate-900">
-                  Export to GitHub Gist
+                  Export Manifest
                 </h2>
                 <button
                   type="button"
@@ -717,6 +678,20 @@ function ManifestEditorPage() {
               </div>
 
               <div className="space-y-4">
+                <button
+                  className="w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+                  type="button"
+                  onClick={handleDownloadManifest}
+                  title="Download manifest as JSON"
+                >
+                  Download JSON
+                </button>
+
+                <div className="border-t border-slate-200 pt-4">
+                  <p className="text-xs font-medium text-slate-700 mb-2">
+                    Export to GitHub Gist
+                  </p>
+
                 <div>
                   <label htmlFor="export-token" className="block text-xs font-medium text-slate-700 mb-2">
                     GitHub Token
@@ -738,7 +713,7 @@ function ManifestEditorPage() {
                     href="https://github.com/settings/tokens"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 underline hover:text-blue-800 mt-1 inline-block"
+                    className="text-xs text-rose-600 underline hover:text-rose-800 mt-1 inline-block"
                     title="Open GitHub token settings page"
                   >
                     Get Token
@@ -767,7 +742,7 @@ function ManifestEditorPage() {
 
                 <div className="flex flex-wrap gap-2">
                   <button
-                    className="flex-1 cursor-pointer rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 cursor-pointer rounded-md bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                     onClick={handleCreateGist}
                     disabled={!githubToken || isCreatingGist || isAutoUpdateEnabled}
@@ -794,7 +769,7 @@ function ManifestEditorPage() {
                       type="checkbox"
                       checked={isAutoUpdateEnabled}
                       onChange={(e) => setIsAutoUpdateEnabled(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
                     />
                     <label htmlFor="auto-update" className="text-sm text-slate-700">
                       Auto-update every 30 seconds and when Export is clicked again
@@ -842,6 +817,7 @@ function ManifestEditorPage() {
                     </div>
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </div>
@@ -859,6 +835,8 @@ function ManifestEditorPage() {
           onSelectedMetadataAnnotationIndexChange={
             setSelectedMetadataAnnotationIndex
           }
+          onImportClick={() => setIsImportModalOpen(true)}
+          onExportClick={handleExportButtonClick}
           onClose={() => setIsInspectorOpen(false)}
           onReset={handleResetInspector}
           onResizeStart={handleResizeStart}
