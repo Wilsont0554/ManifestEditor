@@ -18,6 +18,34 @@ export function downloadJsonFile(data: unknown, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
+export function serializeManifestForExport(manifestObj: ManifestObject): object {
+  const exported = JSON.parse(JSON.stringify(manifestObj)) as any;
+
+  for (const container of exported.items ?? []) {
+    for (const page of container.items ?? []) {
+      for (const annotation of page.items ?? []) {
+        const body = annotation.body;
+
+        if (!body || body.type !== "Model") {
+          continue;
+        }
+
+        const { transforms, ...source } = body;
+
+        annotation.body = {
+          type: "SpecificResource",
+          source: [source],
+          ...(Array.isArray(transforms) && transforms.length > 0
+            ? { transform: transforms }
+            : {}),
+        };
+      }
+    }
+  }
+
+  return exported;
+}
+
 export function createManifestObjectFromUpload(uploadedManifest: ManifestObject): ManifestObject{
   const newManifest = new ManifestObject(uploadedManifest.type);
   newManifest.setAllValues(uploadedManifest);
