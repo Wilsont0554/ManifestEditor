@@ -3,7 +3,6 @@ import { manifestObjContext } from "@/context/manifest-context";
 import {
   getContentResourceDisplayTitle,
   getDisplayableContentResourceItems,
-  getTextAnnotationDisplayTitle,
   getTextAnnotationItems,
 } from "@/utils/content-resource";
 import ContentResourceEditor from "../shared/content-resource-editor";
@@ -22,37 +21,10 @@ function StructureTab() {
     updateManifestObj();
   }
 
-  function syncManifestLabel({
-    previousValue,
-    previousLanguageCode,
-    value,
-    languageCode,
-  }: {
-    previousValue: string;
-    previousLanguageCode: string;
-    value: string;
-    languageCode: string;
-  }): void {
-    const currentManifestLabel = manifestObj.getLabelValue().trim();
-    const currentManifestLabelLanguage = manifestObj.getLabelLanguage();
-    const isManifestLabelBlank =
-      currentManifestLabel.length === 0 ||
-      currentManifestLabel === "Blank Manifest";
-    const matchesPreviousResourceLabel =
-      currentManifestLabel === previousValue.trim() &&
-      currentManifestLabelLanguage === previousLanguageCode;
-
-    if (!value.trim() || (!isManifestLabelBlank && !matchesPreviousResourceLabel)) {
-      return;
-    }
-
-    manifestObj.setLabel(value);
-    manifestObj.setLabelLanguage(languageCode);
-  }
-
   return (
     <ManifestTabBody className="pb-6">
       <section className="space-y-4">
+        {/* Content Resources Section */}
         <div className="space-y-1">
           <p className="text-lg font-medium text-slate-950">Content resources</p>
           <p className="text-sm leading-6 text-slate-500">
@@ -93,7 +65,6 @@ function StructureTab() {
                       resource={resource}
                       idPrefix={`structure-content-resource-${annotationIndex}`}
                       onCommit={commitManifestChange}
-                      onResourceLabelSync={syncManifestLabel}
                       showMetadataAction={false}
                     />
                     <SoftActionButton
