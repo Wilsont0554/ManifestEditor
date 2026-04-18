@@ -1,10 +1,6 @@
 import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
 import Transform from './Transform.ts';
-import type { 
-    IiifContentResource,
-    IiifSpecificResource
- } from "@/types/iiif";
 
 class ContentResource {
     id: string;

@@ -1,129 +1,31 @@
-import { useEffect, useState } from "react";
-import type Annotation from "@/ManifestClasses/Annotation";
-import type Light from "@/ManifestClasses/Light";
 import ManifestField from "./manifest-field";
 import ManifestInput from "./manifest-input";
 import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 import TechnicalOptionGroup from "./technical-option-group";
 import {
-  getLightContentResourceTypeLabel,
   lightContentResourceTypes,
   type LightContentResourceType,
 } from "@/utils/content-resource";
+import NumericDraftInput from "./numeric-draft-input";
+import { clampNumber } from "@/utils/content-resource";
 
-const lightTypeOptions = lightContentResourceTypes.map((value) => ({
+
+const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => ({
   value,
-  label: getLightContentResourceTypeLabel(value),
+  label: lightContentResourceTypes[value]
 }));
 
-interface NumericDraftInputProps {
-  id: string;
-  label: string;
-  value: string;
-  onCommit: (newValue: number | undefined) => void;
-  placeholder?: string;
-  allowBlank?: boolean;
-  min?: number;
-  max?: number;
-  step?: number;
-  clampDraftToRange?: boolean;
-}
-
-function clampNumber(value: number, min?: number, max?: number): number {
-  let nextValue = value;
-
-  if (min !== undefined) {
-    nextValue = Math.max(nextValue, min);
-  }
-
-  if (max !== undefined) {
-    nextValue = Math.min(nextValue, max);
-  }
-
-  return nextValue;
-}
-
-function NumericDraftInput({
-  id,
-  label,
-  value,
-  onCommit,
-  placeholder,
-  allowBlank = false,
-  min,
-  max,
-  step,
-  clampDraftToRange = false,
-}: NumericDraftInputProps) {
-  const [draftValue, setDraftValue] = useState(value);
-
-  useEffect(() => {
-    setDraftValue(value);
-  }, [value]);
-
-  return (
-    <ManifestField label={label} htmlFor={id} className="space-y-2">
-      <input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        value={draftValue}
-        min={min}
-        max={max}
-        step={step}
-        placeholder={placeholder}
-        className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
-        onChange={(event) => {
-          const nextValue = event.target.value;
-
-          if (!nextValue.trim()) {
-            setDraftValue(nextValue);
-            onCommit(allowBlank ? undefined : clampNumber(0, min, max));
-            return;
-          }
-
-          const parsedValue = Number(nextValue);
-
-          if (!Number.isNaN(parsedValue)) {
-            const normalizedValue = clampNumber(parsedValue, min, max);
-
-            setDraftValue(
-              clampDraftToRange && normalizedValue !== parsedValue
-                ? normalizedValue.toString()
-                : nextValue,
-            );
-            onCommit(normalizedValue);
-            return;
-          }
-
-          setDraftValue(nextValue);
-        }}
-        onBlur={() => {
-          if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
-            setDraftValue(value);
-          }
-        }}
-      />
-    </ManifestField>
-  );
-}
 
 const DEFAULT_LIGHT_INTENSITY = 0.50;
 const LIGHT_INTENSITY_MIN = 0.00;
 const LIGHT_INTENSITY_MAX = 1.00;
 const LIGHT_INTENSITY_STEP = 0.01;
 
-interface LightIntensityInputProps {
-  idPrefix: string;
-  value: number | undefined;
-  onCommit: (newValue: number | undefined) => void;
-}
-
 function LightIntensityInput({
   idPrefix,
   value,
   onCommit,
-}: LightIntensityInputProps) {
+}) {
   const sliderValue = clampNumber(
     value ?? DEFAULT_LIGHT_INTENSITY,
     LIGHT_INTENSITY_MIN,
@@ -178,26 +80,19 @@ function LightIntensityInput({
   );
 }
 
-interface LightResourceTechnicalEditorProps {
-  annotation: Annotation;
-  resource: Light;
-  idPrefix: string;
-  onCommit: () => void;
-}
-
 function LightResourceTechnicalEditor({
   annotation,
   resource,
   idPrefix,
   onCommit,
-}: LightResourceTechnicalEditorProps) {
+}) {
   const lightType = resource.getType() as LightContentResourceType;
   const intensity = resource.getIntensity();
   const target = annotation.getTarget();
   const coordinatePreviewDetails = [
     {
       label: "Type",
-      value: getLightContentResourceTypeLabel(lightType),
+      value: lightType,
     },
     ...(lightType === "SpotLight" && resource.getAngle() !== undefined
       ? [
@@ -356,12 +251,12 @@ function LightResourceTechnicalEditor({
           />
         </div>
 
-        <SpatialCoordinatePreview
-          x={target?.getX() ?? 0}
-          y={target?.getY() ?? 0}
-          z={target?.getZ() ?? 0}
-          details={coordinatePreviewDetails}
-        />
+          <SpatialCoordinatePreview
+            x={target?.getX() ?? 0}
+            y={target?.getY() ?? 0}
+            z={target?.getZ() ?? 0}
+            details={coordinatePreviewDetails}
+          />
       </section>
     </section>
   );

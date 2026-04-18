@@ -1,20 +1,4 @@
 import { manifestObjContext } from "@/context/manifest-context";
-import {
-  getCameraContentResourceItems,
-  getContentResourceDisplayTitle,
-  getLightContentResourceItems,
-} from "@/utils/content-resource";
-import {
-  builtInManifestBehaviors,
-  manifestAutoAdvanceBehaviors,
-  manifestOrderingBehaviors,
-  manifestRepeatBehaviors,
-  manifestViewingDirections,
-  type ManifestAutoAdvanceBehavior,
-  type ManifestOrderingBehavior,
-  type ManifestRepeatBehavior,
-  type ManifestViewingDirection,
-} from "@/types/iiif";
 import { useContext } from "react";
 import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
 import CollapsibleResourceCard from "../shared/collapsible-resource-card";
@@ -26,88 +10,17 @@ import SoftActionButton from "../shared/soft-action-button";
 import ManifestField from "../shared/manifest-field";
 import TechnicalOptionGroup from "../shared/technical-option-group";
 import DropDownField from "@/components/shared/dropdown-field";
-
-const viewingDirectionOptions = manifestViewingDirections.map((value) => ({
-  value,
-  label: value
-    .replace(/-/g, " ")
-    .replace(/^\w/, (character: string) => character.toUpperCase()),
-}));
-
-const manifestOrderingOptions = [
-  { value: "", label: "None" },
-  ...manifestOrderingBehaviors.map((value) => ({
-    value,
-    label: value,
-  })),
-];
-
-const repeatOptions = [
-  { value: "", label: "None" },
-  ...manifestRepeatBehaviors.map((value) => ({
-    value,
-    label: value,
-  })),
-];
-
-const autoAdvanceOptions = [
-  { value: "", label: "None" },
-  ...manifestAutoAdvanceBehaviors.map((value) => ({
-    value,
-    label: value,
-  })),
-];
+import { getCameraItems, getContentResourceItems, getLightItems, getResourceTypeItems } from "@/utils/content-resource";
+import Camera from "@/ManifestClasses/Camera";
+import Light from "@/ManifestClasses/Light";
 
 function EnvironmentTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
-  const cameraResourceItems = getCameraContentResourceItems(manifestObj);
-  const lightResourceItems = getLightContentResourceItems(manifestObj);
   const customBehaviors = manifestObj.getCustomBehaviors();
   const isCanvasContainer = manifestObj.getContainerObj().getType() === "Canvas";
 
-  function handleIdentifierChange(newValue: string): void {
-    manifestObj.setId(newValue);
-    updateManifestObj();
-  }
-
-  function handleViewingDirectionChange(newValue: string): void {
-    manifestObj.setViewingDirection(newValue as ManifestViewingDirection | "");
-    updateManifestObj();
-  }
-
-  function handleManifestOrderingChange(newValue: string): void {
-    manifestObj.setManifestOrderingBehavior(
-      newValue as ManifestOrderingBehavior | "",
-    );
-    updateManifestObj();
-  }
-
-  function handleRepeatChange(newValue: string): void {
-    manifestObj.setRepeatBehavior(newValue as ManifestRepeatBehavior | "");
-    updateManifestObj();
-  }
-
-  function handleAutoAdvanceChange(newValue: string): void {
-    manifestObj.setAutoAdvanceBehavior(
-      newValue as ManifestAutoAdvanceBehavior | "",
-    );
-    updateManifestObj();
-  }
-
-  function handleAddCustomBehavior(value: string): boolean {
-    const wasAdded = manifestObj.addCustomBehavior(value);
-
-    if (wasAdded) {
-      updateManifestObj();
-    }
-
-    return wasAdded;
-  }
-
-  function handleRemoveCustomBehavior(value: string): void {
-    manifestObj.removeCustomBehavior(value);
-    updateManifestObj();
-  }
+  const cameraItems = getResourceTypeItems(manifestObj, Camera);
+  const lightItems = getResourceTypeItems(manifestObj, Light);
 
   function handleRemoveResource(annotationIndex: number): void {
     manifestObj
@@ -124,10 +37,10 @@ function EnvironmentTab() {
         id="manifest-identifier"
         type="text"
         value={manifestObj.getId()}
-        onChange={handleIdentifierChange}
+        onChange={() => console.log('')}
       />
 
-      {cameraResourceItems.length > 0 ? (
+      {cameraItems.length > 0 ? (
         <section className="space-y-4">
           <div className="space-y-1">
             <p className="text-lg font-medium text-slate-950">Cameras</p>
@@ -138,40 +51,37 @@ function EnvironmentTab() {
           </div>
 
           <div className="space-y-4">
-            {cameraResourceItems.map(
-              ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                <CollapsibleResourceCard
-                  key={`technical-camera-resource-${annotationIndex}`}
-                  badgeLabel={`Content Resource ${resourceNumber}`}
-                  description={getContentResourceDisplayTitle(
-                    annotation,
-                    resource,
-                    resourceNumber,
-                  )}
-                  collapsible
-                >
-                  <CameraResourceTechnicalEditor
-                    annotation={annotation}
-                    resource={resource}
-                    idPrefix={`technical-camera-${annotationIndex}`}
-                    onCommit={updateManifestObj}
-                  />
-                  <div className="pt-3">
-                    <SoftActionButton
-                      className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
-                      onClick={() => handleRemoveResource(annotationIndex)}
-                    >
-                      Remove Content Resource
-                    </SoftActionButton>
-                  </div>
-                </CollapsibleResourceCard>
-              ),
+            {cameraItems.map(
+              ({ annotation, resource, annotationIndex, resourceNumber}) => (<>
+                  <CollapsibleResourceCard
+                    key={`technical-camera-resource-${annotationIndex}`}
+                    badgeLabel={`Camera ${resourceNumber}`}
+                    description=""
+                    collapsible
+                    defaultOpen={false}
+                  >
+                    <CameraResourceTechnicalEditor
+                      annotation={annotation}
+                      resource={resource}
+                      idPrefix={`technical-camera-${annotationIndex}`}
+                      onCommit={updateManifestObj}
+                    />
+                    <div className="pt-3">
+                      <SoftActionButton
+                        className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                        onClick={() => handleRemoveResource(annotationIndex)}
+                      >
+                        Remove {`Camera ${resourceNumber}`}
+                      </SoftActionButton>
+                    </div>
+                  </CollapsibleResourceCard>
+              </>),
             )}
           </div>
         </section>
       ) : null}
 
-      {lightResourceItems.length > 0 ? (
+      {lightItems.length > 0 ? (
         <section className="space-y-4">
           <div className="space-y-1">
             <p className="text-lg font-medium text-slate-950">Lights</p>
@@ -182,34 +92,31 @@ function EnvironmentTab() {
           </div>
 
           <div className="space-y-4">
-            {lightResourceItems.map(
-              ({ annotation, resource, annotationIndex, resourceNumber }) => (
-                <CollapsibleResourceCard
-                  key={`technical-light-resource-${annotationIndex}`}
-                  badgeLabel={`Content Resource ${resourceNumber}`}
-                  description={getContentResourceDisplayTitle(
-                    annotation,
-                    resource,
-                    resourceNumber,
-                  )}
-                  collapsible
-                >
-                  <LightResourceTechnicalEditor
-                    annotation={annotation}
-                    resource={resource}
-                    idPrefix={`technical-light-${annotationIndex}`}
-                    onCommit={updateManifestObj}
-                  />
-                  <div className="pt-3">
-                    <SoftActionButton
-                      className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
-                      onClick={() => handleRemoveResource(annotationIndex)}
-                    >
-                      Remove Content Resource
-                    </SoftActionButton>
-                  </div>
-                </CollapsibleResourceCard>
-              ),
+            {lightItems.map(
+              ({ annotation, resource, annotationIndex, resourceNumber}) => (<>
+                  <CollapsibleResourceCard
+                    key={`technical-light-resource-${annotationIndex}`}
+                    badgeLabel={`Light ${resourceNumber}`}
+                    description=""
+                    collapsible
+                    defaultOpen={false}
+                  >
+                    <LightResourceTechnicalEditor
+                      annotation={annotation}
+                      resource={resource}
+                      idPrefix={`technical-light-${annotationIndex}`}
+                      onCommit={updateManifestObj}
+                    />
+                    <div className="pt-3">
+                      <SoftActionButton
+                        className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
+                        onClick={() => handleRemoveResource(annotationIndex)}
+                      >
+                        Remove {`Light ${resourceNumber}`}
+                      </SoftActionButton>
+                    </div>
+                  </CollapsibleResourceCard>
+              </>),
             )}
           </div>
         </section>
@@ -219,9 +126,9 @@ function EnvironmentTab() {
         <>
           <ManifestField label="Viewing direction" className="space-y-3">
             <TechnicalOptionGroup
-              options={viewingDirectionOptions}
+              options={["temp"]}
               value={manifestObj.getViewingDirection()}
-              onChange={handleViewingDirectionChange}
+              onChange={() => {console.log('')}}
               allowDeselect
             />
           </ManifestField>
@@ -229,24 +136,24 @@ function EnvironmentTab() {
           <ManifestField label="Built in behaviors" className="space-y-2">
             <DropDownField label="Manifest ordering">
               <TechnicalOptionGroup
-                options={manifestOrderingOptions}
+                options={["manifestOrderingOptions"]}
                 value={manifestObj.getManifestOrderingBehavior()}
-                onChange={handleManifestOrderingChange}
+              onChange={() => {console.log('')}}
               />
             </DropDownField>
             <DropDownField label="Repeat">
               <TechnicalOptionGroup
-                options={repeatOptions}
+                options={["repeatOptions"]}
                 value={manifestObj.getRepeatBehavior()}
-                onChange={handleRepeatChange}
+              onChange={() => {console.log('')}}
                 orientation="horizontal"
               />
             </DropDownField>
             <DropDownField label="Auto-advance">
               <TechnicalOptionGroup
-                options={autoAdvanceOptions}
+                options={["autoAdvanceOptions"]}
                 value={manifestObj.getAutoAdvanceBehavior()}
-                onChange={handleAutoAdvanceChange}
+              onChange={() => {console.log('')}}
                 orientation="horizontal"
               />
             </DropDownField>
@@ -259,8 +166,8 @@ function EnvironmentTab() {
             <ManifestCustomBehaviorEditor
               behaviors={customBehaviors}
               reservedBehaviors={builtInManifestBehaviors}
-              onAddBehavior={handleAddCustomBehavior}
-              onRemoveBehavior={handleRemoveCustomBehavior}
+              onChange={() => {console.log('')}}
+              onChange={() => {console.log('')}}
             />
           </ManifestField>
         </>

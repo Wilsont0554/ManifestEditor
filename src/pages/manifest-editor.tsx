@@ -17,11 +17,13 @@ import Annotation from "@/ManifestClasses/Annotation";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import {
-  createDefaultContentResource,
   type EditableContentResourceType,
 } from "@/utils/content-resource";
 import CreateBar from "@/components/shared/createBar/CreateBar";
 import ImportExportHandler from "@/components/shared/importExport/importExportHandler";
+import ContentResource from "@/ManifestClasses/ContentResource";
+import Light from "@/ManifestClasses/Light";
+import Camera from "@/ManifestClasses/Camera";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
@@ -225,12 +227,20 @@ function ManifestEditorPage() {
 
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1);
-    annotation.setContentResource(
-      createDefaultContentResource(type, nextAnnotationIndex),
-    );
-
-    if (type === "Light" || type === "Camera") {
-      annotation.ensureSpatialTarget();
+    if (type == "Model"){
+      annotation.setContentResource(
+        new ContentResource("", "Model", "model/gltf-binary"),
+      );
+    }
+    else if (type === "Light") {
+      annotation.setContentResource(
+        new Light("", "AmbientLight"),
+      );
+    }
+    else if (type === "Camera") {
+      annotation.setContentResource(
+        new Camera("", "OrthographicCamera"),
+      );
     }
 
     annotationPage.addAnnotation(annotation);

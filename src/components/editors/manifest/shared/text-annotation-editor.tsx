@@ -5,15 +5,6 @@ import ManifestField from "./manifest-field";
 import Annotation from "@/ManifestClasses/Annotation";
 import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 
-interface NumericDraftInputProps {
-  id: string;
-  label: string;
-  value: string;
-  onCommit: (newValue: number) => void;
-  placeholder?: string;
-  step?: number;
-}
-
 function NumericDraftInput({
   id,
   label,
@@ -21,7 +12,7 @@ function NumericDraftInput({
   onCommit,
   placeholder,
   step = 0.1,
-}: NumericDraftInputProps) {
+}) {
   const [draftValue, setDraftValue] = useState(value);
 
   useEffect(() => {

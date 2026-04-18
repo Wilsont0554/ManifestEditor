@@ -26,32 +26,6 @@ const transformTypeOptions = transformTypes.map((value) => ({
   label: value.replace("Transform", ""),
 }));
 
-interface ResourceLabelSyncPayload {
-  previousValue: string;
-  previousLanguageCode: string;
-  value: string;
-  languageCode: string;
-}
-
-interface ContentResourceEditorProps {
-  annotation: Annotation;
-  resource: ContentResource;
-  idPrefix: string;
-  onCommit: () => void;
-  className?: string;
-  showTypeSelector?: boolean;
-  showMetadataAction?: boolean;
-  onOpenMetadata?: () => void;
-}
-
-interface NumericDraftInputProps {
-  id: string;
-  label: string;
-  value: string;
-  onCommit: (newValue: number) => void;
-  placeholder?: string;
-  step?: number;
-}
 
 function NumericDraftInput({
   id,
@@ -60,7 +34,7 @@ function NumericDraftInput({
   onCommit,
   placeholder,
   step = 0.1,
-}: NumericDraftInputProps) {
+}) {
   const [draftValue, setDraftValue] = useState(value);
 
   useEffect(() => {
@@ -111,7 +85,7 @@ function ContentResourceEditor({
   showTypeSelector = true,
   showMetadataAction = true,
   onOpenMetadata,
-}: ContentResourceEditorProps) {
+}) {
   const isLightResource = resource instanceof Light;
   const isCameraResource = resource instanceof Camera;
   const isModelResource = resource.isModelResource();

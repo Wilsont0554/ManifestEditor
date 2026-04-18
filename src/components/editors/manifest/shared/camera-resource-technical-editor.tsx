@@ -1,105 +1,29 @@
-import { useEffect, useState } from "react";
-import type Annotation from "@/ManifestClasses/Annotation";
-import type Camera from "@/ManifestClasses/Camera";
-import ManifestField from "./manifest-field";
 import SpatialCoordinatePreview from "./spatial-coordinate-preview";
 import TechnicalOptionGroup from "./technical-option-group";
+import NumericDraftInput from "./numeric-draft-input";
+
 import {
   cameraContentResourceTypes,
-  getCameraContentResourceTypeLabel,
   type SupportedCameraContentResourceType,
 } from "@/utils/content-resource";
 
-const cameraTypeOptions = cameraContentResourceTypes.map((value) => ({
+const cameraTypeOptions = Object.keys(cameraContentResourceTypes).map((value) => ({
   value,
-  label: getCameraContentResourceTypeLabel(value),
+  label: cameraContentResourceTypes[value]
 }));
-
-interface NumericDraftInputProps {
-  id: string;
-  label: string;
-  value: string;
-  onCommit: (newValue: number | undefined) => void;
-  placeholder?: string;
-  allowBlank?: boolean;
-  min?: number;
-  max?: number;
-  step?: number;
-}
-
-function NumericDraftInput({
-  id,
-  label,
-  value,
-  onCommit,
-  placeholder,
-  allowBlank = false,
-  min,
-  max,
-  step,
-}: NumericDraftInputProps) {
-  const [draftValue, setDraftValue] = useState(value);
-
-  useEffect(() => {
-    setDraftValue(value);
-  }, [value]);
-
-  return (
-    <ManifestField label={label} htmlFor={id} className="space-y-2">
-      <input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        value={draftValue}
-        min={min}
-        max={max}
-        step={step}
-        placeholder={placeholder}
-        className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
-        onChange={(event) => {
-          const nextValue = event.target.value;
-          setDraftValue(nextValue);
-
-          if (!nextValue.trim()) {
-            onCommit(allowBlank ? undefined : 0);
-            return;
-          }
-
-          const parsedValue = Number(nextValue);
-
-          if (!Number.isNaN(parsedValue)) {
-            onCommit(parsedValue);
-          }
-        }}
-        onBlur={() => {
-          if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
-            setDraftValue(value);
-          }
-        }}
-      />
-    </ManifestField>
-  );
-}
-
-interface CameraResourceTechnicalEditorProps {
-  annotation: Annotation;
-  resource: Camera;
-  idPrefix: string;
-  onCommit: () => void;
-}
 
 function CameraResourceTechnicalEditor({
   annotation,
   resource,
   idPrefix,
   onCommit,
-}: CameraResourceTechnicalEditorProps) {
+}) {
   const cameraType = resource.getType();
   const target = annotation.getTarget();
   const coordinatePreviewDetails = [
     {
       label: "Type",
-      value: getCameraContentResourceTypeLabel(cameraType),
+      value: cameraType,
     },
     cameraType === "OrthographicCamera"
       ? {

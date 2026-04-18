@@ -1,4 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import CollapsibleResourceCard from "./collapsible-resource-card";
 
 interface SpatialPreviewDetail {
   label: string;
@@ -217,11 +218,18 @@ function SpatialCoordinatePreview({
     }
   }
 
-  return (
-    <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+  return (<>
+    <CollapsibleResourceCard
+      key=""
+      badgeLabel={`3D Coordinate Preview`}
+      description=""
+      collapsible
+    >
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-slate-950">3D Preview</p>
+          <p className="text-xs font-medium text-slate-500">
+          Drag to rotate. Floor uses X/Z and height uses Y.
+        </p>
           <button
             type="button"
             className="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
@@ -232,10 +240,9 @@ function SpatialCoordinatePreview({
           >
             Reset view
           </button>
+        
         </div>
-        <p className="text-xs font-medium text-slate-500">
-          Drag to rotate. Floor uses X/Z and height uses Y.
-        </p>
+
         {detailItems.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {detailItems.map((detail) => (
@@ -382,8 +389,8 @@ function SpatialCoordinatePreview({
           X {formatCoordinate(x)} | Y {formatCoordinate(y)} | Z {formatCoordinate(z)}
         </span>
       </div>
-    </section>
-  );
+    </CollapsibleResourceCard>
+  </>);
 }
 
 export type { SpatialPreviewDetail };
