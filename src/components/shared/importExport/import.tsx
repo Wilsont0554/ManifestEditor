@@ -1,5 +1,7 @@
 
-function ImportMenu({setIsImportModalOpen, handleUploadManifest, gistImportUrl, setGistImportUrl, handleUploadManifestFromGist, isImportingGist} : any) {
+function ImportMenu({setImportExportType, handleUploadManifest, gistImportUrl, 
+  setGistImportUrl, handleUploadManifestFromGist, isImportingGist}) {
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-md w-full mx-4">
@@ -9,7 +11,7 @@ function ImportMenu({setIsImportModalOpen, handleUploadManifest, gistImportUrl, 
                 </h2>
                 <button
                   type="button"
-                  onClick={() => setIsImportModalOpen(false)}
+                  onClick={() => setImportExportType("none")}
                   className="text-2xl leading-none text-slate-500 hover:text-slate-700"
                   title="Close"
                 >

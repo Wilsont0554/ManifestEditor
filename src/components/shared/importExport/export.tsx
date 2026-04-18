@@ -1,7 +1,7 @@
-function ExportMenu({setIsExportModalOpen, handleDownloadManifest,
+function ExportMenu({setImportExportType, handleDownloadManifest,
     githubToken, setGithubToken, setShowTokenWarning,gistBaseName, setGistBaseName, 
     handleCreateGist, isCreatingGist, isAutoUpdateEnabled, handleClearToken,gistId, 
-    gistRawUrl, setIsAutoUpdateEnabled, gistUrl} : any) {
+    gistRawUrl, setIsAutoUpdateEnabled, gistUrl}) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-lg max-w-sm w-full mx-4">
@@ -11,7 +11,7 @@ function ExportMenu({setIsExportModalOpen, handleDownloadManifest,
                 </h2>
                 <button
                   type="button"
-                  onClick={() => setIsExportModalOpen(false)}
+                  onClick={() => setImportExportType("none")}
                   className="text-slate-500 hover:text-slate-700 text-2xl leading-none"
                   title="Close"
                 >

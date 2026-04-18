@@ -15,20 +15,8 @@ import OverviewTab from "./tabs/overview-tab";
 import AssetsTab from "./tabs/assets-tab";
 import EnvironmentTab from "./tabs/environment-tab";
 
-interface ManifestComponentProps {
-  width: number;
-  activeTab: ManifestTabId;
-  onActiveTabChange: (tab: ManifestTabId) => void;
-  selectedMetadataAnnotationIndex: number;
-  onSelectedMetadataAnnotationIndexChange: (index: number) => void;
-  onImportClick: () => void;
-  onExportClick: () => void;
-  onClose: () => void;
-  onReset: () => void;
-  onResizeStart: (event: ReactMouseEvent<HTMLButtonElement>) => void;
-}
-
 function ManifestComponent({
+  //props
   width,
   activeTab,
   onActiveTabChange,
@@ -39,7 +27,7 @@ function ManifestComponent({
   onClose,
   onReset,
   onResizeStart,
-}: ManifestComponentProps) {
+}) {
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
