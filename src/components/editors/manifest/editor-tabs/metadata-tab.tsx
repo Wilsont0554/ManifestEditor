@@ -3,9 +3,8 @@ import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import { manifestObjContext } from "@/context/manifest-context";
 import type Annotation from "@/ManifestClasses/Annotation";
 import type ContentResource from "@/ManifestClasses/ContentResource";
-import EmptyStateCard from "../shared/empty-state-card";
-import ManifestTabBody from "../shared/manifest-tab-body";
-import SoftActionButton from "../shared/soft-action-button";
+import EmptyStateCard from "../shared/cards/empty-state-card";
+import SoftActionButton from "../shared/inputs/soft-action-button";
 
 interface MetadataTabProps {
   selectedAnnotationIndex: number;
@@ -89,12 +88,8 @@ function MetadataTab({
     onSelectedAnnotationIndexChange(index);
   }
 
-  if (resourceItems.length === 0) {
-    return <ManifestTabBody className="pb-6" />;
-  }
-
   return (
-    <ManifestTabBody className="pb-6">
+    <div className="min-h-40 space-y-8 pb-6">
       <section className="space-y-4">
         <div className="space-y-1">
           <p className="text-lg font-medium text-slate-950">Metadata</p>
@@ -246,11 +241,21 @@ function MetadataTab({
                   </div>
                 </article>
               );
-            },
+            }
           )}
+          {resourceItems.length == 0 ? (
+            <EmptyStateCard
+            title="No Metadata"
+            description="Add an image or model content resource to populate editable fields here."
+            align="left"
+            className="border border-slate-200 bg-slate-50"
+            titleClassName="text-slate-950 text-lg"
+            descriptionClassName="max-w-none text-base leading-relaxed text-slate-500"
+          />
+          ) : null}
         </div>
       </section>
-    </ManifestTabBody>
+    </div>
   );
 }
 

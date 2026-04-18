@@ -1,8 +1,7 @@
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import { manifestObjContext } from "@/context/manifest-context";
 import { useContext } from "react";
-import ManifestTabBody from "../shared/manifest-tab-body";
-import ManifestField from "../shared/manifest-field";
+import ManifestField from "../shared/inputs/manifest-field";
 
 function OverviewMetadataField({
   label,
@@ -71,7 +70,7 @@ function OverviewTab() {
   };
 
   return (
-    <ManifestTabBody className="pb-6">
+    <div className="min-h-40 space-y-8 pb-6">
         <section className="space-y-6">
             <InputWithLanguage
               label="Label"
@@ -141,7 +140,7 @@ function OverviewTab() {
           </ManifestField> }
         <section className="space-y-6 border-t border-slate-200 pt-8">
         </section> 
-    </ManifestTabBody>
+    </div>
   );
 }
 

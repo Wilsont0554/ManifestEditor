@@ -1,6 +1,5 @@
 import {
   type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode,
   useContext,
   useEffect,
   useRef,
@@ -10,15 +9,11 @@ import Button from "@/components/shared/button";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import {
-  getResourceTypeItems,
-  type EditableContentResourceType,
-} from "@/utils/content-resource";
-import CameraResourceTechnicalEditor from "./shared/camera-resource-technical-editor";
-import ContentResourceEditor from "./shared/content-resource-editor";
-import LightResourceTechnicalEditor from "./shared/light-resource-technical-editor";
-import SoftActionButton from "./shared/soft-action-button";
-import TextAnnotationEditor from "./shared/text-annotation-editor";
+import CameraResourceTechnicalEditor from "./shared/resource-editors/camera-resource-technical-editor";
+import ContentResourceEditor from "./shared/resource-editors/content-resource-editor";
+import LightResourceTechnicalEditor from "./shared/resource-editors/light-resource-technical-editor";
+import SoftActionButton from "./shared/inputs/soft-action-button";
+import TextAnnotationEditor from "./shared/resource-editors/text-annotation-editor";
 import ContentResource from "@/ManifestClasses/ContentResource";
 
 export type ContentResourceModalView = "picker" | "editor";
@@ -209,18 +204,9 @@ function ContentResourceModal({
     .getContainerObj()
     .getAnnotationPage()
     .getAllAnnotations();
-  const contentResourceItems = getResourceTypeItems(manifestObj, Object);
-  const selectedAnnotation =
-    view === "editor"
-      ? annotations[selectedAnnotationIndex] ?? null
-      : null;
+
+  const selectedAnnotation = annotations[selectedAnnotationIndex];
   const selectedResource = selectedAnnotation?.getContentResource() ?? null;
-  const selectedResourceItem =
-    selectedAnnotation && selectedResource
-      ? contentResourceItems.find(
-          (item) => item.annotationIndex === selectedAnnotationIndex,
-        ) ?? null
-      : null;
   const contentResourceOptions = baseContentResourceOptions.filter((option) => {
     const isSceneOnlyOption = option.value === "Light" || option.value === "Camera";
 
@@ -369,7 +355,7 @@ function ContentResourceModal({
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Text Annotation {selectedResourceItem?.resourceNumber ?? 1}
+                  New Text Annotation
                 </button>
 
                 <TextAnnotationEditor
@@ -386,7 +372,7 @@ function ContentResourceModal({
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Content Resource {selectedResourceItem?.resourceNumber ?? 1}
+                  New Resource
                 </button>
 
                 <ContentResourceEditor
@@ -396,7 +382,6 @@ function ContentResourceModal({
                   onCommit={commitManifestChange}
                   className="pt-5"
                   showTypeSelector={false}
-                  showMetadataAction={false}
                 />
 
                 {selectedResource instanceof Camera ? (

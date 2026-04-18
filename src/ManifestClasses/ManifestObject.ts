@@ -51,12 +51,9 @@ class ManifestObject {
         this.items = [];
         this.label = new Label(defaultManifestLabel, "en");
         this.addContainer(new Container(undefined, containerType));
-        this.synchronizeStructure();
     }
 
     clone(): ManifestObject {
-        this.synchronizeStructure();
-
         const nextManifestObj = new ManifestObject(this.getContainerObj().getType());
 
         nextManifestObj.id = this.id;
@@ -74,7 +71,6 @@ class ManifestObject {
     
     addContainer(container: Container): void {
         this.items.push(container);
-        this.synchronizeStructure();
     }
 
     getContainerObj(index?: number): Container {
@@ -293,67 +289,6 @@ class ManifestObject {
         }
 
         return new Label(defaultManifestLabel, "en");
-    }
-
-    private synchronizeStructure(): void {
-        const manifestBaseId = getManifestBaseId(this.id);
-
-        this.items.forEach((container, containerIndex) => {
-            const containerId = `${manifestBaseId}/${container.getType().toLowerCase()}/${containerIndex + 1}`;
-            container.setID(containerId);
-
-            container.getItems().forEach((annotationPage, annotationPageIndex) => {
-                annotationPage.setID(`${containerId}/page/${annotationPageIndex + 1}`);
-
-                let lightIndex = 0;
-                let cameraIndex = 0;
-
-                annotationPage.getAllAnnotations().forEach((annotation, annotationIndex) => {
-                    const annotationId = `${containerId}/anno/${annotationIndex + 1}`;
-                    annotation.changeID(annotationId);
-
-                    const resource = annotation.getContentResource();
-                    const targetId = `${annotationId}/target`;
-
-                    if (resource instanceof Light) {
-                        lightIndex += 1;
-                        resource.setID(`${containerId}/lights/${lightIndex}`);
-                        resource.synchronizeDerivedIds();
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    if (resource instanceof Camera) {
-                        cameraIndex += 1;
-                        resource.setID(`${containerId}/cameras/${cameraIndex}`);
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    if (annotation.getTarget()) {
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    annotation.setTargetReference(
-                        containerId,
-                        container.getType() as IiifContainerType,
-                    );
-                });
-            });
-        });
     }
 }
 

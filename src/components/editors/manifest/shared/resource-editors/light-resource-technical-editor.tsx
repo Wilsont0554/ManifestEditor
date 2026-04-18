@@ -1,12 +1,12 @@
-import ManifestField from "./manifest-field";
-import ManifestInput from "./manifest-input";
-import SpatialCoordinatePreview from "./spatial-coordinate-preview";
-import TechnicalOptionGroup from "./technical-option-group";
+import ManifestField from "../inputs/manifest-field";
+import ManifestInput from "../inputs/manifest-input";
+import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
+import TechnicalOptionGroup from "../technical-option-group";
 import {
   lightContentResourceTypes,
   type LightContentResourceType,
 } from "@/utils/content-resource";
-import NumericDraftInput from "./numeric-draft-input";
+import NumericDraftInput from "../inputs/numeric-draft-input";
 import { clampNumber } from "@/utils/content-resource";
 
 

@@ -1,5 +1,5 @@
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from "react";
-import SoftActionButton from "./soft-action-button";
+import SoftActionButton from "./inputs/soft-action-button";
 
 function ManifestCustomBehaviorEditor({
   behaviors,

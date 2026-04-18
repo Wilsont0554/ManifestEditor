@@ -1,6 +1,6 @@
-import SpatialCoordinatePreview from "./spatial-coordinate-preview";
-import TechnicalOptionGroup from "./technical-option-group";
-import NumericDraftInput from "./numeric-draft-input";
+import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
+import TechnicalOptionGroup from "../technical-option-group";
+import NumericDraftInput from "../inputs/numeric-draft-input";
 
 import {
   cameraContentResourceTypes,

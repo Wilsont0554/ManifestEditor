@@ -1,11 +1,10 @@
 import { useContext } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
-import ContentResourceEditor from "../shared/content-resource-editor";
-import CollapsibleResourceCard from "../shared/collapsible-resource-card";
-import EmptyStateCard from "../shared/empty-state-card";
-import ManifestTabBody from "../shared/manifest-tab-body";
-import SoftActionButton from "../shared/soft-action-button";
-import TextAnnotationEditor from "../shared/text-annotation-editor";
+import ContentResourceEditor from "../shared/resource-editors/content-resource-editor";
+import CollapsibleResourceCard from "../shared/cards/collapsible-resource-card";
+import EmptyStateCard from "../shared/cards/empty-state-card";
+import SoftActionButton from "../shared/inputs/soft-action-button";
+import TextAnnotationEditor from "../shared/resource-editors/text-annotation-editor";
 import { getResourceTypeItems } from "@/utils/content-resource";
 import ContentResource from "@/ManifestClasses/ContentResource";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
@@ -24,7 +23,7 @@ function AssetsTab() {
   }
 
   return (
-    <ManifestTabBody className="pb-6">
+    <div className="min-h-40 space-y-8">
       <section className="space-y-4">
         {/* Content Resources Section */}
         <div className="space-y-1">
@@ -51,7 +50,6 @@ function AssetsTab() {
                       resource={resource}
                       idPrefix={`structure-content-resource-${annotationIndex}`}
                       onCommit={commitManifestChange}
-                      showMetadataAction={false}
                     />
                     <SoftActionButton
                     className="bg-white text-rose-600 ring-1 ring-pink-200 hover:bg-rose-50"
@@ -69,7 +67,7 @@ function AssetsTab() {
           </div>
         ) : (
           <EmptyStateCard
-            title="No content resources"
+            title="No Content Resources"
             description="Add an image or model content resource to populate editable fields here."
             align="left"
             className="border border-slate-200 bg-slate-50"
@@ -122,7 +120,7 @@ function AssetsTab() {
           </div>
         ) : (
           <EmptyStateCard
-            title="No content resources"
+            title="No Text Annotations"
             description="Add an image or model content resource to populate editable fields here."
             align="left"
             className="border border-slate-200 bg-slate-50"
@@ -131,7 +129,7 @@ function AssetsTab() {
           />
         )}
       </section>
-    </ManifestTabBody>
+    </div>
   );
 }
 

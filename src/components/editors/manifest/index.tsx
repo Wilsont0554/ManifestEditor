@@ -7,13 +7,13 @@ import {
   MANIFEST_TABS,
   type ManifestTabId,
 } from "./manifest-component-constants";
-import DescriptiveTab from "./tabs/descriptive-tab";
-import JsonPreviewTab from "./tabs/json-preview-tab";
-import LinkingTab from "./tabs/linking-tab";
-import MetadataTab from "./tabs/metadata-tab";
-import OverviewTab from "./tabs/overview-tab";
-import AssetsTab from "./tabs/assets-tab";
-import EnvironmentTab from "./tabs/environment-tab";
+import DescriptiveTab from "./editor-tabs/descriptive-tab";
+import JsonPreviewTab from "./editor-tabs/json-preview-tab";
+import LinkingTab from "./editor-tabs/linking-tab";
+import MetadataTab from "./editor-tabs/metadata-tab";
+import OverviewTab from "./editor-tabs/overview-tab";
+import AssetsTab from "./editor-tabs/assets-tab";
+import EnvironmentTab from "./editor-tabs/environment-tab";
 
 function ManifestComponent({
   //props

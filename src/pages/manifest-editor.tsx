@@ -9,7 +9,7 @@ import {
 import ContentResourceModal, {
   type ContentResourceModalView,
 } from "@components/editors/manifest/content-resource-modal";
-import ManifestComponent from "@components/editors/manifest";
+import ManifestComponent from "@/components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { manifestObjContext } from "@/context/manifest-context";
 import { createManifestObjectFromUpload, serializeManifestForExport  } from "@/utils/file";

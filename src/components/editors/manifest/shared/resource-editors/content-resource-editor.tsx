@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
-import type Annotation from "@/ManifestClasses/Annotation";
 import Camera from "@/ManifestClasses/Camera";
-import type ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import { transformTypes } from "@/ManifestClasses/Transform";
 import {
   contentResourceTypeToFormat,
 } from "@/utils/content-resource";
-import ManifestField from "./manifest-field";
-import ManifestInput from "./manifest-input";
-import SoftActionButton from "./soft-action-button";
-import SpatialCoordinatePreview from "./spatial-coordinate-preview";
-import TechnicalOptionGroup from "./technical-option-group";
+import ManifestField from "../inputs/manifest-field";
+import ManifestInput from "../inputs/manifest-input";
+import SoftActionButton from "../inputs/soft-action-button";
+import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
+import TechnicalOptionGroup from "../technical-option-group";
 
 const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
   (value) => ({
@@ -83,8 +81,6 @@ function ContentResourceEditor({
   onCommit,
   className = "",
   showTypeSelector = true,
-  showMetadataAction = true,
-  onOpenMetadata,
 }) {
   const isLightResource = resource instanceof Light;
   const isCameraResource = resource instanceof Camera;
@@ -356,23 +352,6 @@ function ContentResourceEditor({
               </div>
             </section>
           ))}
-        </section>
-      ) : null}
-
-      {showMetadataAction && onOpenMetadata ? (
-        <section className="space-y-3 rounded-xl border border-dashed border-pink-200 bg-white p-4">
-          <ManifestField label="Metadata">
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              {resource.getMetadata().getEntryCount() > 0
-                ? "Open the metadata editor to review or update existing entries."
-                : "This resource does not have metadata yet. Start by creating your first entry."}
-            </p>
-          </ManifestField>
-          <SoftActionButton onClick={onOpenMetadata}>
-            {resource.getMetadata().getEntryCount() > 0
-              ? "Edit Metadata"
-              : "Add Metadata"}
-          </SoftActionButton>
         </section>
       ) : null}
     </section>

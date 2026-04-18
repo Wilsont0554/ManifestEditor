@@ -1,18 +1,17 @@
 import { manifestObjContext } from "@/context/manifest-context";
 import { useContext } from "react";
-import CameraResourceTechnicalEditor from "../shared/camera-resource-technical-editor";
-import CollapsibleResourceCard from "../shared/collapsible-resource-card";
-import LightResourceTechnicalEditor from "../shared/light-resource-technical-editor";
+import CameraResourceTechnicalEditor from "../shared/resource-editors/camera-resource-technical-editor";
+import CollapsibleResourceCard from "../shared/cards/collapsible-resource-card";
+import LightResourceTechnicalEditor from "../shared/resource-editors/light-resource-technical-editor";
 import ManifestCustomBehaviorEditor from "../shared/manifest-custom-behavior-editor";
-import ManifestInput from "../shared/manifest-input";
-import ManifestTabBody from "../shared/manifest-tab-body";
-import SoftActionButton from "../shared/soft-action-button";
-import ManifestField from "../shared/manifest-field";
+import SoftActionButton from "../shared/inputs/soft-action-button";
+import ManifestField from "../shared/inputs/manifest-field";
 import TechnicalOptionGroup from "../shared/technical-option-group";
 import DropDownField from "@/components/shared/dropdown-field";
-import { getCameraItems, getContentResourceItems, getLightItems, getResourceTypeItems } from "@/utils/content-resource";
+import { getResourceTypeItems } from "@/utils/content-resource";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
+import EmptyStateCard from "../shared/cards/empty-state-card";
 
 function EnvironmentTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
@@ -31,25 +30,19 @@ function EnvironmentTab() {
   }
 
   return (
-    <ManifestTabBody className="pb-6">
-      <ManifestInput
-        label="Identifier"
-        id="manifest-identifier"
-        type="text"
-        value={manifestObj.getId()}
-        onChange={() => console.log('')}
-      />
+    <div className="min-h-40 space-y-4">
+      <div className="space-y-1">
+        <p className="text-lg font-medium text-slate-950">
+          Cameras
+        </p>
+        <p className="text-sm leading-6 text-slate-500">
+          Edit camera type, clipping planes, position, and type-specific
+          settings for each camera content resource.
+        </p>
+      </div>
 
       {cameraItems.length > 0 ? (
         <section className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-lg font-medium text-slate-950">Cameras</p>
-            <p className="text-sm leading-6 text-slate-500">
-              Edit camera type, clipping planes, position, and type-specific
-              settings for each camera content resource.
-            </p>
-          </div>
-
           <div className="space-y-4">
             {cameraItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber}) => (<>
@@ -79,18 +72,30 @@ function EnvironmentTab() {
             )}
           </div>
         </section>
-      ) : null}
+      ) : (
+        <EmptyStateCard
+            title="No Cameras"
+            description="Add an image or model content resource to populate editable fields here."
+            align="left"
+            className="border border-slate-200 bg-slate-50"
+            titleClassName="text-slate-950 text-lg"
+            descriptionClassName="max-w-none text-base leading-relaxed text-slate-500"
+          />
+      )}
+
+      <div className="space-y-1">
+          <p className="text-lg font-medium text-slate-950">
+            Lights
+          </p>
+          <p className="text-sm leading-6 text-slate-500">
+            Edit light type, color, intensity, and 3D coordinates for each light
+            content resource.
+          </p>
+        </div>
+
 
       {lightItems.length > 0 ? (
         <section className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-lg font-medium text-slate-950">Lights</p>
-            <p className="text-sm leading-6 text-slate-500">
-              Edit light type, color, intensity, and 3D coordinates for each light
-              content resource.
-            </p>
-          </div>
-
           <div className="space-y-4">
             {lightItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber}) => (<>
@@ -120,7 +125,16 @@ function EnvironmentTab() {
             )}
           </div>
         </section>
-      ) : null}
+      ) : (
+        <EmptyStateCard
+            title="No Lights"
+            description="Add an image or model content resource to populate editable fields here."
+            align="left"
+            className="border border-slate-200 bg-slate-50"
+            titleClassName="text-slate-950 text-lg"
+            descriptionClassName="max-w-none text-base leading-relaxed text-slate-500"
+          />
+      )}
 
       {isCanvasContainer ? (
         <>
@@ -167,12 +181,11 @@ function EnvironmentTab() {
               behaviors={customBehaviors}
               reservedBehaviors={builtInManifestBehaviors}
               onChange={() => {console.log('')}}
-              onChange={() => {console.log('')}}
             />
           </ManifestField>
         </>
       ) : null}
-    </ManifestTabBody>
+    </div>
   );
 }
 
