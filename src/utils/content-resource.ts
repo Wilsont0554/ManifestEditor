@@ -1,3 +1,4 @@
+import ContentResource from "@/ManifestClasses/ContentResource";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
 export const contentResourceTypeToFormat = {
@@ -25,7 +26,7 @@ export type EditableContentResourceType =
   | "Light"
   | "Camera";
 
-export function getResourceTypeItems(manifestObj: ManifestObject, resourceType: any) {
+export function getResourceTypeItems(manifestObj: ManifestObject, resourceType: object) {
   let resourceNumber = 0;
 
   return manifestObj
@@ -52,7 +53,6 @@ export function getResourceTypeItems(manifestObj: ManifestObject, resourceType: 
       }
     });
 }
-
 
 export function clampNumber(value: number, min?: number, max?: number): number {
   let nextValue = value;

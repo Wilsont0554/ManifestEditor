@@ -118,6 +118,10 @@ class ContentResource {
         return [this.height, this.width];
     }
 
+    getID(): string{
+        return this.id;
+    }
+
     changeLabel(index: number, value: string, languageCode?: string): void {
         this.label.changeLabelTest(value);
         if (languageCode) {

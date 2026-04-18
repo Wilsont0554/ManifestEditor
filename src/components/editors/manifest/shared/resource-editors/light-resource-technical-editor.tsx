@@ -3,18 +3,19 @@ import ManifestInput from "../inputs/manifest-input";
 import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
 import TechnicalOptionGroup from "../technical-option-group";
 import {
+  getContentResourcesIDLabels,
   lightContentResourceTypes,
   type LightContentResourceType,
 } from "@/utils/content-resource";
 import NumericDraftInput from "../inputs/numeric-draft-input";
 import { clampNumber } from "@/utils/content-resource";
-
+import { useContext } from "react";
+import { manifestObjContext } from "@/context/manifest-context";
 
 const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => ({
   value,
   label: lightContentResourceTypes[value]
 }));
-
 
 const DEFAULT_LIGHT_INTENSITY = 0.50;
 const LIGHT_INTENSITY_MIN = 0.00;
@@ -32,6 +33,7 @@ function LightIntensityInput({
     LIGHT_INTENSITY_MAX,
   );
   const sliderPercentage = Math.round(sliderValue * 100);
+
 
   return (
     <section className="space-y-3">
@@ -86,6 +88,7 @@ function LightResourceTechnicalEditor({
   idPrefix,
   onCommit,
 }) {
+  const { manifestObj } = useContext(manifestObjContext);
   const lightType = resource.getType() as LightContentResourceType;
   const intensity = resource.getIntensity();
   const target = annotation.getTarget();
@@ -117,6 +120,12 @@ function LightResourceTechnicalEditor({
     if (nextType !== "SpotLight") {
       resource.removeAngle();
     }
+
+    onCommit();
+  }
+
+  function handleChangeLookAt(newValue: string): void {
+    resource.setLookAt(newValue)
 
     onCommit();
   }
@@ -174,7 +183,7 @@ function LightResourceTechnicalEditor({
         />
       </section>
 
-      {lightType === "DirectionalLight" ? (
+      {lightType === "DirectionalLight" ? (<>
         <ManifestInput
           label="Look At"
           id={`${idPrefix}-look-at`}
@@ -186,7 +195,7 @@ function LightResourceTechnicalEditor({
           }}
           appearance="outline"
         />
-      ) : null}
+      </>) : null}
 
       {lightType === "SpotLight" ? (
         <NumericDraftInput

@@ -11,6 +11,7 @@ import ManifestInput from "../inputs/manifest-input";
 import SoftActionButton from "../inputs/soft-action-button";
 import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
 import TechnicalOptionGroup from "../technical-option-group";
+import NumericDraftInput from "../inputs/numeric-draft-input";
 
 const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
   (value) => ({
@@ -23,56 +24,6 @@ const transformTypeOptions = transformTypes.map((value) => ({
   value,
   label: value.replace("Transform", ""),
 }));
-
-
-function NumericDraftInput({
-  id,
-  label,
-  value,
-  onCommit,
-  placeholder,
-  step = 0.1,
-}) {
-  const [draftValue, setDraftValue] = useState(value);
-
-  useEffect(() => {
-    setDraftValue(value);
-  }, [value]);
-
-  return (
-    <ManifestField label={label} htmlFor={id} className="space-y-2">
-      <input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        value={draftValue}
-        step={step}
-        placeholder={placeholder}
-        className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
-        onChange={(event) => {
-          const nextValue = event.target.value;
-          setDraftValue(nextValue);
-
-          if (!nextValue.trim()) {
-            onCommit(0);
-            return;
-          }
-
-          const parsedValue = Number(nextValue);
-
-          if (!Number.isNaN(parsedValue)) {
-            onCommit(parsedValue);
-          }
-        }}
-        onBlur={() => {
-          if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
-            setDraftValue(value);
-          }
-        }}
-      />
-    </ManifestField>
-  );
-}
 
 function ContentResourceEditor({
   annotation,
@@ -89,14 +40,6 @@ function ContentResourceEditor({
   const shouldShowTypeSelector =
     showTypeSelector && !isLightResource && !isCameraResource;
   const target = annotation.getTarget();
-
-  function getAnnotationLabel(): string {
-    return annotation.getLabel()?.getValue() ?? "";
-  }
-
-  function getAnnotationLabelLanguage(): string {
-    return annotation.getLabel()?.getLanguage() ?? "en";
-  }
 
   function getResourceLabel(): string {
     return resource.getLabel().getValue();
@@ -121,17 +64,7 @@ function ContentResourceEditor({
     }
 
     onCommit();
-  }
-
-  function handleAnnotationLabelChange(newValue: string): void {
-    annotation.changeLabel(0, newValue, getAnnotationLabelLanguage());
-    onCommit();
-  }
-
-  function handleAnnotationLabelLanguageChange(newLanguageCode: string): void {
-    annotation.changeLabel(0, getAnnotationLabel(), newLanguageCode);
-    onCommit();
-  }
+   }
 
   function handleResourceLabelChange(newValue: string): void {
     const languageCode = getResourceLabelLanguage();
@@ -186,14 +119,15 @@ function ContentResourceEditor({
         />
       )}
 
-      <InputWithLanguage
+{/**<InputWithLanguage
         label="Annotation Label"
         languageCode={getAnnotationLabelLanguage()}
         value={getAnnotationLabel()}
         onChange={handleAnnotationLabelChange}
         onLanguageChange={handleAnnotationLabelLanguageChange}
       />
-
+ */}
+      
       <InputWithLanguage
         label="Content Resource Label"
         languageCode={getResourceLabelLanguage()}
