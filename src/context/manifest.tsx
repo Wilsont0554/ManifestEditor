@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
 import { IndexedDB } from "@/utils/indexdb";
@@ -8,6 +8,7 @@ import { createManifestObjectFromUpload, serializeManifestForExport } from "@/ut
 export const ManifestObjProvider = ({ children }: { children: React.ReactNode }) => {
   const [manifestObj, setManifestObj] = useState(() => (new ManifestObject("scene")));
   const [db] = useState(() => new IndexedDB());
+  const hydratedRef = useRef(false);
 
   /**
    * initialize IndexedDB and save the initial manifest object.
@@ -16,27 +17,33 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
     await db.open();
     const currentSavedManifest = await db.getProject("current");
     if (currentSavedManifest) {
-      //TO DO: convert the plain object back to ManifestObject instance and set it to state
       const manifestFromDB = createManifestObjectFromUpload(currentSavedManifest as ManifestObject);
       setManifestObj(manifestFromDB);
     } else {
       await db.saveProject(serializeManifestForExport(manifestObj));
-      console.log("Saved initial manifest to IndexedDB");
     }
+    hydratedRef.current = true;
   }
 
-  useEffect(() =>{
-    initDB();
-  }, []);
+  // Persist any manifest change after the DB has been hydrated. Routing persistence
+  // through this effect instead of each setter ensures imports, snapshot restores,
+  // and future callsites all save without having to remember to call the DB.
+  useEffect(() => {
+    if (!hydratedRef.current) {
+      initDB().catch((error) => {
+        console.error("Failed to initialize IndexedDB:", error);
+      });
+      return;
+    }
+
+    if (!hydratedRef.current) return;
+    db.saveProject(serializeManifestForExport(manifestObj)).catch((error) => {
+      console.error("Failed to save manifest to IndexedDB:", error);
+    });
+  }, [manifestObj, db]);
 
   const updateManifestObj = () => {
-   setManifestObj(prev => {
-     const updatedManifest = prev.clone();
-     db.saveProject(serializeManifestForExport(updatedManifest)).catch((error) => {
-       console.error("Failed to save manifest to IndexedDB:", error);
-     });
-     return updatedManifest;
-   });
+    setManifestObj(prev => prev.clone());
   };
 
   return (
