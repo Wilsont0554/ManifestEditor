@@ -65,11 +65,11 @@ class ContentResource {
 
     setAllValues(newContentResource: ContentResource): void{
         try{
-
             if (newContentResource.type == "SpecificResource"){
                 if (newContentResource.transform != undefined){
                     for (let i = 0; i < newContentResource.transform.length; i++){
                         const tempTransform = new Transform(newContentResource.transform[i].type)
+                        tempTransform.setType(newContentResource.transform[i].type);
                         tempTransform.setX(newContentResource.transform[i].x);
                         tempTransform.setY(newContentResource.transform[i].y);
                         tempTransform.setZ(newContentResource.transform[i].z);

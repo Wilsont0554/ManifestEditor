@@ -30,7 +30,7 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
         if (!body || body.type !== "Model") {
           continue;
         }*/
-
+        
         const { transforms, ...source } = body;
 
         annotation.body = {
@@ -55,33 +55,33 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
   for (let i = 0; i < uploadedManifest.items[0].items[0].items.length; i++){
     try {
       const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
-      let tempContentResource;
+      const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
       
-      let uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
-
-      if (uploadedResource!.type == "SpecificResource"){
-        uploadedResource = uploadedResource!.source[0];
+      let tempContentResource;
+      let specificResourceType;
+      
+      if (uploadedResource.type == "SpecificResource"){
+        specificResourceType = uploadedResource.source[0].type;
       }
 
-      console.log(uploadedResource);
-
-      if (uploadedResource!.type == "Model"){
+      if (uploadedResource!.type == "Model" || specificResourceType == "Model"){
         tempContentResource = new ContentResource("", "", "");
         tempContentResource!.setAllValues(uploadedResource!);
       }
-      else if(uploadedResource!.type.includes("Light")){
+      else if(uploadedResource!.type.includes("Light") || specificResourceType.includes("Light")){
           tempContentResource = new Light("", "");
           tempContentResource!.setAllLightValues(uploadedResource! as Light)
       }
-      else if (uploadedResource!.type.includes("Camera")){
+      else if (uploadedResource!.type.includes("Camera") || specificResourceType.includes("Camera")){
           tempContentResource = new Camera("");
           tempContentResource!.setAllCameraValues(uploadedResource! as Camera)
       }
-      else if (uploadedResource!.type == "TextualBody"){
+      else if (uploadedResource!.type == "TextualBody" || specificResourceType == "TextualBody"){
         tempContentResource = new TextAnnotation;
         tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
       }
       else{
+        console.log(uploadedResource);
         console.log('Format not recognized');
       }
 
