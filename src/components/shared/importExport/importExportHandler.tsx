@@ -173,7 +173,7 @@ function ImportExportHandler({
       setGistUrl(gistData.html_url ?? null);
       setGistRawUrl(manifestFile.raw_url ?? null);
       setGistImportUrl("");
-      setIsImportModalOpen(false);
+      setImportExportType("none");
     } catch (error) {
       console.error("Failed to import gist:", error);
       alert(
@@ -182,7 +182,7 @@ function ImportExportHandler({
           : "Failed to import gist. Check the link and try again."
       );
     } finally {
-      setIsImportingGist(false);
+      setImportExportType("none");
     }
   }
 
@@ -197,7 +197,7 @@ function ImportExportHandler({
       const stringManifest = await uploadedManifest.text();
       const nextManifest = JSON.parse(stringManifest);
       applyUploadedManifest(nextManifest);
-      setIsImportModalOpen(false);
+      setImportExportType("none");
     } catch (error) {
       console.error("Failed to upload manifest:", error);
       alert("Failed to upload manifest. Please upload a valid JSON file.");
