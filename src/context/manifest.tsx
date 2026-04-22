@@ -30,10 +30,13 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
   }, []);
 
   const updateManifestObj = () => {
-   setManifestObj(prev => prev.clone());
-    db.saveProject(serializeManifestForExport(manifestObj)).catch((error) => {
-      console.error("Failed to save manifest to IndexedDB:", error);
-    });
+   setManifestObj(prev => {
+     const updatedManifest = prev.clone();
+     db.saveProject(serializeManifestForExport(updatedManifest)).catch((error) => {
+       console.error("Failed to save manifest to IndexedDB:", error);
+     });
+     return updatedManifest;
+   });
   };
 
   return (
