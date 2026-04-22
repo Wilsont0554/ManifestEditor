@@ -10,27 +10,31 @@ import { IiifManifest } from "@/types/iiif";
 export class IndexedDB {
   dbName: string = "IIIfManifest3DProjects";
   version: number = 1;
-  static request: IDBOpenDBRequest;
-  static db: IDBDatabase | null = null;
+  private db: IDBDatabase | null = null;
 
   constructor(dbName?: string, version?: number) {
     if (dbName) this.dbName = dbName;
     if (version) this.version = version;
-    IndexedDB.request = indexedDB.open(this.dbName, this.version);
   }
 
   /**
    * Opens the IndexedDB database.
    * @returns A promise resolving to the database instance.
    */
-
   open(): Promise<IDBDatabase> {
-    if (IndexedDB.db) {
-      return Promise.resolve(IndexedDB.db);
+    if (this.db) {
+      return Promise.resolve(this.db);
+    }
+
+    // IndexedDB is unavailable in Safari private browsing mode
+    if (!window.indexedDB) {
+      return Promise.reject(new Error("IndexedDB is not available in this browser or context"));
     }
 
     return new Promise((resolve, reject) => {
-      IndexedDB.request.onupgradeneeded = (event) => {
+      const request = indexedDB.open(this.dbName, this.version);
+
+      request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
         if (!db.objectStoreNames.contains("projects")) {
@@ -38,14 +42,12 @@ export class IndexedDB {
         }
       };
 
-      //handle successful opening of the database
-      IndexedDB.request.onsuccess = (event) => {
-        IndexedDB.db = (event.target as IDBOpenDBRequest).result;
-        resolve(IndexedDB.db);
+      request.onsuccess = (event) => {
+        this.db = (event.target as IDBOpenDBRequest).result;
+        resolve(this.db);
       };
 
-      //handle errors during opening of the database
-      IndexedDB.request.onerror = (event) => {
+      request.onerror = (event) => {
         reject((event.target as IDBOpenDBRequest).error);
       };
     });
@@ -58,12 +60,12 @@ export class IndexedDB {
    */
   saveProject(manifest: object) {
     return new Promise((resolve, reject) => {
-      if (!IndexedDB.db) {
+      if (!this.db) {
         reject(new Error("Database not open"));
         return;
       }
 
-      const transaction = IndexedDB.db.transaction(["projects"], "readwrite");
+      const transaction = this.db.transaction(["projects"], "readwrite");
       const store = transaction.objectStore("projects");
       const request = store.put(manifest, "current");
 
@@ -88,12 +90,12 @@ export class IndexedDB {
    */
   getProject(id: string) {
     return new Promise<object>((resolve, reject) => {
-      if (!IndexedDB.db) {
+      if (!this.db) {
         reject(new Error("Database not open"));
         return;
       }
 
-      const transaction = IndexedDB.db.transaction(["projects"], "readonly");
+      const transaction = this.db.transaction(["projects"], "readonly");
       const store = transaction.objectStore("projects");
       const request = store.get(id);
 
