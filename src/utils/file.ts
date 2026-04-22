@@ -26,9 +26,10 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
       for (const annotation of page.items ?? []) {
         const body = annotation.body;
 
+        /*
         if (!body || body.type !== "Model") {
           continue;
-        }
+        }*/
 
         const { transforms, ...source } = body;
 
