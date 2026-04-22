@@ -46,7 +46,7 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
   return exported;
 }
 
-export function createManifestObjectFromUpload(uploadedManifest: ManifestObject): ManifestObject{
+export function createManifestObjectFromUpload(uploadedManifest: any): ManifestObject{
   const newManifest = new ManifestObject(uploadedManifest.type);
   newManifest.setAllValues(uploadedManifest);
 
@@ -56,9 +56,15 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
       const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
       let tempContentResource;
       
-      const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
+      let uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
 
-      if (uploadedResource!.type == "Model" || uploadedResource!.type == "SpecificResource"){
+      if (uploadedResource!.type == "SpecificResource"){
+        uploadedResource = uploadedResource!.source[0];
+      }
+
+      console.log(uploadedResource);
+
+      if (uploadedResource!.type == "Model"){
         tempContentResource = new ContentResource("", "", "");
         tempContentResource!.setAllValues(uploadedResource!);
       }
@@ -83,7 +89,8 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
 
       newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
       newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i])
-    } catch{
+    } catch(e){
+      alert(e);
       return new ManifestObject("");
     }
   }
