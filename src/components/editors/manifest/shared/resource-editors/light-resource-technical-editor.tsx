@@ -8,6 +8,7 @@ import {
 } from "@/utils/content-resource";
 import NumericDraftInput from "../inputs/numeric-draft-input";
 import { clampNumber } from "@/utils/content-resource";
+import { transformTypes } from "@/ManifestClasses/Transform";
 
 const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => ({
   value,
@@ -86,6 +87,11 @@ function LightResourceTechnicalEditor({
   onCommit,
 }) {
   const lightType = resource.getType() as LightContentResourceType;
+  const transformTypeOptions = transformTypes.map((value) => ({
+    value,
+    label: value.replace("Transform", ""),
+  }));
+  const transforms = resource.getTransforms();
   const intensity = resource.getIntensity();
   const target = annotation.getTarget();
   const coordinatePreviewDetails = [
