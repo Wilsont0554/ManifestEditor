@@ -1,11 +1,10 @@
 import InputWithLanguage from "@components/shared/inputWithLanguage";
 import { manifestObjContext } from "@/context/manifest-context";
 import { type ChangeEvent, useContext, useEffect, useMemo, useRef, useState } from "react";
-import EmptyStateCard from "../shared/empty-state-card";
-import ManifestField from "../shared/manifest-field";
-import ManifestInput from "../shared/manifest-input";
-import ManifestTabBody from "../shared/manifest-tab-body";
-import SoftActionButton from "../shared/soft-action-button";
+import EmptyStateCard from "../shared/cards/empty-state-card";
+import ManifestField from "../shared/inputs/manifest-field";
+import ManifestInput from "../shared/inputs/manifest-input";
+import SoftActionButton from "../shared/inputs/soft-action-button";
 
 function DescriptiveTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
@@ -72,7 +71,7 @@ function DescriptiveTab() {
   }
 
   return (
-    <ManifestTabBody>
+    <div className={`min-h-40 space-y-8`}>
       <InputWithLanguage
         label="Label"
         languageCode={labelLanguageCode}
@@ -161,7 +160,7 @@ function DescriptiveTab() {
           <span className="text-base">Add Provider</span>
         </SoftActionButton>
       </ManifestField>
-    </ManifestTabBody>
+    </div>
   );
 }
 

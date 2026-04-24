@@ -1,16 +1,3 @@
-import { useState } from "react";
-import type { ContentResourceItem } from "@/utils/content-resource";
-import {
-  getContentResourceDisplayTitle,
-  getLightContentResourceTypeLabel,
-  isLightContentResourceType,
-} from "@/utils/content-resource";
-
-interface ContentResourceMediaListProps {
-  items: ContentResourceItem[];
-  className?: string;
-}
-
 function ImagePreviewIcon() {
   return (
     <svg
@@ -98,26 +85,8 @@ function LightPreviewIcon() {
   );
 }
 
-function MediaPreview({ item }: { item: ContentResourceItem }) {
-  const [hasImageError, setHasImageError] = useState(false);
-  const previewUrl = item.resource.id.trim();
-  const isImage = item.resource.getType() === "Image" && previewUrl.length > 0;
-  const isLight = isLightContentResourceType(item.resource.getType());
-
-  if (isImage && !hasImageError) {
-    return (
-      <img
-        src={previewUrl}
-        alt={getContentResourceDisplayTitle(
-          item.annotation,
-          item.resource,
-          item.resourceNumber,
-        )}
-        className="h-full w-full object-cover"
-        onError={() => setHasImageError(true)}
-      />
-    );
-  }
+function MediaPreview({ item }) {
+  const isLight = (item.resource.getType().includes("Light"));
 
   return (
     <div className="flex h-full w-full items-center justify-center bg-slate-100">
@@ -135,19 +104,11 @@ function MediaPreview({ item }: { item: ContentResourceItem }) {
 function ContentResourceMediaList({
   items,
   className = "",
-}: ContentResourceMediaListProps) {
+}) {
   return (
     <div className={`space-y-3 ${className}`}>
       {items.map((item) => {
         const resourceType = item.resource.getType();
-        const title = getContentResourceDisplayTitle(
-          item.annotation,
-          item.resource,
-          item.resourceNumber,
-        );
-        const detail = isLightContentResourceType(resourceType)
-          ? getLightContentResourceTypeLabel(resourceType)
-          : item.resource.getFormat() || resourceType;
         const target = item.annotation.getTarget();
         const coordinateDetail = target
           ? `X ${target.getX()}  Y ${target.getY()}  Z ${target.getZ()}`
@@ -169,7 +130,6 @@ function ContentResourceMediaList({
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate text-[15px] font-medium text-slate-900">
-                    {title}
                   </p>
                   <p className="mt-2 truncate text-sm text-slate-400">
                     {item.resource.id}
@@ -181,7 +141,7 @@ function ContentResourceMediaList({
                   ) : null}
                 </div>
 
-                <p className="shrink-0 text-sm text-slate-400">{detail}</p>
+                <p className="shrink-0 text-sm text-slate-400"></p>
               </div>
             </div>
           </article>

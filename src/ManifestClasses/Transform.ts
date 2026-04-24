@@ -1,5 +1,3 @@
-import type { IiifTransForm } from "@/types/iiif";
-
 export const transformTypes = [
     "RotateTransform",
     "ScaleTransform",
@@ -75,26 +73,6 @@ class Transform {
         nextTransform.z = this.z;
 
         return nextTransform;
-    }
-
-    toJSON(): IiifTransForm {
-        const out: IiifTransForm = {
-            type: this.type,
-        };
-
-        if(this.x !== undefined){
-            out.x = this.x;
-        }
-
-        if(this.y !== undefined){
-            out.y = this.y;
-        }
-
-        if(this.z !== undefined){
-            out.z = this.z;
-        }
-
-        return out;
     }
 } 
 export default Transform;

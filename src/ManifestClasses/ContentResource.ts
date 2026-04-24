@@ -1,10 +1,6 @@
 import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
 import Transform from './Transform.ts';
-import type { 
-    IiifContentResource,
-    IiifSpecificResource
- } from "@/types/iiif";
 
 class ContentResource {
     id: string;
@@ -120,6 +116,10 @@ class ContentResource {
     //returns as 0:height, 1:width
     getDimensions(): [number | undefined, number | undefined] {
         return [this.height, this.width];
+    }
+
+    getID(): string{
+        return this.id;
     }
 
     changeLabel(index: number, value: string, languageCode?: string): void {

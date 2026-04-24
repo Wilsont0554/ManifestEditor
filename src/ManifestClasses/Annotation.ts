@@ -1,21 +1,14 @@
 import Label from './Label.ts';
 import ContentResource from './ContentResource.ts';
 import Target from "./Target.ts";
-import type {
-    IiifContainerType,
-    IiifResourceReference,
-    IiifSpecificResource
-} from "@/types/iiif";
 import TextAnnotation from './TextAnnotation.ts';
-
-type AnnotationTargetReference = IiifResourceReference;
 
 class Annotation {
     id: string;
     type: string;
     motivation: string[];
     body?: ContentResource;
-    target: AnnotationTargetReference | Target;
+    target: Target;
     label?: Label;
 
     constructor(index: number = 1, motivation: string[] = ["painting"]) {
@@ -46,12 +39,8 @@ class Annotation {
         this.label?.changeLabelTest(value);
     }
 
-    setTarget(target: AnnotationTargetReference | Target): void {
+    setTarget(target: Target): void {
         this.target = target;
-    }
-
-    setTargetReference(id: string, type: IiifContainerType): void {
-        this.target = { id, type };
     }
 
     setAllValues(newAnnotation: Annotation): void{
@@ -85,36 +74,20 @@ class Annotation {
         }
     }
 
-    ensureSpatialTarget(
-        targetId: string = `${this.id}/target`,
-        sourceId: string = "https://example.org/iiif/manifest/1/scene/1",
-        sourceType: IiifContainerType = "Scene",
-    ): Target {
-        if (this.target instanceof Target) {
-            this.target.setID(targetId);
-            this.target.setSource(sourceId, sourceType);
-            return this.target;
-        }
-
-        const nextTarget = new Target(targetId, sourceId, sourceType);
-        this.target = nextTarget;
-        return nextTarget;
-    }
-
     getTarget(): Target | null {
         return this.target instanceof Target ? this.target : null;
     }
 
     setX(x: number): void {
-        this.ensureSpatialTarget().setX(x);
+        this.getTarget()!.setX(x);
     }
 
     setY(y: number): void {
-        this.ensureSpatialTarget().setY(y);
+        this.getTarget()!.setY(y);
     }
 
     setZ(z: number): void {
-        this.ensureSpatialTarget().setZ(z);
+        this.getTarget()!.setZ(z);
     }
 
     createLabel(languageCode: string = 'en') {
@@ -155,9 +128,7 @@ class Annotation {
         nextAnnotation.type = this.type;
         nextAnnotation.motivation = [...this.motivation];
         nextAnnotation.body = this.body?.clone();
-        nextAnnotation.target = this.target instanceof Target
-            ? this.target.clone()
-            : { ...this.target };
+        nextAnnotation.target = this.target.clone();
         nextAnnotation.label = this.label?.clone();
 
         return nextAnnotation;

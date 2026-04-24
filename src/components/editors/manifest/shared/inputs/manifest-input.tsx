@@ -1,15 +1,4 @@
-import type { InputHTMLAttributes } from "react";
 import ManifestField from "./manifest-field";
-
-interface ManifestInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> {
-  label: string;
-  value: string;
-  onChange: (newValue: string) => void;
-  appearance?: "underline" | "outline";
-  fieldClassName?: string;
-  inputClassName?: string;
-}
 
 function ManifestInput({
   label,
@@ -20,7 +9,7 @@ function ManifestInput({
   fieldClassName = "",
   inputClassName = "",
   ...props
-}: ManifestInputProps) {
+}) {
   const appearanceClass =
     appearance === "outline"
       ? "w-full border border-slate-400 bg-white px-3 py-2"

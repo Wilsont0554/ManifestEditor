@@ -1,6 +1,5 @@
 import {
   type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode,
   useContext,
   useEffect,
   useRef,
@@ -10,38 +9,17 @@ import Button from "@/components/shared/button";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import {
-  getContentResourceItems,
-  getTextAnnotationItems,
-  type EditableContentResourceType,
-} from "@/utils/content-resource";
-import CameraResourceTechnicalEditor from "./shared/camera-resource-technical-editor";
-import ContentResourceEditor from "./shared/content-resource-editor";
-import LightResourceTechnicalEditor from "./shared/light-resource-technical-editor";
-import SoftActionButton from "./shared/soft-action-button";
-import TextAnnotationEditor from "./shared/text-annotation-editor";
+import CameraResourceTechnicalEditor from "./shared/resource-editors/camera-resource-technical-editor";
+import ContentResourceEditor from "./shared/resource-editors/content-resource-editor";
+import LightResourceTechnicalEditor from "./shared/resource-editors/light-resource-technical-editor";
+import SoftActionButton from "./shared/inputs/soft-action-button";
+import TextAnnotationEditor from "./shared/resource-editors/text-annotation-editor";
+import ContentResource from "@/ManifestClasses/ContentResource";
 
 export type ContentResourceModalView = "picker" | "editor";
 
 const dialogTitleId = "content-resource-modal-title";
 const dialogDescriptionId = "content-resource-modal-description";
-
-interface ContentResourceModalProps {
-  isOpen: boolean;
-  view: ContentResourceModalView;
-  selectedAnnotationIndex: number;
-  allowedTypes?: EditableContentResourceType[];
-  onCancel: () => void;
-  onSave: () => void;
-  onSelectType: (type: EditableContentResourceType) => void;
-}
-
-interface ContentResourceOption {
-  value: EditableContentResourceType;
-  title: string;
-  description: string;
-  icon: ReactNode;
-}
 
 function ImageIcon() {
   return (
@@ -182,7 +160,7 @@ function CameraIcon() {
   );
 }
 
-const baseContentResourceOptions: ContentResourceOption[] = [
+const baseContentResourceOptions = [
   {
     value: "Image",
     title: "Image",
@@ -217,7 +195,7 @@ function ContentResourceModal({
   onCancel,
   onSave,
   onSelectType,
-}: ContentResourceModalProps) {
+}) {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const isSceneContainer = manifestObj.getContainerObj().getType() === "Scene";
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -226,26 +204,9 @@ function ContentResourceModal({
     .getContainerObj()
     .getAnnotationPage()
     .getAllAnnotations();
-  const contentResourceItems = getContentResourceItems(manifestObj);
-  const textAnnotationItems = getTextAnnotationItems(manifestObj);
-  const selectedAnnotation =
-    view === "editor"
-      ? annotations[selectedAnnotationIndex] ?? null
-      : null;
+
+  const selectedAnnotation = annotations[selectedAnnotationIndex];
   const selectedResource = selectedAnnotation?.getContentResource() ?? null;
-  const selectedTextAnnotation =
-    selectedResource instanceof TextAnnotation ? selectedAnnotation : null;
-  const selectedResourceItem =
-    selectedAnnotation && selectedResource
-      ? contentResourceItems.find(
-          (item) => item.annotationIndex === selectedAnnotationIndex,
-        ) ?? null
-      : null;
-  const selectedTextAnnotationItem = selectedTextAnnotation
-    ? textAnnotationItems.find(
-        (item) => item.annotationIndex === selectedAnnotationIndex,
-      ) ?? null
-    : null;
   const contentResourceOptions = baseContentResourceOptions.filter((option) => {
     const isSceneOnlyOption = option.value === "Light" || option.value === "Camera";
 
@@ -321,10 +282,6 @@ function ContentResourceModal({
     return null;
   }
 
-  const canSave = Boolean(
-    selectedTextAnnotation || (selectedAnnotation && selectedResource),
-  );
-
   return (
     <div className="absolute inset-0 z-30">
       <div
@@ -351,18 +308,9 @@ function ContentResourceModal({
                 id={dialogTitleId}
                 className="text-2xl font-semibold tracking-tight text-slate-950"
               >
-                {view === "picker"
-                  ? "Add content"
-                  : selectedTextAnnotation
-                    ? "Text annotation"
-                    : "Content resource"}
+                
               </h2>
               <p id={dialogDescriptionId} className="text-sm text-slate-500">
-                {view === "picker"
-                  ? "Choose the content resource type you want to add."
-                  : selectedTextAnnotation
-                    ? "Complete the text annotation details below."
-                    : "Complete the content resource details below."}
               </p>
             </div>
 
@@ -401,13 +349,13 @@ function ContentResourceModal({
                   </button>
                 ))}
               </div>
-            ) : selectedAnnotation && selectedTextAnnotation ? (
+            ) : selectedResource instanceof TextAnnotation ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Text Annotation {selectedResourceItem?.resourceNumber ?? 1}
+                  New Text Annotation
                 </button>
 
                 <TextAnnotationEditor
@@ -418,13 +366,13 @@ function ContentResourceModal({
                   className="pt-5"
                 />
               </section>
-            ) : selectedAnnotation && selectedResource ? (
+            ) : selectedResource instanceof ContentResource ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Content Resource {selectedResourceItem?.resourceNumber ?? 1}
+                  New Resource
                 </button>
 
                 <ContentResourceEditor
@@ -434,7 +382,6 @@ function ContentResourceModal({
                   onCommit={commitManifestChange}
                   className="pt-5"
                   showTypeSelector={false}
-                  showMetadataAction={false}
                 />
 
                 {selectedResource instanceof Camera ? (
@@ -480,7 +427,6 @@ function ContentResourceModal({
                 type="button"
                 className="min-w-24 justify-center"
                 onClick={onSave}
-                disabled={!canSave}
               >
                 Save
               </Button>
