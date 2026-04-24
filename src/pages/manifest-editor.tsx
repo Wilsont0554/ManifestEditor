@@ -29,7 +29,7 @@ import {
   serializeManifestForExport,
 } from "@/utils/file";
 
-const DEFAULT_INSPECTOR_WIDTH = 720;
+const DEFAULT_INSPECTOR_WIDTH = 560;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
