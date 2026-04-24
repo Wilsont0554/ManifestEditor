@@ -19,7 +19,7 @@ function AssetsTab() {
   }
 
   for (let i = 0; i < resourceItems.length; i++){
-    console.log(resourceItems[i]);
+    //console.log(resourceItems[i]);
   }
 
   return (
