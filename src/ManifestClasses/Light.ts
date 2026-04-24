@@ -1,15 +1,15 @@
 import ContentResource from "./ContentResource.ts";
 import type {
-    IiifContentResource,
-    IiifQuantity,
     IiifResourceReference,
 } from "@/types/iiif";
 
-type LightIntensity = IiifQuantity;
-
 class Light extends ContentResource {
     color?: string;
-    intensity?: LightIntensity;
+    intensity?: {
+        type: string;
+        unit: string;
+        value: number;
+    };
     lookAt?: IiifResourceReference;
     angle?: number;
 
@@ -37,7 +37,7 @@ class Light extends ContentResource {
         return this.color;
     }
 
-    getIntensity(): LightIntensity | undefined {
+    getIntensity(): object | undefined {
         return this.intensity;
     }
 
@@ -112,6 +112,4 @@ class Light extends ContentResource {
         return nextLight;
     }
 }
-
-export type { LightIntensity };
 export default Light;

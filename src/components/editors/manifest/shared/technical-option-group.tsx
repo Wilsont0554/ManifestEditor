@@ -1,15 +1,3 @@
-interface TechnicalOptionGroupProps {
-  options: ReadonlyArray<{
-    label: string;
-    value: string;
-  }>;
-  value: string;
-  onChange: (newValue: string) => void;
-  orientation?: "vertical" | "horizontal";
-  allowDeselect?: boolean;
-  selectedVariant?: "default" | "pink";
-}
-
 function TechnicalOptionGroup({
   options,
   value,
@@ -17,7 +5,7 @@ function TechnicalOptionGroup({
   orientation = "vertical",
   allowDeselect = false,
   selectedVariant = "default",
-}: TechnicalOptionGroupProps) {
+}) {
   const groupClassName =
     orientation === "horizontal"
       ? "grid"
@@ -49,7 +37,7 @@ function TechnicalOptionGroup({
               ? "border-t border-slate-300"
               : "";
 
-        return (
+        return (<>
           <button
             key={option.label}
             type="button"
@@ -63,7 +51,7 @@ function TechnicalOptionGroup({
           >
             {option.label}
           </button>
-        );
+        </>);
       })}
     </div>
   );
