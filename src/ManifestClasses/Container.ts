@@ -1,7 +1,5 @@
 import AnnotationPage from './AnnotationPage.ts';
 import type {
-    IiifAnnotationPage,
-    IiifCanvasLike,
     IiifContainerType,
 } from "@/types/iiif";
 

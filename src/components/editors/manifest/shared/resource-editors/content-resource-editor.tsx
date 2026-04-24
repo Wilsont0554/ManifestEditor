@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
-import type Annotation from "@/ManifestClasses/Annotation";
 import Camera from "@/ManifestClasses/Camera";
-import type ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import { transformTypes } from "@/ManifestClasses/Transform";
 import {
   contentResourceTypeToFormat,
 } from "@/utils/content-resource";
-import ManifestField from "./manifest-field";
-import ManifestInput from "./manifest-input";
-import SoftActionButton from "./soft-action-button";
-import TechnicalOptionGroup from "./technical-option-group";
+import ManifestField from "../inputs/manifest-field";
+import ManifestInput from "../inputs/manifest-input";
+import SoftActionButton from "../inputs/soft-action-button";
+import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
+import TechnicalOptionGroup from "../technical-option-group";
+import NumericDraftInput from "../inputs/numeric-draft-input";
 
 const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
   (value) => ({
@@ -25,82 +25,6 @@ const transformTypeOptions = transformTypes.map((value) => ({
   label: value.replace("Transform", ""),
 }));
 
-interface ResourceLabelSyncPayload {
-  previousValue: string;
-  previousLanguageCode: string;
-  value: string;
-  languageCode: string;
-}
-
-interface ContentResourceEditorProps {
-  annotation: Annotation;
-  resource: ContentResource;
-  idPrefix: string;
-  onCommit: () => void;
-  className?: string;
-  showTypeSelector?: boolean;
-  showMetadataAction?: boolean;
-  onOpenMetadata?: () => void;
-}
-
-interface NumericDraftInputProps {
-  id: string;
-  label: string;
-  value: string;
-  onCommit: (newValue: number) => void;
-  placeholder?: string;
-  step?: number;
-}
-
-function NumericDraftInput({
-  id,
-  label,
-  value,
-  onCommit,
-  placeholder,
-  step = 0.1,
-}: NumericDraftInputProps) {
-  const [draftValue, setDraftValue] = useState(value);
-
-  useEffect(() => {
-    setDraftValue(value);
-  }, [value]);
-
-  return (
-    <ManifestField label={label} htmlFor={id} className="space-y-2">
-      <input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        value={draftValue}
-        step={step}
-        placeholder={placeholder}
-        className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
-        onChange={(event) => {
-          const nextValue = event.target.value;
-          setDraftValue(nextValue);
-
-          if (!nextValue.trim()) {
-            onCommit(0);
-            return;
-          }
-
-          const parsedValue = Number(nextValue);
-
-          if (!Number.isNaN(parsedValue)) {
-            onCommit(parsedValue);
-          }
-        }}
-        onBlur={() => {
-          if (draftValue.trim() && Number.isNaN(Number(draftValue))) {
-            setDraftValue(value);
-          }
-        }}
-      />
-    </ManifestField>
-  );
-}
-
 function ContentResourceEditor({
   annotation,
   resource,
@@ -108,9 +32,7 @@ function ContentResourceEditor({
   onCommit,
   className = "",
   showTypeSelector = true,
-  showMetadataAction = true,
-  onOpenMetadata,
-}: ContentResourceEditorProps) {
+}) {
   const isLightResource = resource instanceof Light;
   const isCameraResource = resource instanceof Camera;
   const isModelResource = resource.isModelResource();
@@ -118,14 +40,6 @@ function ContentResourceEditor({
   const shouldShowTypeSelector =
     showTypeSelector && !isLightResource && !isCameraResource;
   const target = annotation.getTarget();
-
-  function getAnnotationLabel(): string {
-    return annotation.getLabel()?.getValue() ?? "";
-  }
-
-  function getAnnotationLabelLanguage(): string {
-    return annotation.getLabel()?.getLanguage() ?? "en";
-  }
 
   function getResourceLabel(): string {
     return resource.getLabel().getValue();
@@ -150,17 +64,7 @@ function ContentResourceEditor({
     }
 
     onCommit();
-  }
-
-  function handleAnnotationLabelChange(newValue: string): void {
-    annotation.changeLabel(0, newValue, getAnnotationLabelLanguage());
-    onCommit();
-  }
-
-  function handleAnnotationLabelLanguageChange(newLanguageCode: string): void {
-    annotation.changeLabel(0, getAnnotationLabel(), newLanguageCode);
-    onCommit();
-  }
+   }
 
   function handleResourceLabelChange(newValue: string): void {
     const languageCode = getResourceLabelLanguage();
@@ -215,14 +119,15 @@ function ContentResourceEditor({
         />
       )}
 
-      <InputWithLanguage
+{/**<InputWithLanguage
         label="Annotation Label"
         languageCode={getAnnotationLabelLanguage()}
         value={getAnnotationLabel()}
         onChange={handleAnnotationLabelChange}
         onLanguageChange={handleAnnotationLabelLanguageChange}
       />
-
+ */}
+      
       <InputWithLanguage
         label="Content Resource Label"
         languageCode={getResourceLabelLanguage()}
@@ -232,7 +137,7 @@ function ContentResourceEditor({
       />
 
       {!isLightResource && !isCameraResource ? (
-        <section className="space-y-3">
+        <section className="space-y-4">
           <p className="text-base font-semibold text-slate-950">Position</p>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -272,6 +177,12 @@ function ContentResourceEditor({
               }}
             />
           </div>
+
+          <SpatialCoordinatePreview
+            x={target?.getX() ?? 0}
+            y={target?.getY() ?? 0}
+            z={target?.getZ() ?? 0}
+          />
         </section>
       ) : null}
 
@@ -375,23 +286,6 @@ function ContentResourceEditor({
               </div>
             </section>
           ))}
-        </section>
-      ) : null}
-
-      {showMetadataAction && onOpenMetadata ? (
-        <section className="space-y-3 rounded-xl border border-dashed border-pink-200 bg-white p-4">
-          <ManifestField label="Metadata">
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              {resource.getMetadata().getEntryCount() > 0
-                ? "Open the metadata editor to review or update existing entries."
-                : "This resource does not have metadata yet. Start by creating your first entry."}
-            </p>
-          </ManifestField>
-          <SoftActionButton onClick={onOpenMetadata}>
-            {resource.getMetadata().getEntryCount() > 0
-              ? "Edit Metadata"
-              : "Add Metadata"}
-          </SoftActionButton>
         </section>
       ) : null}
     </section>

@@ -7,35 +7,28 @@ import {
   MANIFEST_TABS,
   type ManifestTabId,
 } from "./manifest-component-constants";
-import DescriptiveTab from "./tabs/descriptive-tab";
-import LinkingTab from "./tabs/linking-tab";
-import MetadataTab from "./tabs/metadata-tab";
-import NavPlaceTab from "./tabs/nav-place-tab";
-import OverviewTab from "./tabs/overview-tab";
-import StructureTab from "./tabs/structure-tab";
-import TechnicalTab from "./tabs/technical-tab";
-
-interface ManifestComponentProps {
-  width: number;
-  activeTab: ManifestTabId;
-  onActiveTabChange: (tab: ManifestTabId) => void;
-  selectedMetadataAnnotationIndex: number;
-  onSelectedMetadataAnnotationIndexChange: (index: number) => void;
-  onClose: () => void;
-  onReset: () => void;
-  onResizeStart: (event: ReactMouseEvent<HTMLButtonElement>) => void;
-}
+import DescriptiveTab from "./editor-tabs/descriptive-tab";
+import JsonPreviewTab from "./editor-tabs/json-preview-tab";
+import LinkingTab from "./editor-tabs/linking-tab";
+import MetadataTab from "./editor-tabs/metadata-tab";
+import NavPlaceTab from "./editor-tabs/nav-place-tab";
+import OverviewTab from "./editor-tabs/overview-tab";
+import AssetsTab from "./editor-tabs/assets-tab";
+import EnvironmentTab from "./editor-tabs/environment-tab";
 
 function ManifestComponent({
+  //props
   width,
   activeTab,
   onActiveTabChange,
   selectedMetadataAnnotationIndex,
   onSelectedMetadataAnnotationIndexChange,
+  onImportClick,
+  onExportClick,
   onClose,
   onReset,
   onResizeStart,
-}: ManifestComponentProps) {
+}) {
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
@@ -56,7 +49,11 @@ function ManifestComponent({
   }
 
   if (activeTab === "technical") {
-    tabContent = <TechnicalTab />;
+    tabContent = <EnvironmentTab />;
+  }
+
+  if (activeTab === "json-preview") {
+    tabContent = <JsonPreviewTab />;
   }
 
   if (activeTab === "linking") {
@@ -64,7 +61,7 @@ function ManifestComponent({
   }
 
   if (activeTab === "structure") {
-    tabContent = <StructureTab />;
+    tabContent = <AssetsTab />;
   }
 
   if (activeTab === "nav-place") {
@@ -156,14 +153,32 @@ function ManifestComponent({
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
             Manifest
           </p>
-          <button
-            type="button"
-            className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
-            onClick={onClose}
-            aria-label="Close inspector"
-          >
-            &times;
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-s font-semibold text-rose-700 transition hover:bg-rose-100"
+              onClick={onImportClick}
+              title="Import manifest from file or GitHub Gist"
+            >
+              Import
+            </button>
+            <button
+              type="button"
+              className="rounded-md bg-rose-600 px-2.5 py-1 text-s font-semibold text-white transition hover:bg-rose-700"
+              onClick={onExportClick}
+              title="Export manifest"
+            >
+              Export
+            </button>
+            <button
+              type="button"
+              className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
+              onClick={onClose}
+              aria-label="Close inspector"
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
         <div className="border-b border-slate-200 px-4 py-3">
