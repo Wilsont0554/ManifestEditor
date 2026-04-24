@@ -56,7 +56,6 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
     try {
       const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
       const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
-      
       let tempContentResource;
       let specificResourceType;
       
@@ -93,6 +92,30 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
     } catch(e){
       alert(e);
       return new ManifestObject("");
+    }
+  }
+
+  console.log("text annotations");
+  //text annotation compatibility
+  if (uploadedManifest.items[0].annotations){
+    for (let i = 0; i < uploadedManifest.items[0].annotations[0].items.length; ++i){
+      try {
+          console.log(uploadedManifest.items[0].annotations[0].items[i])
+        const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
+        const uploadedResource = uploadedManifest.items[0].annotations[0].items[i];
+
+        const tempContentResource = new TextAnnotation;
+        tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
+
+        const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
+        tempAnnotation.setContentResource(tempContentResource!);
+
+        newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
+        newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i])
+      } catch(e){
+        alert(e);
+        return new ManifestObject("");
+      }
     }
   }
 
