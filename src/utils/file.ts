@@ -26,10 +26,10 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
       for (const annotation of page.items ?? []) {
         const body = annotation.body;
 
-        /*
-        if (!body || body.type !== "Model") {
+        
+        if (!body || body.type == "TextualBody") {
           continue;
-        }*/
+        }
         
         const { transforms, ...source } = body;
 
@@ -51,13 +51,15 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
   const newManifest = new ManifestObject(uploadedManifest.type);
   newManifest.setAllValues(uploadedManifest);
 
+  let endIndex = 0;
+
   //for each annotation
   for (let i = 0; i < uploadedManifest.items[0].items[0].items.length; i++){
     try {
       const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
       const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
       let tempContentResource;
-      let specificResourceType;
+      let specificResourceType = "none";
       
       if (uploadedResource.type == "SpecificResource"){
         specificResourceType = uploadedResource.source[0].type;
@@ -88,7 +90,8 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
       tempAnnotation.setContentResource(tempContentResource!);
 
       newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
-      newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i])
+      newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i]);
+      endIndex++;
     } catch(e){
       alert(e);
       return new ManifestObject("");
@@ -100,18 +103,18 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
   if (uploadedManifest.items[0].annotations){
     for (let i = 0; i < uploadedManifest.items[0].annotations[0].items.length; ++i){
       try {
-          console.log(uploadedManifest.items[0].annotations[0].items[i])
         const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
         const uploadedResource = uploadedManifest.items[0].annotations[0].items[i];
+        console.log(uploadedResource)
 
         const tempContentResource = new TextAnnotation;
-        tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
+        tempContentResource!.setAllTextAnnotationValuesTest(uploadedResource! as TextAnnotation);
 
         const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
         tempAnnotation.setContentResource(tempContentResource!);
 
         newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
-        newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i])
+        newManifest.getContainerObj().getAnnotationPage().getAnnotation(endIndex).setAllValues(uploadedManifest.items[0].items[0].items[i])
       } catch(e){
         alert(e);
         return new ManifestObject("");
