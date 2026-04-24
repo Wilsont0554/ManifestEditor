@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 
-export type ManifestObjContext = {
+type ManifestObjContext = {
   manifestObj: ManifestObject;
   updateManifestObj: () => void;
   setManifestObj: (manifestObj: ManifestObject) => void;

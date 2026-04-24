@@ -2,6 +2,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   useEffect,
   useState,
+  useContext,
 } from "react";
 import {
   MANIFEST_TABS,
@@ -14,6 +15,9 @@ import MetadataTab from "./editor-tabs/metadata-tab";
 import OverviewTab from "./editor-tabs/overview-tab";
 import AssetsTab from "./editor-tabs/assets-tab";
 import EnvironmentTab from "./editor-tabs/environment-tab";
+import { manifestObjContext } from "@/context/manifest-context";
+import ManifestObject from "@/ManifestClasses/ManifestObject";
+
 
 function ManifestComponent({
   //props
@@ -31,6 +35,7 @@ function ManifestComponent({
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
+  const {setManifestObj} = useContext(manifestObjContext);
 
   let tabContent = <OverviewTab />;
 
@@ -151,7 +156,7 @@ function ManifestComponent({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-s font-semibold text-rose-700 transition hover:bg-rose-100"
+              className="rounded-md border border-green-200 bg-green-50 px-2.5 py-1 text-s font-semibold text-green-700 transition hover:bg-rose-green-100"
               onClick={onImportClick}
               title="Import manifest from file or GitHub Gist"
             >
@@ -159,11 +164,19 @@ function ManifestComponent({
             </button>
             <button
               type="button"
-              className="rounded-md bg-rose-600 px-2.5 py-1 text-s font-semibold text-white transition hover:bg-rose-700"
+              className="rounded-md bg-green-600 px-2.5 py-1 text-s font-semibold text-white transition hover:bg-rose-700"
               onClick={onExportClick}
               title="Export manifest"
             >
               Export
+            </button>
+            <button
+              type="button"
+              className="rounded-md bg-rose-600 px-2.5 py-1 text-s font-semibold text-white transition hover:bg-rose-700"
+              onClick={() => {setManifestObj(new ManifestObject("scene"))}}
+              title="Export manifest"
+            >
+              Clear all Fields
             </button>
             <button
               type="button"

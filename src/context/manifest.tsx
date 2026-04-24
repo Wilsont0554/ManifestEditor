@@ -42,6 +42,10 @@ export const ManifestObjProvider = ({ children }: { children: React.ReactNode })
     });
   }, [manifestObj, db]);
 
+  /**
+   * use this function when you want to mutate the manifest object without replacing it with a new instance of the manifest object. This is useful for when you want to trigger a re-render after mutating the manifest object, since React won't detect changes to object if it's mutated directly without creating a new instance.
+   * 
+   */
   const updateManifestObj = () => {
     setManifestObj(prev => prev.clone());
   };
