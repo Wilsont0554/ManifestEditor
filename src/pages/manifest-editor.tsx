@@ -24,6 +24,7 @@ import {
   createDefaultContentResource,
   type EditableContentResourceType,
 } from "@/utils/content-resource";
+import { saveManifestToLibrary } from "@/utils/saved-manifests";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
@@ -425,6 +426,12 @@ function ManifestEditorPage() {
     downloadJsonFile(manifestObj, "manifest");
   }
 
+  function handleSaveManifestToLibrary(): void {
+    const savedManifest = saveManifestToLibrary(manifestObj);
+
+    alert(`Saved "${savedManifest.title}" to the homepage.`);
+  }
+
   async function handleUpdateGist(): Promise<void> {
     if (!githubToken) {
       alert("Please enter your GitHub token to update the gist.");
@@ -544,6 +551,15 @@ function ManifestEditorPage() {
                 onClick={handleDownloadManifest}
               >
                 Download JSON
+              </button>
+
+              <button
+                className="cursor-pointer rounded-md bg-pink-600 px-3 py-2 text-sm font-medium text-white hover:bg-pink-700"
+                type="button"
+                onClick={handleSaveManifestToLibrary}
+                title="Save this manifest to the homepage library"
+              >
+                Save to Home
               </button>
 
               <button

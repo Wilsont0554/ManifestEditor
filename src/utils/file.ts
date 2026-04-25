@@ -4,6 +4,7 @@ import ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import Camera from "@/ManifestClasses/Camera";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
+import type { IiifContainerType } from "@/types/iiif";
 
 export function downloadJsonFile(data: unknown, filename: string): void {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -19,7 +20,9 @@ export function downloadJsonFile(data: unknown, filename: string): void {
 }
 
 export function createManifestObjectFromUpload(uploadedManifest: ManifestObject): ManifestObject{
-  const newManifest = new ManifestObject(uploadedManifest.type);
+  const uploadedContainerType =
+    uploadedManifest.items?.[0]?.type as IiifContainerType | undefined;
+  const newManifest = new ManifestObject(uploadedContainerType ?? "Scene");
   newManifest.setAllValues(uploadedManifest);
 
   //for each annotation
