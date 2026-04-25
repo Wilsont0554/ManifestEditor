@@ -429,7 +429,7 @@ function ManifestEditorPage() {
   function handleSaveManifestToLibrary(): void {
     const savedManifest = saveManifestToLibrary(manifestObj);
 
-    alert(`Saved "${savedManifest.title}" to the homepage.`);
+    alert(`Published "${savedManifest.title}" to Recent Examples.`);
   }
 
   async function handleUpdateGist(): Promise<void> {
@@ -557,9 +557,9 @@ function ManifestEditorPage() {
                 className="cursor-pointer rounded-md bg-pink-600 px-3 py-2 text-sm font-medium text-white hover:bg-pink-700"
                 type="button"
                 onClick={handleSaveManifestToLibrary}
-                title="Save this manifest to the homepage library"
+                title="Publish this manifest to Recent Examples"
               >
-                Save to Home
+                Publish
               </button>
 
               <button
