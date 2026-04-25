@@ -47,7 +47,7 @@ function CollapsibleResourceCard({
   description,
   children,
   collapsible = false,
-  defaultOpen = true,
+  defaultOpen = false,
 }: CollapsibleResourceCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const isExpanded = !collapsible || isOpen;

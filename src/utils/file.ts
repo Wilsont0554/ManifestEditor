@@ -19,6 +19,34 @@ export function downloadJsonFile(data: unknown, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
+export function serializeManifestForExport(manifestObj: ManifestObject): object {
+  const exported = JSON.parse(JSON.stringify(manifestObj)) as any;
+
+  for (const container of exported.items ?? []) {
+    for (const page of container.items ?? []) {
+      for (const annotation of page.items ?? []) {
+        const body = annotation.body;
+
+        if (!body || body.type !== "Model") {
+          continue;
+        }
+
+        const { transforms, ...source } = body;
+
+        annotation.body = {
+          type: "SpecificResource",
+          source: [source],
+          ...(Array.isArray(transforms) && transforms.length > 0
+            ? { transform: transforms }
+            : {}),
+        };
+      }
+    }
+  }
+
+  return exported;
+}
+
 export function createManifestObjectFromUpload(uploadedManifest: ManifestObject): ManifestObject{
   const uploadedContainerType =
     uploadedManifest.items?.[0]?.type as IiifContainerType | undefined;
@@ -33,7 +61,7 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
       
       const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
 
-      if (uploadedResource!.type == "Model"){
+      if (uploadedResource!.type == "Model" || uploadedResource!.type == "SpecificResource"){
         tempContentResource = new ContentResource("", "", "");
         tempContentResource!.setAllValues(uploadedResource!);
       }
@@ -50,7 +78,7 @@ export function createManifestObjectFromUpload(uploadedManifest: ManifestObject)
         tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
       }
       else{
-        console.log('test');
+        console.log('Format not recognized');
       }
 
       const tempAnnotation = new Annotation(nextAnnotationIndex + 1);

@@ -51,12 +51,9 @@ class ManifestObject {
         this.items = [];
         this.label = new Label(defaultManifestLabel, "en");
         this.addContainer(new Container(undefined, containerType));
-        this.synchronizeStructure();
     }
 
     clone(): ManifestObject {
-        this.synchronizeStructure();
-
         const nextManifestObj = new ManifestObject(this.getContainerObj().getType());
 
         nextManifestObj.id = this.id;
@@ -74,7 +71,6 @@ class ManifestObject {
     
     addContainer(container: Container): void {
         this.items.push(container);
-        this.synchronizeStructure();
     }
 
     getContainerObj(index?: number): Container {
@@ -142,16 +138,22 @@ class ManifestObject {
             this.type = newManifest.type;
             this.rights = newManifest.rights;
             this.navDate = newManifest.navDate;
-            this.behavior = newManifest.behavior ? [...newManifest.behavior] : undefined;
+            this.behavior = newManifest.behavior;
 
             if (newManifest.label != undefined){
-                this.setLabel(newManifest.label.getValue());
-                this.setLabelLanguage(newManifest.label.getLanguage() ?? 'en');
+                const labelCodeArray = Object.keys(newManifest.label);
+                const labelCode = labelCodeArray[0] as keyof Label;
+
+                this.setLabel((newManifest.label[labelCode][0] as unknown as string));
+                this.label!.setLanguage(labelCode);
             }
 
             if (newManifest.summary != undefined){
-                this.setSummary(newManifest.summary.getValue());
-                this.setSummaryLanguage(newManifest.summary.getLanguage() ?? 'en');
+                const summaryCodeArray = Object.keys(newManifest.summary);
+                const summaryCode = summaryCodeArray[0] as keyof Label;
+
+                this.setSummary(newManifest.summary[summaryCode][0] as unknown as string);
+                this.summary!.setLanguage(summaryCode);
             }
         }catch(e){
             console.log(e);
@@ -287,67 +289,6 @@ class ManifestObject {
         }
 
         return new Label(defaultManifestLabel, "en");
-    }
-
-    private synchronizeStructure(): void {
-        const manifestBaseId = getManifestBaseId(this.id);
-
-        this.items.forEach((container, containerIndex) => {
-            const containerId = `${manifestBaseId}/${container.getType().toLowerCase()}/${containerIndex + 1}`;
-            container.setID(containerId);
-
-            container.getItems().forEach((annotationPage, annotationPageIndex) => {
-                annotationPage.setID(`${containerId}/page/${annotationPageIndex + 1}`);
-
-                let lightIndex = 0;
-                let cameraIndex = 0;
-
-                annotationPage.getAllAnnotations().forEach((annotation, annotationIndex) => {
-                    const annotationId = `${containerId}/anno/${annotationIndex + 1}`;
-                    annotation.changeID(annotationId);
-
-                    const resource = annotation.getContentResource();
-                    const targetId = `${annotationId}/target`;
-
-                    if (resource instanceof Light) {
-                        lightIndex += 1;
-                        resource.setID(`${containerId}/lights/${lightIndex}`);
-                        resource.synchronizeDerivedIds();
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    if (resource instanceof Camera) {
-                        cameraIndex += 1;
-                        resource.setID(`${containerId}/cameras/${cameraIndex}`);
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    if (annotation.getTarget()) {
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    annotation.setTargetReference(
-                        containerId,
-                        container.getType() as IiifContainerType,
-                    );
-                });
-            });
-        });
     }
 }
 
