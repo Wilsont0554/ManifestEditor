@@ -85,8 +85,7 @@ function HomePage() {
               </h1>
               <p className="mt-7 max-w-3xl text-lg leading-8 text-slate-300 sm:text-xl">
                 Work through metadata, containers, annotations, resources, and
-                preview in one place. Recent examples saved from the editor stay
-                here so you can return to real manifests instead of starting over.
+                preview in one place.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <NavLink
