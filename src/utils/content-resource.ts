@@ -1,5 +1,6 @@
 import ContentResource from "@/ManifestClasses/ContentResource";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
+import Transform from "@/ManifestClasses/Transform";
 
 export const contentResourceTypeToFormat = {
   Image: "image/jpeg",
@@ -25,6 +26,8 @@ export type EditableContentResourceType =
   | keyof typeof contentResourceTypeToFormat
   | "Light"
   | "Camera";
+
+export const cameraPresets = ["Zoom Out", "Top Right"] as const
 
 export function getResourceTypeItems(manifestObj: ManifestObject, resourceType: object) {
   let resourceNumber = 0;

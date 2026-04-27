@@ -63,6 +63,10 @@ class ContentResource {
         this.summary.changeLabelTest(summary);
     }
 
+    setTransformTest(newTransform: Transform): void{
+        this.transforms.push(newTransform);
+    }
+
     setAllValues(newContentResource: ContentResource): void{
         try{
 
