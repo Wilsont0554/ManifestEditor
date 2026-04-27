@@ -29,7 +29,7 @@ function CreateBar({
 
           <Button
             type="button"
-            className="!bg-pink-600 hover:!bg-pink-700"
+            className="bg-pink-600! hover:bg-pink-700!"
             onClick={handlePublishManifest}
           >
             Publish
