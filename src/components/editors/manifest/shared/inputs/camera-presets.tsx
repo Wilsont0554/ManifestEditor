@@ -15,7 +15,10 @@ function CameraPresets({annotation, resource, onCommit, id}){
         topRight[1].setY(45);
 
         if (event == "Top Right"){
-            resource.transforms.push(topRight);
+            annotation.getTarget().setZ(0.5);
+            annotation.getTarget().setY(0.2);
+            console.log(annotation);
+            onCommit();
         }
     }
 
