@@ -33,6 +33,7 @@ export default function ProjectCard({ id, manifest, index }: Props) {
 
   const label = manifest["label"]?.en?.[0] ?? "Untitled Manifest";
   const indexLabel = String(index + 1).padStart(3, "0");
+  const editedAt = manifest["editedAt"] ? new Date(manifest["editedAt"]) : null;
 
   return (
     <Link
@@ -42,11 +43,6 @@ export default function ProjectCard({ id, manifest, index }: Props) {
       <span className="pointer-events-none absolute left-2 top-2 z-10 text-[10px] font-semibold tracking-[0.15em] text-slate-500 group-hover:text-slate-900 transition-colors">
         № {indexLabel}
       </span>
-      <span className="pointer-events-none absolute right-2 top-2 z-10 flex items-center gap-1 text-[10px] font-medium tracking-[0.18em] text-slate-400">
-        <span className="h-1 w-1 rounded-full bg-emerald-500" />
-        LIVE
-      </span>
-
       <div
         ref={cardRef}
         className="relative aspect-square w-full overflow-hidden bg-[radial-gradient(circle_at_50%_30%,#f8fafc_0%,#e2e8f0_100%)]"
@@ -85,6 +81,11 @@ export default function ProjectCard({ id, manifest, index }: Props) {
         >
           {id}
         </p>
+        {editedAt && (
+          <p className="text-[10px] font-medium tracking-[0.12em] text-slate-400">
+            Edited: {editedAt.toLocaleDateString()}
+          </p>
+        )}
       </div>
 
       <span className="pointer-events-none absolute inset-x-2.5 bottom-1.5 h-px scale-x-0 bg-slate-900 transition-transform duration-300 origin-left group-hover:scale-x-100" />

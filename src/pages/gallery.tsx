@@ -23,6 +23,7 @@ export default function Gallery() {
       if (cancelled) return false;
       setProjects(savedManifested);
     }
+
     loadManifests().catch((err) => {
       console.log("Failed to load manifests from IndexedDB", err);
     });
@@ -31,6 +32,19 @@ export default function Gallery() {
     };
   }, []);
 
+  /**
+   * Handle delete manifest
+   */
+  async function handleDelete(id: string) {
+    try {
+      await db.deleteProject(id);
+      setProjects((prev) => prev?.filter((proj: any) => proj.id !== id) ?? null);
+    }
+    catch (err) {
+      console.error("Failed to delete manifest from IndexedDB:", err);
+    }
+  };
+  
   return (
     <Layout>
       <GettingStartedSection />

@@ -15,7 +15,14 @@ type Props = {
  * @param projects user manifests from IndexedDB, or null while loading
  */
 export default function MyProjectsTab({ projects }: Props) {
-  if (projects === null) {
+  
+  const sortedProjects = projects ? [...projects].sort((a, b) => {
+    const dateA = a["editedAt"] ? new Date(a["editedAt"]) : new Date(0);
+    const dateB = b["editedAt"] ? new Date(b["editedAt"]) : new Date(0);
+    return dateB.getTime() - dateA.getTime();
+  }) : null;
+
+  if (sortedProjects === null) {
     return (
       <ProjectGrid>
         {Array.from({ length: 8 }).map((_, i) => (
@@ -25,7 +32,7 @@ export default function MyProjectsTab({ projects }: Props) {
     );
   }
 
-  if (projects.length === 0) {
+  if (sortedProjects.length === 0) {
     return (
       <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50/40 p-10 text-center">
         <p className="w-full text-base font-semibold text-slate-700">
@@ -40,7 +47,7 @@ export default function MyProjectsTab({ projects }: Props) {
 
   return (
     <ProjectGrid>
-      {projects.map((p, i) => {
+      {sortedProjects.map((p, i) => {
         const id = p["id"].split("/").pop() ?? "invalid-id";
         return <ProjectCard key={id} id={id} manifest={p} index={i} />;
       })}

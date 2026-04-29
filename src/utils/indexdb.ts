@@ -66,10 +66,15 @@ export class IndexedDB {
 
       const transaction = this.db.transaction(["projects"], "readwrite");
       const store = transaction.objectStore("projects");
-      const request = store.put(manifest, id);
+      const now = new Date();
+      const manifestWithETag = {
+        ...manifest, 
+        editedAt: now.toISOString(),
+      };
+      const request = store.put(manifestWithETag, id);
 
       request.onsuccess = () => {
-        resolve(manifest);
+        resolve(manifestWithETag);
       };
 
       request.onerror = (event) => {
@@ -127,6 +132,31 @@ export class IndexedDB {
         request.onerror = (event) => {
           reject((event.target as IDBRequest).error);
         };
+      }
+    });
+  }
+
+  /**
+   * Delete a project by ID
+   * @param id the ID of the manifest object to delete from the "projects" object store
+   * @return A promise that resolves when the deletion is complete
+   */
+  deleteProject(id: string) {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error("Database not open"));
+        return;
+      }
+      const transaction = this.db.transaction(["projects"], "readwrite");
+      const store = transaction.objectStore("projects");
+      const request = store.delete(id);
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = (event) => {
+        reject((event.target as IDBRequest).error);
       }
     });
   }
