@@ -24,6 +24,7 @@ import ImportExportHandler from "@/components/shared/importExport/importExportHa
 import ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import Camera from "@/ManifestClasses/Camera";
+import { saveManifestToLibrary } from "@/utils/saved-manifests";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
@@ -85,9 +86,9 @@ function ManifestEditorPage() {
 
   let importExportMenu;
   if (importExportType != "none"){
-    importExportMenu = 
+    importExportMenu =
       <ImportExportHandler
-        createManifestObjectFromUpload = {createManifestObjectFromUpload} 
+        createManifestObjectFromUpload = {createManifestObjectFromUpload}
         setIsAutoUpdateEnabled  = {setIsAutoUpdateEnabled}
         isAutoUpdateEnabled = {isAutoUpdateEnabled}
         setImportExportType = {setImportExportType}
@@ -269,6 +270,13 @@ function ManifestEditorPage() {
     setIsContentResourceModalOpen(true);
     updateManifestObj();
   }
+
+  function handlePublishManifest(): void {
+    const savedManifest = saveManifestToLibrary(manifestObj);
+
+    alert(`Published "${savedManifest.title}" to Recent Examples.`);
+  }
+
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;
@@ -298,6 +306,7 @@ function ManifestEditorPage() {
           handleOpenContentResourceModal={handleOpenContentResourceModal}
           handleOpenTempModal={handleOpenTempModal}
           handleCreateTextAnnotation={handleCreateTextAnnotation}
+          handlePublishManifest={handlePublishManifest}
         />
           
         <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -312,7 +321,7 @@ function ManifestEditorPage() {
           </div>
         </div>
         {importExportMenu}
-      </div>          
+      </div>
 
       {isInspectorOpen ? (
         <ManifestComponent
