@@ -3,6 +3,10 @@ import { useNavigate } from "react-router";
 import Icon from "@/components/icon";
 import { importManifestFromGist } from "@/utils/import";
 
+/**
+ * Card component for importing a manifest from a GitHub Gist URL
+ * @returns card component to import a manifest from a GitHub Gist URL
+ */
 export default function ImportGistCard() {
   const reRoute = useNavigate();
   const [gistInput, setGistInput] = useState("");

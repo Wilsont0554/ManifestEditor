@@ -2,6 +2,10 @@ import { useNavigate } from "react-router";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import Icon from "@/components/icon";
 
+/**
+ * Card component for creating a new manifest project. Routes the user to the editor with a blank manifest
+ * @returns Card component to create a new manifest project
+ */
 export default function CreateProjectCard() {
   const reRoute = useNavigate();
 

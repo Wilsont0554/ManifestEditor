@@ -3,6 +3,10 @@ import { useNavigate } from "react-router";
 import Icon from "@/components/icon";
 import { importManifestFromFile } from "@/utils/import";
 
+/**
+ * Card component for importing a manifest from a local file
+ * @returns card component to import a manifest from a local file
+ */
 export default function ImportFileCard() {
   const reRoute = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);

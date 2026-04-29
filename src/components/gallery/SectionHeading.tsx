@@ -4,6 +4,13 @@ type Props = {
   description?: string;
 };
 
+/**
+ * Section heading component for the Gallery page.
+ * @param eyebrow - the small uppercase text above the title, usually a number or short label
+ * @param title - the main heading text for the section
+ * @param description - optional smaller text describing the section, displayed next to the title
+ * @returns section heading component
+ */
 export default function SectionHeading({ eyebrow, title, description }: Props) {
   return (
     <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-slate-200 pb-3">

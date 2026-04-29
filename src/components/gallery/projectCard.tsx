@@ -7,10 +7,20 @@ type Props = {
   index: number;
 };
 
+/**
+ * 
+ * @param id - manifest id
+ * @param manifest - the manifest object
+ * @param index - the index of the manifest in the list of projects, used for display purposes
+ * @returns 
+ */
 export default function ProjectCard({ id, manifest, index }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  /**
+   * Encode the manifest as a data URL for the voyager preview
+   */
   const liveViewerManifestUrl = useMemo(() => {
     if (!isLoaded) return "";
     return `data:application/json;charset=utf-8,${encodeURIComponent(

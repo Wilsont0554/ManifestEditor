@@ -3,6 +3,11 @@ import ImportGistCard from "@/components/gallery/ImportGistCard";
 import ImportFileCard from "@/components/gallery/ImportFileCard";
 import SectionHeading from "@/components/gallery/SectionHeading";
 
+/**
+ * The first section of Gallery page
+ * Containing cards for creating a new manifest, importing from GitHub Gist, and importing from a local file
+ * @returns Getting started section
+ */
 export default function GettingStartedSection() {
   return (
     <section className="mb-14">
