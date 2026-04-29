@@ -5,6 +5,7 @@ import {
   useState,
   useContext,
   useMemo,
+  useCallback,
 } from "react";
 import ContentResourceModal, {
   type ContentResourceModalView,
@@ -27,6 +28,7 @@ import ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import Camera from "@/ManifestClasses/Camera";
 import { useParams } from "react-router";
+import { setupVoyagerScript } from "@/utils/voyager";
 
 const DEFAULT_INSPECTOR_WIDTH = 720;
 const MIN_INSPECTOR_WIDTH = 320;
@@ -129,11 +131,7 @@ function ManifestEditorPage() {
   }, [liveViewerManifestUrl]);
 
   useEffect(() => {
-    const scriptTag = document.createElement("script");
-    scriptTag.src =
-      "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js";
-    scriptTag.addEventListener("load", () => setIsInspectorOpen(true));
-    document.body.appendChild(scriptTag);
+    setupVoyagerScript();
   }, []);
 
   useEffect(() => {
@@ -275,7 +273,8 @@ function ManifestEditorPage() {
     setContentResourceModalView("editor");
     setIsContentResourceModalOpen(true);
     updateManifestObj();
-  }
+  } 
+
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;

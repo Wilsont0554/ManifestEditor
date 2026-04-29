@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 import HomePage from "@/pages/home";
 import ManifestEditorPage from "@/pages/manifest-editor";
 import NotFound from "@/pages/404";
+import GalleryPage from "@/pages/gallery";
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <main className="flex min-h-0 w-full flex-1 overflow-hidden">
         <Routes>
           <Route path="/" element={ <HomePage /> } />
+          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="editor/:id" element={<ManifestEditorPage/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>

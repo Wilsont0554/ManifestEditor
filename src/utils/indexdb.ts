@@ -107,4 +107,27 @@ export class IndexedDB {
       };
     });
   }
+
+  /**
+   * Get All Projects
+   * @returns A promise resolving to an array of all manifest objects stored in the "projects" object store
+   */
+  getAllProjects() {
+    return new Promise<object[]>((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error("Database not open"));
+        return;
+      } else {
+        const transaction = this.db.transaction(["projects"], "readonly");
+        const store = transaction.objectStore("projects");
+        const request = store.getAll();
+        request.onsuccess = () => {
+          resolve(request.result);
+        };
+        request.onerror = (event) => {
+          reject((event.target as IDBRequest).error);
+        };
+      }
+    });
+  }
 }
