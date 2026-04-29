@@ -49,25 +49,19 @@ class Annotation {
             this.id = newAnnotation.id;
             this.type = newAnnotation.type;
             this.motivation = newAnnotation.motivation;
-            
-            const tempTarget = new Target;
 
-            if (newAnnotation.target.source != undefined){
-                tempTarget.setSource(newAnnotation.target.source[0].id, newAnnotation.target.source[0].type);
-                tempTarget.setSelectorType(newAnnotation.target.selector[0].type);
-                tempTarget.setX(newAnnotation.target.selector[0].x);
-                tempTarget.setY(newAnnotation.target.selector[0].y);
-                tempTarget.setZ(newAnnotation.target.selector[0].z);
-
-                this.setTarget(tempTarget);
-            }
+            this.setTarget(newAnnotation.target.clone());
 
             if (newAnnotation.label != undefined){
                 const labelCodeArray = Object.keys(newAnnotation.label!);
                 const labelCode = labelCodeArray[0] as keyof Label;
+                const labelValues = newAnnotation.label[labelCode];
+                const labelValue = labelValues?.[0] as unknown as string | undefined;
 
-                this.setLabel(0, (newAnnotation.label[labelCode][0] as unknown as string));
-                this.label!.setLanguage(labelCode);
+                if (labelValue != undefined) {
+                    this.setLabel(0, labelValue);
+                    this.label!.setLanguage(labelCode);
+                }
             }
         }catch(e){
             console.log(e);

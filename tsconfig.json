@@ -13,14 +13,13 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
-    "baseUrl": "./",
     "noImplicitAny": false,
     "paths": {
-      "@/*": ["src/*"],
-      "@components/*": ["src/components/*"],
-      "@ManifestClasses/*": ["src/ManifestClasses/*"],
-      "@utils/*": ["src/utils/*"],
-      "@pages/*": ["src/pages/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@ManifestClasses/*": ["./src/ManifestClasses/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@pages/*": ["./src/pages/*"]
     }
   },
   "include": ["src", "vite.config.ts", "eslint.config.ts"]

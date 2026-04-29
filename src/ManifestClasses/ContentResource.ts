@@ -77,7 +77,7 @@ class ContentResource {
                     }
                 }
                 console.log(newContentResource)
-                newContentResource = newContentResource.source[0];
+                newContentResource = (newContentResource as any).source[0];
                 console.log(newContentResource);
             }
 

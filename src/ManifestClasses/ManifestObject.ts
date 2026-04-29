@@ -149,17 +149,25 @@ class ManifestObject {
             if (newManifest.label != undefined){
                 const labelCodeArray = Object.keys(newManifest.label);
                 const labelCode = labelCodeArray[0] as keyof Label;
+                const labelValues = newManifest.label[labelCode];
+                const labelValue = labelValues?.[0] as unknown as string | undefined;
 
-                this.setLabel((newManifest.label[labelCode][0] as unknown as string));
-                this.label!.setLanguage(labelCode);
+                if (labelValue != undefined) {
+                    this.setLabel(labelValue);
+                    this.label!.setLanguage(labelCode);
+                }
             }
 
             if (newManifest.summary != undefined){
                 const summaryCodeArray = Object.keys(newManifest.summary);
                 const summaryCode = summaryCodeArray[0] as keyof Label;
+                const summaryValues = newManifest.summary[summaryCode];
+                const summaryValue = summaryValues?.[0] as unknown as string | undefined;
 
-                this.setSummary(newManifest.summary[summaryCode][0] as unknown as string);
-                this.summary!.setLanguage(summaryCode);
+                if (summaryValue != undefined) {
+                    this.setSummary(summaryValue);
+                    this.summary!.setLanguage(summaryCode);
+                }
             }
         }catch(e){
             console.log(e);
