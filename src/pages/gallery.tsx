@@ -14,7 +14,7 @@ export default function Gallery() {
 
     /**
      * Load all manifest from IndexedDB 
-     * @returns 
+     * @returns true if manifests are loaded successfully, false if the loading is cancelled
      */
     async function loadManifests() {
       await db.open();
@@ -22,6 +22,7 @@ export default function Gallery() {
       const savedManifested = await db.getAllProjects();
       if (cancelled) return false;
       setProjects(savedManifested);
+      return true;
     }
 
     loadManifests().catch((err) => {

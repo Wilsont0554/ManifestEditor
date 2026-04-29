@@ -12,7 +12,7 @@ type Props = {
  * @param id - manifest id
  * @param manifest - the manifest object
  * @param index - the index of the manifest in the list of projects, used for display purposes
- * @returns 
+ * @returns the card component displaying a manifest project in the gallery. 
  */
 export default function ProjectCard({ id, manifest, index }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
