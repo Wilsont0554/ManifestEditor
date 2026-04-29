@@ -9,8 +9,6 @@ export type ImportResult = {
 
 /**
  * Parse a user-provided string and extract a GitHub gist identifier.
- * Accepts a raw 20+ char hex gist id, a gist.github.com URL, or a
- * gist.githubusercontent.com raw URL.
  * @param inputValue raw user input (URL or id) to parse
  * @returns the gist id if one can be derived, otherwise null
  */
@@ -45,10 +43,6 @@ export function extractGistId(inputValue: string): string | null {
 
 /**
  * Fetch a manifest from a GitHub gist and convert it into a ManifestObject.
- * Picks the first .json file in the gist (or the first file if none match),
- * falls back to fetching raw_url when inline content is unavailable, and
- * runs the result through createManifestObjectFromUpload to assign a fresh
- * unique id.
  * @param rawInput user-provided gist URL or id
  * @returns the new manifest id, the parsed manifest data, and the gist id
  * @throws if the input is unparseable, the gist API call fails, the gist
