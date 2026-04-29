@@ -1,5 +1,4 @@
 import ManifestObject from "@/ManifestClasses/ManifestObject";
-import { IiifManifest } from "@/types/iiif";
 
 /**
  * Utility class for handling IndexedDB operations related to saving and retrieving IIIF manifest data.
@@ -58,7 +57,7 @@ export class IndexedDB {
    * @param manifest the manifest object you want to store to indexDB
    * @returns A promise resolving to the saved manifest object
    */
-  saveProject(manifest: object) {
+  saveProject(manifest: object, id: string) {
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error("Database not open"));
@@ -67,7 +66,7 @@ export class IndexedDB {
 
       const transaction = this.db.transaction(["projects"], "readwrite");
       const store = transaction.objectStore("projects");
-      const request = store.put(manifest, "current");
+      const request = store.put(manifest, id);
 
       request.onsuccess = () => {
         resolve(manifest);

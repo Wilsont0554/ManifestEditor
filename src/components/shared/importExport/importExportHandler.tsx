@@ -3,13 +3,14 @@ import { useState, useEffect, ChangeEvent } from "react";
 import ImportMenu from "./import";
 import ExportMenu from "./export";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
+import { useNavigate } from "react-router";
 
 function ImportExportHandler({
     gistId, isAutoUpdateEnabled, setGistId, setIsAutoUpdateEnabled, 
     createManifestObjectFromUpload, setManifestObj, serializedManifest, manifestObj, 
     importExportType, setImportExportType
 }) {
-
+    const reRoute = useNavigate();
     const [isCreatingGist, setIsCreatingGist] = useState(false);
     const [gistBaseName, setGistBaseName] = useState("manifest");
     const [gistUrl, setGistUrl] = useState<string | null>(null);
@@ -117,6 +118,10 @@ function ImportExportHandler({
     }
   }*/
 
+  /**
+   * Handle when user upload a manifest using a github gist url
+   * @returns 
+   */
   async function handleUploadManifestFromGist(): Promise<void> {
     const gistIdentifier = extractGistId(gistImportUrl);
 
@@ -167,13 +172,17 @@ function ImportExportHandler({
       }
 
       const nextManifest = JSON.parse(manifestText);
-      applyUploadedManifest(nextManifest);
-
+      const parsedManifest = createManifestObjectFromUpload(nextManifest) as ManifestObject;
+      const manifestId = parsedManifest.getUniqueIdCode();
+      applyUploadedManifest(parsedManifest);
       setGistId(gistData.id ?? gistIdentifier);
       setGistUrl(gistData.html_url ?? null);
       setGistRawUrl(manifestFile.raw_url ?? null);
       setGistImportUrl("");
       setImportExportType("none");
+      reRoute('/editor/' + manifestId, { replace: true, state: {
+          manifest: nextManifest
+      } });
     } catch (error) {
       console.error("Failed to import gist:", error);
       alert(
@@ -186,9 +195,13 @@ function ImportExportHandler({
     }
   }
 
+  /**
+   * Handle when user upload a manifest file from their local machine. 
+   * @param event - button click event when user select a file to upload
+   * @returns 
+   */
   async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     const uploadedManifest = event.target.files?.[0] ?? null;
-
     if (!uploadedManifest) {
       return;
     }
@@ -196,8 +209,13 @@ function ImportExportHandler({
     try {
       const stringManifest = await uploadedManifest.text();
       const nextManifest = JSON.parse(stringManifest);
-      applyUploadedManifest(nextManifest);
+      const parsedManifest = createManifestObjectFromUpload(nextManifest) as ManifestObject;
+      const manifestId = parsedManifest.getUniqueIdCode();
+      applyUploadedManifest(parsedManifest);
       setImportExportType("none");
+      reRoute('/editor/' + manifestId, { replace: true, state: {
+          manifest: nextManifest
+      }});
     } catch (error) {
       console.error("Failed to upload manifest:", error);
       alert("Failed to upload manifest. Please upload a valid JSON file.");
@@ -257,9 +275,7 @@ function ImportExportHandler({
     }
   }
 
-  function applyUploadedManifest(nextManifest: ManifestObject): void {
-    const parsedManifest = createManifestObjectFromUpload(nextManifest);
-
+  function applyUploadedManifest(parsedManifest: ManifestObject): void {
     if (parsedManifest.getLabelValue().trim() === "Blank Manifest") {
       parsedManifest.setLabel("");
     }
