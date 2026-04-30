@@ -23,7 +23,7 @@ export default function SectionHeading({ eyebrow, title, description }: Props) {
         </h2>
       </div>
       {description && (
-        <p className="max-w-xs text-sm leading-snug text-slate-500">
+        <p className="max-w-xs text-sm leading-snug text-slate-500 self-end">
           {description}
         </p>
       )}

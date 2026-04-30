@@ -12,11 +12,11 @@ type Props = {
 };
 
 /**
- * Projects section of the Gallery page. 
+ * Projects section of the Gallery page.
  * @param projects user manifests from IndexedDB, or null while loading
  */
 export default function ProjectsSection({ projects }: Props) {
-  const [tab, setTab] = useState<Tab>("projects");
+  const [tab, setTab] = useState<Tab>("examples");
 
   const counts = {
     projects: projects?.length ?? 0,
@@ -27,7 +27,7 @@ export default function ProjectsSection({ projects }: Props) {
     <section>
       <SectionHeading
         eyebrow="02"
-        title="Projects"
+        title={tab === "projects" ? "Your projects" : "Examples Manifests"}
         description="Browse what you've made and what's available."
       />
       <div className="flex flex-col gap-8 md:flex-row md:gap-10">
@@ -37,16 +37,16 @@ export default function ProjectsSection({ projects }: Props) {
           </p>
           <nav className="flex flex-col border-l border-slate-200">
             <TabButton
-              active={tab === "projects"}
-              label="Your projects"
-              count={counts.projects}
-              onClick={() => setTab("projects")}
-            />
-            <TabButton
               active={tab === "examples"}
               label="Examples"
               count={counts.examples}
               onClick={() => setTab("examples")}
+            />
+            <TabButton
+              active={tab === "projects"}
+              label="Your projects"
+              count={counts.projects}
+              onClick={() => setTab("projects")}
             />
           </nav>
         </aside>
