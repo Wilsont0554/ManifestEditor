@@ -1,7 +1,20 @@
-import Button
- from "../button";
+import Button from "../button";
 
-function CreateBar({isAutoUpdateEnabled, gistId, handleOpenContentResourceModal, handleOpenTempModal, handleCreateTextAnnotation} : any) {
+interface CreateBarProps {
+  isAutoUpdateEnabled: boolean;
+  gistId: string | null;
+  handleOpenContentResourceModal: () => void;
+  handleOpenTempModal: () => void;
+  handleCreateTextAnnotation: () => void;
+}
+
+function CreateBar({
+  isAutoUpdateEnabled,
+  gistId,
+  handleOpenContentResourceModal,
+  handleOpenTempModal,
+  handleCreateTextAnnotation,
+}: CreateBarProps) {
   return (
     <div className="mr-auto max-w-245 space-y-4 pb-6">
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -32,9 +45,8 @@ function CreateBar({isAutoUpdateEnabled, gistId, handleOpenContentResourceModal,
           >
             Add Text Annotation
           </Button>
-          
         </div>
-      </div>  
+      </div>
     </div>
   );
 }

@@ -97,6 +97,10 @@ class Metadata {
         return this.entries;
     }
 
+    getEntries(): MetadataEntry[] {
+        return this.getAllEntries();
+    }
+
     updateEntry(
         index: number,
         labelText: string,
@@ -116,6 +120,10 @@ class Metadata {
     }
 
     getEntryCount(): number {
+        return this.entries.length;
+    }
+
+    get length(): number {
         return this.entries.length;
     }
 

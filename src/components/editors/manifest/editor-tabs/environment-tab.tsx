@@ -11,6 +11,7 @@ import DropDownField from "@/components/shared/dropdown-field";
 import { getResourceTypeItems } from "@/utils/content-resource";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
+import { builtInManifestBehaviors } from "@/types/iiif";
 import EmptyStateCard from "../shared/cards/empty-state-card";
 
 function EnvironmentTab() {
@@ -26,6 +27,21 @@ function EnvironmentTab() {
       .getContainerObj()
       .getAnnotationPage()
       .removeAnnotation(annotationIndex);
+    updateManifestObj();
+  }
+
+  function handleAddCustomBehavior(value: string): boolean {
+    const didAdd = manifestObj.addCustomBehavior(value);
+
+    if (didAdd) {
+      updateManifestObj();
+    }
+
+    return didAdd;
+  }
+
+  function handleRemoveCustomBehavior(value: string): void {
+    manifestObj.removeCustomBehavior(value);
     updateManifestObj();
   }
 
@@ -180,7 +196,8 @@ function EnvironmentTab() {
             <ManifestCustomBehaviorEditor
               behaviors={customBehaviors}
               reservedBehaviors={builtInManifestBehaviors}
-              onChange={() => {console.log('')}}
+              onAddBehavior={handleAddCustomBehavior}
+              onRemoveBehavior={handleRemoveCustomBehavior}
             />
           </ManifestField>
         </>

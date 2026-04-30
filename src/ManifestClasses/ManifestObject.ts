@@ -2,6 +2,7 @@ import Container from './Container.ts';
 import Label from './Label.ts';
 import Camera from "./Camera.ts";
 import Light from "./Light.ts";
+import { v4 as uuidv4 } from "uuid";
 import {
     builtInManifestBehaviors,
     manifestAutoAdvanceBehaviors,
@@ -18,7 +19,7 @@ const manifestOrderingBehaviorSet = new Set<string>(manifestOrderingBehaviors);
 const manifestRepeatBehaviorSet = new Set<string>(manifestRepeatBehaviors);
 const manifestAutoAdvanceBehaviorSet = new Set<string>(manifestAutoAdvanceBehaviors);
 const builtInManifestBehaviorSet = new Set<string>(builtInManifestBehaviors);
-const defaultManifestId = "https://example.org/iiif/manifest/1";
+const defaultManifestId = 'https://example.org/iiif/manifest/1';
 const defaultManifestLabel = "Blank Manifest";
 
 function trimTrailingSlash(value: string): string {
@@ -34,6 +35,11 @@ function getManifestBaseId(value: string): string {
     return trimTrailingSlash(getEffectiveManifestId(value).replace(/\.json$/i, ''));
 }
 
+function getUniqueIdCode(baseId: string): string {
+    const uniqueId = baseId.split('/').pop() as string;
+    return uniqueId;
+}
+
 class ManifestObject {
     id: string;
     type: string;
@@ -46,7 +52,7 @@ class ManifestObject {
     behavior?: string[];
 
     constructor(containerType: string) {
-        this.id = defaultManifestId;
+        this.id = `https://example.org/iiif/manifest/${uuidv4()}`;
         this.type = "Manifest";
         this.items = [];
         this.label = new Label(defaultManifestLabel, "en");
@@ -55,7 +61,7 @@ class ManifestObject {
 
     clone(): ManifestObject {
         const nextManifestObj = new ManifestObject(this.getContainerObj().getType());
-
+        
         nextManifestObj.id = this.id;
         nextManifestObj.type = this.type;
         nextManifestObj.items = this.items.map((item) => item.clone());
@@ -143,17 +149,25 @@ class ManifestObject {
             if (newManifest.label != undefined){
                 const labelCodeArray = Object.keys(newManifest.label);
                 const labelCode = labelCodeArray[0] as keyof Label;
+                const labelValues = newManifest.label[labelCode];
+                const labelValue = labelValues?.[0] as unknown as string | undefined;
 
-                this.setLabel((newManifest.label[labelCode][0] as unknown as string));
-                this.label!.setLanguage(labelCode);
+                if (labelValue != undefined) {
+                    this.setLabel(labelValue);
+                    this.label!.setLanguage(labelCode);
+                }
             }
 
             if (newManifest.summary != undefined){
                 const summaryCodeArray = Object.keys(newManifest.summary);
                 const summaryCode = summaryCodeArray[0] as keyof Label;
+                const summaryValues = newManifest.summary[summaryCode];
+                const summaryValue = summaryValues?.[0] as unknown as string | undefined;
 
-                this.setSummary(newManifest.summary[summaryCode][0] as unknown as string);
-                this.summary!.setLanguage(summaryCode);
+                if (summaryValue != undefined) {
+                    this.setSummary(summaryValue);
+                    this.summary!.setLanguage(summaryCode);
+                }
             }
         }catch(e){
             console.log(e);
@@ -251,6 +265,10 @@ class ManifestObject {
             this.behavior?.filter((currentValue) => currentValue !== value) ?? [];
 
         this.updateBehaviorList(nextBehaviors);
+    }
+
+    getUniqueIdCode(): string {
+        return getUniqueIdCode(getManifestBaseId(this.id));
     }
 
     private updateBehaviorList(nextBehaviors: string[]): void {
