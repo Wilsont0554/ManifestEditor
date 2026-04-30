@@ -58,6 +58,7 @@ function EnvironmentTab() {
                       resource={resource}
                       idPrefix={`technical-camera-${annotationIndex}`}
                       onCommit={updateManifestObj}
+                      manifestObj={manifestObj}
                     />
                     <div className="pt-3">
                       <SoftActionButton

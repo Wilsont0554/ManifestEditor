@@ -128,7 +128,7 @@ class Annotation {
         nextAnnotation.type = this.type;
         nextAnnotation.motivation = [...this.motivation];
         nextAnnotation.body = this.body?.clone();
-        nextAnnotation.target = this.target.clone();
+        //nextAnnotation.target = this.target.clone();
         nextAnnotation.label = this.label?.clone();
 
         return nextAnnotation;

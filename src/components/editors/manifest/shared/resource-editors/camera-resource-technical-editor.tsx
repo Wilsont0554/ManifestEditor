@@ -18,6 +18,7 @@ function CameraResourceTechnicalEditor({
   resource,
   idPrefix,
   onCommit,
+  manifestObj
 }) {
   const cameraType = resource.getType();
   const target = annotation.getTarget();
@@ -54,13 +55,6 @@ function CameraResourceTechnicalEditor({
         />
       </section>
       
-      <CameraPresets
-        id={`${idPrefix}-near`}
-        onCommit={onCommit}
-        resource={resource}
-        annotation={annotation}
-      />
-
       <section className="grid gap-4 sm:grid-cols-2">
         <NumericDraftInput
           id={`${idPrefix}-near`}
