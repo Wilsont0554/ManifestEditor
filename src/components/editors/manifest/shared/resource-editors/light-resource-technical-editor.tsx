@@ -8,6 +8,7 @@ import {
 } from "@/utils/content-resource";
 import NumericDraftInput from "../inputs/numeric-draft-input";
 import { clampNumber } from "@/utils/content-resource";
+import SliderInput from "../inputs/slider-input";
 
 const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => ({
   value,
@@ -15,69 +16,10 @@ const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => (
 }));
 
 const DEFAULT_LIGHT_INTENSITY = 0.50;
-const LIGHT_INTENSITY_MIN = 0.00;
-const LIGHT_INTENSITY_MAX = 1.00;
-const LIGHT_INTENSITY_STEP = 0.01;
+const LIGHT_INTENSITY_MIN     = 0.00;
+const LIGHT_INTENSITY_MAX     = 1.00;
+const LIGHT_INTENSITY_STEP    = 0.01;
 
-function LightIntensityInput({
-  idPrefix,
-  value,
-  onCommit,
-}) {
-  const sliderValue = clampNumber(
-    value ?? DEFAULT_LIGHT_INTENSITY,
-    LIGHT_INTENSITY_MIN,
-    LIGHT_INTENSITY_MAX,
-  );
-  const sliderPercentage = Math.round(sliderValue * 100);
-
-
-  return (
-    <section className="space-y-3">
-      <ManifestField
-        label="Intensity"
-        htmlFor={`${idPrefix}-slider`}
-        className="space-y-3"
-      >
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <input
-              id={`${idPrefix}-slider`}
-              type="range"
-              min={LIGHT_INTENSITY_MIN}
-              max={LIGHT_INTENSITY_MAX}
-              step={LIGHT_INTENSITY_STEP}
-              value={sliderValue}
-              className="h-2 w-full cursor-pointer accent-pink-500"
-              onChange={(event) => {
-                const nextValue = Number(event.target.value);
-
-                onCommit(nextValue);
-              }}
-            />
-            <span className="min-w-12 text-right text-sm font-semibold text-slate-700">
-              {sliderPercentage}%
-            </span>
-          </div>
-
-        </div>
-      </ManifestField>
-
-      <NumericDraftInput
-        id={`${idPrefix}-value`}
-        label="Exact intensity"
-        value={value?.toString() ?? ""}
-        min={LIGHT_INTENSITY_MIN}
-        max={LIGHT_INTENSITY_MAX}
-        step={LIGHT_INTENSITY_STEP}
-        placeholder={DEFAULT_LIGHT_INTENSITY.toString()}
-        allowBlank
-        clampDraftToRange
-        onCommit={onCommit}
-      />
-    </section>
-  );
-}
 
 function LightResourceTechnicalEditor({
   annotation,
@@ -150,7 +92,7 @@ function LightResourceTechnicalEditor({
           />
         </ManifestField>
 
-        <LightIntensityInput
+        <SliderInput
           idPrefix={`${idPrefix}-intensity`}
           value={intensity?.value}
           onCommit={(newValue) => {
@@ -170,7 +112,14 @@ function LightResourceTechnicalEditor({
 
             onCommit();
           }}
+          MIN = {LIGHT_INTENSITY_MIN}
+          MAX = {LIGHT_INTENSITY_MAX}
+          STEP = {LIGHT_INTENSITY_STEP}
+          DEFAULT = {DEFAULT_LIGHT_INTENSITY}
+          exact = {true}
+          label={"Intensity"}
         />
+        
       </section>
 
       {lightType === "DirectionalLight" ? (<>
