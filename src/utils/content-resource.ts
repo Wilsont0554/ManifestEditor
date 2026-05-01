@@ -1,6 +1,8 @@
 import ContentResource from "@/ManifestClasses/ContentResource";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
+export const cameraPresets = ["Origin", "Zoom Out", "Top Right"] as const
+
 export const contentResourceTypeToFormat = {
   Image: "image/jpeg",
   Model: "model/gltf-binary",

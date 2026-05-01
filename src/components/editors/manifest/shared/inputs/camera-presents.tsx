@@ -14,15 +14,6 @@ function CameraPresets({annotation, resource, onCommit, id}){
   const { manifestObj } = useContext(manifestObjContext);
 
     async function test(event){
-        const zoomOut = [new Transform("TranslateTransform")];
-        const topRight = [new Transform("TranslateTransform"), new Transform("RotateTransform")];
-        zoomOut[0].setZ(5);
-        zoomOut[0].setY(3);
-        topRight[0].setZ(5);
-        topRight[0].setY(3);
-        topRight[1].setX(45);
-        topRight[1].setY(45);
-        
         let allResources: string[] | undefined[]//manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations()
         // eslint-disable-next-line prefer-const
         allResources = [];
@@ -57,8 +48,20 @@ function CameraPresets({annotation, resource, onCommit, id}){
             // Usage: Get size or center
             const size = new THREE.Vector3();
             box.getSize(size);
-            annotation.setZ(Math.max(size.y, size.y, size.x) * 2);
-            annotation.setY(Math.max(size.y, size.y, size.x) / 2);
+            
+            if (event == "Zoom Out"){
+                annotation.setX(0)
+                annotation.setY(Math.max(size.y, size.y, size.x) / 2);
+                annotation.setZ(Math.max(size.y, size.y, size.x) * 2);
+            }
+            else if (event == "Top Right"){
+                console.log('test');
+            }
+            else if (event == "Origin"){
+                annotation.setX(0)
+                annotation.setY(0)
+                annotation.setZ(0)
+            }         
 
             console.log('Total Size:', size);
             onCommit();
@@ -71,7 +74,26 @@ function CameraPresets({annotation, resource, onCommit, id}){
 
     return(
         <div id={id}>
-            <button onClick={test}>test</button>
+            <ManifestField
+                label="Transform Type"
+                htmlFor={``}
+                className="space-y-2"
+              >
+                <select
+                    id={``}
+                    value={``}
+                    className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
+                    onChange={(event) => {
+                        test(event.target.value);
+                    }}
+                >
+                  {cameraPresets.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </ManifestField>
         </div>
     )
 } export default CameraPresets
