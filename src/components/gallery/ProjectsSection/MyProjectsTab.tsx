@@ -49,7 +49,7 @@ export default function MyProjectsTab({ projects }: Props) {
     <ProjectGrid>
       {sortedProjects.map((p, i) => {
         const id = p["id"].split("/").pop() ?? "invalid-id";
-        return <ProjectCard key={id} id={id} manifest={p} index={i} />;
+        return <ProjectCard key={id} id={id} manifest={p}/>;
       })}
     </ProjectGrid>
   );

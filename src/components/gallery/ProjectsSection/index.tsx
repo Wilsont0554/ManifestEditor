@@ -26,7 +26,6 @@ export default function ProjectsSection({ projects }: Props) {
   return (
     <section>
       <SectionHeading
-        eyebrow="02"
         title={tab === "projects" ? "Your projects" : "Examples Manifests"}
         description="Browse what you've made and what's available."
       />
