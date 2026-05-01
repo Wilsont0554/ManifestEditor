@@ -5,71 +5,7 @@ import { Box3, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import Annotation from "@/ManifestClasses/Annotation";
 import NumericDraftInput from "./numeric-draft-input";
-
-
-    const DEFAULT_LIGHT_INTENSITY = 0.50;
-    const LIGHT_INTENSITY_MIN = 0.00;
-    const LIGHT_INTENSITY_MAX = 1.00;
-    const LIGHT_INTENSITY_STEP = 0.01;
-
-function LightIntensityInput({
-  idPrefix,
-  value,
-  onCommit,
-}) {
-  const sliderValue = clampNumber(
-    value ?? DEFAULT_LIGHT_INTENSITY,
-    LIGHT_INTENSITY_MIN,
-    LIGHT_INTENSITY_MAX,
-  );
-  const sliderPercentage = Math.round(sliderValue * 100);
-
-
-  return (
-    <section className="space-y-3">
-      <ManifestField
-        label="Intensity"
-        htmlFor={`${idPrefix}-slider`}
-        className="space-y-3"
-      >
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <input
-              id={`${idPrefix}-slider`}
-              type="range"
-              min={LIGHT_INTENSITY_MIN}
-              max={LIGHT_INTENSITY_MAX}
-              step={LIGHT_INTENSITY_STEP}
-              value={sliderValue}
-              className="h-2 w-full cursor-pointer accent-pink-500"
-              onChange={(event) => {
-                const nextValue = Number(event.target.value);
-                onCommit(nextValue);
-              }}
-            />
-            <span className="min-w-12 text-right text-sm font-semibold text-slate-700">
-              {sliderPercentage}%
-            </span>
-          </div>
-
-        </div>
-      </ManifestField>
-
-      <NumericDraftInput
-        id={`${idPrefix}-value`}
-        label="Exact intensity"
-        value={value?.toString() ?? ""}
-        min={LIGHT_INTENSITY_MIN}
-        max={LIGHT_INTENSITY_MAX}
-        step={LIGHT_INTENSITY_STEP}
-        placeholder={DEFAULT_LIGHT_INTENSITY.toString()}
-        allowBlank
-        clampDraftToRange
-        onCommit={onCommit}
-      />
-    </section>
-  );
-}
+import * as THREE from 'three';
 
 function CameraPresets({annotation, resource, onCommit, id, manifestObj}){
 
@@ -83,60 +19,66 @@ function CameraPresets({annotation, resource, onCommit, id, manifestObj}){
         topRight[1].setX(45);
         topRight[1].setY(45);
 
-        if (event == "Top Right"){
-            const allResources = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations()
-            let maxScale = [0,0,0];
-            const loader = new GLTFLoader();
-
-            await allResources.map((currentAnnotation, index) => {
-                const url = currentAnnotation.getContentResource().getID();
-                if(url){
-                    console.log(url);
-                    loader.load(currentAnnotation.getContentResource().getID(), (gltf) => {
-                    const object = gltf.scene;
-                    
-                    // Create a bounding box for the object
-                    const box = new Box3().setFromObject(object);
-                    
-                    // Get the size of the box
-                    const size = new Vector3();
-                    box.getSize(size);
-                    
-                    console.log(`Content resource ${index}: (${size.x}, ${size.y}, ${size.z})`);
-                    maxScale[0] = Math.max(maxScale[0], size.x);
-                    maxScale[1] = Math.max(maxScale[1], size.y);
-                    maxScale[2] = Math.max(maxScale[2], size.z);
-                });
-                }
-            })
-
-            console.log("test")
-            console.log(maxScale[1])
-            console.log(maxScale[2])
-            annotation.getTarget().setZ(Math.max(maxScale[0], maxScale[1]));
-            annotation.getTarget().setY(maxScale[1] / 2);
-            onCommit();
-        }
         
-    }
+        if (event == "Top Right"){
+          const allResources = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations()
+          const loader = new GLTFLoader();
+          const urls = ["https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb"];
+          const group = new THREE.Group();
+          const loadModels = async () => {
+            const loadPromises = urls.map(url => {
+                return new Promise((resolve, reject) => {
+                    loader.load(url, (gltf) => {
+                        group.add(gltf.scene); // 2. Add to group
+                        resolve(gltf);
+                    }, undefined, reject);
+                });
+            });
 
+            await Promise.all(loadPromises);
+
+            // 3. Update world matrices to ensure correct coordinates
+            group.updateWorldMatrix(true, true);
+
+            // 4. Get the combined bounding box
+            const box = new THREE.Box3().setFromObject(group);
+            
+            // Usage: Get size or center
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            annotation.setZ(size.z);
+            console.log('Total Size:', size);
+            onCommit();
+        };
+        await loadModels();
+      }
+      console.log(annotation.getTarget().getCoordinates());
+      onCommit();
+    }
 
     return(
         <div id={id}>
-            <LightIntensityInput
-                idPrefix={`${id}-intensity`}
-                value={annotation.getTarget().getZ()}
-                onCommit={(newValue) => {
-                if (newValue === undefined) {
-                    console.log('test')
-                } else {
-                    annotation.getTarget().setZ(newValue);
-                    console.log(annotation.getTarget().getZ())
-                }
-
-                onCommit();
-                }}
-            />
+            <ManifestField
+                label="Transform Type"
+                htmlFor={``}
+                className="space-y-2"
+              >
+                <select
+                    id={``}
+                    value={``}
+                    className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
+                    onChange={(event) => {
+                        console.log(event.target.value)
+                        test(event.target.value);
+                    }}
+                >
+                  {cameraPresets.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </ManifestField>
         </div>
     )
 } export default CameraPresets

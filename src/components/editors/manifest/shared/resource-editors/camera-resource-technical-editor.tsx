@@ -54,6 +54,8 @@ function CameraResourceTechnicalEditor({
           selectedVariant="pink"
         />
       </section>
+
+      <CameraPresets annotation={annotation} resource={resource} onCommit={(newValue) => {annotation.setZ(newValue)}} id={idPrefix} manifestObj={manifestObj}/>
       
       <section className="grid gap-4 sm:grid-cols-2">
         <NumericDraftInput
@@ -70,7 +72,6 @@ function CameraResourceTechnicalEditor({
             } else {
               resource.setNear(newValue);
             }
-
             onCommit();
           }}
         />
