@@ -1,14 +1,19 @@
+import { manifestObjContext } from "@/context/manifest-context";
 import ManifestField from "../inputs/manifest-field";
 import ManifestInput from "../inputs/manifest-input";
 import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
 import TechnicalOptionGroup from "../technical-option-group";
 import {
   lightContentResourceTypes,
+  getAllContentResourceIDs,
   type LightContentResourceType,
 } from "@/utils/content-resource";
 import NumericDraftInput from "../inputs/numeric-draft-input";
 import { clampNumber } from "@/utils/content-resource";
 import SliderInput from "../inputs/slider-input";
+import { isAdvancedViewContext } from "@/context/manifest-context";
+import { useContext } from "react";
+import { couldStartTrivia } from "typescript";
 
 const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => ({
   value,
@@ -20,6 +25,10 @@ const LIGHT_INTENSITY_MIN     = 0.00;
 const LIGHT_INTENSITY_MAX     = 1.00;
 const LIGHT_INTENSITY_STEP    = 0.01;
 
+const DEFAULT_LIGHT_CORDS = 0.00;
+const LIGHT_CORDS_MIN     = -100;
+const LIGHT_CORDS_MAX     = 100;
+const LIGHT_CORDS_STEP    = 0.1;
 
 function LightResourceTechnicalEditor({
   annotation,
@@ -27,6 +36,9 @@ function LightResourceTechnicalEditor({
   idPrefix,
   onCommit,
 }) {
+  const { advancedView } = useContext(isAdvancedViewContext);
+  const { manifestObj } = useContext(manifestObjContext);
+  
   const lightType = resource.getType() as LightContentResourceType;
   const intensity = resource.getIntensity();
   const target = annotation.getTarget();
@@ -44,6 +56,128 @@ function LightResourceTechnicalEditor({
         ]
       : []),
   ];
+  const testIDs = getAllContentResourceIDs(manifestObj);
+  console.log(testIDs);
+  let advancedOptions = <></>;
+
+    if (!advancedView){
+      advancedOptions = <>
+      <p className="text-base font-semibold text-slate-950">Position</p>
+      
+      <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getZ() ?? 0).toString()}
+          MIN = {LIGHT_CORDS_MIN}
+          MAX = {LIGHT_CORDS_MAX}
+          STEP = {LIGHT_CORDS_STEP}
+          DEFAULT = {DEFAULT_LIGHT_CORDS}
+          percent = {false}
+          label={"In-Out"}
+          onCommit={(newValue) => {
+            annotation.setZ(
+                clampNumber(
+                  newValue,
+                  LIGHT_CORDS_MIN,
+                  LIGHT_CORDS_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
+
+      <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getX() ?? 0).toString()}
+          MIN = {LIGHT_CORDS_MIN}
+          MAX = {LIGHT_CORDS_MAX}
+          STEP = {LIGHT_CORDS_STEP}
+          DEFAULT = {DEFAULT_LIGHT_CORDS}
+          percent = {false}
+          label={"Left-Right"}
+          onCommit={(newValue) => {
+            annotation.setX(
+                clampNumber(
+                  newValue,
+                  LIGHT_CORDS_MIN,
+                  LIGHT_CORDS_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
+        <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getY() ?? 0).toString()}
+          MIN = {LIGHT_CORDS_MIN}
+          MAX = {LIGHT_CORDS_MAX}
+          STEP = {LIGHT_CORDS_STEP}
+          DEFAULT = {DEFAULT_LIGHT_CORDS}
+          percent = {false}
+          label={"Down-Up"}
+          onCommit={(newValue) => {
+            annotation.setY(
+                clampNumber(
+                  newValue,
+                  LIGHT_CORDS_MIN,
+                  LIGHT_CORDS_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
+      </>
+    }
+    else{
+      advancedOptions = 
+      <>
+        <p className="text-base font-semibold text-slate-950">Position</p>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <NumericDraftInput
+            id={`${idPrefix}-x`}
+            label="X"
+            value={(target?.getX() ?? 0).toString()}
+            step={0.1}
+            placeholder="0"
+            onCommit={(newValue) => {
+              annotation.setX(newValue ?? 0);
+              onCommit();
+            }}
+          />
+
+          <NumericDraftInput
+            id={`${idPrefix}-y`}
+            label="Y"
+            value={(target?.getY() ?? 0).toString()}
+            step={0.1}
+            placeholder="0"
+            onCommit={(newValue) => {
+              annotation.setY(newValue ?? 0);
+              onCommit();
+            }}
+          />
+
+          <NumericDraftInput
+            id={`${idPrefix}-z`}
+            label="Z"
+            value={(target?.getZ() ?? 0).toString()}
+            step={0.1}
+            placeholder="0"
+            onCommit={(newValue) => {
+              annotation.setZ(newValue ?? 0);
+              onCommit();
+            }}
+          />
+        </div>
+
+          <SpatialCoordinatePreview
+            x={target?.getX() ?? 0}
+            y={target?.getY() ?? 0}
+            z={target?.getZ() ?? 0}
+            details={coordinatePreviewDetails}
+          />
+      </>
+    }
 
   function handleLightTypeChange(newValue: string): void {
     const nextType = newValue as LightContentResourceType;
@@ -123,7 +257,28 @@ function LightResourceTechnicalEditor({
       </section>
 
       {lightType === "DirectionalLight" ? (<>
-        <ManifestInput
+        <ManifestField
+          label="Looking At"
+          htmlFor={``}
+          className="space-y-2"
+        >
+          <select
+            id={`${idPrefix}`}
+            value={resource.getLookAtId()}
+            className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
+            onChange={(event) => {
+              resource.setLookAt(event.target.value);
+              onCommit();
+            }}
+          >
+            {testIDs.map((annotationTest) =>
+              <option key={annotationTest.getID()} value={annotationTest.getID()}>{annotationTest.getContentResource()?.getLabel().getValue()}</option>
+            )}
+          </select>
+        </ManifestField>
+        
+        {advancedView ? (
+          <ManifestInput
           label="Look At"
           id={`${idPrefix}-look-at`}
           type="text"
@@ -134,6 +289,7 @@ function LightResourceTechnicalEditor({
           }}
           appearance="outline"
         />
+        ) : (null)}
       </>) : null}
 
       {lightType === "SpotLight" ? (
@@ -159,52 +315,7 @@ function LightResourceTechnicalEditor({
       ) : null}
 
       <section className="space-y-4">
-        <p className="text-base font-semibold text-slate-950">Coordinates</p>
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          <NumericDraftInput
-            id={`${idPrefix}-x`}
-            label="X"
-            value={(target?.getX() ?? 0).toString()}
-            step={0.1}
-            placeholder="0"
-            onCommit={(newValue) => {
-              annotation.setX(newValue ?? 0);
-              onCommit();
-            }}
-          />
-
-          <NumericDraftInput
-            id={`${idPrefix}-y`}
-            label="Y"
-            value={(target?.getY() ?? 0).toString()}
-            step={0.1}
-            placeholder="0"
-            onCommit={(newValue) => {
-              annotation.setY(newValue ?? 0);
-              onCommit();
-            }}
-          />
-
-          <NumericDraftInput
-            id={`${idPrefix}-z`}
-            label="Z"
-            value={(target?.getZ() ?? 0).toString()}
-            step={0.1}
-            placeholder="0"
-            onCommit={(newValue) => {
-              annotation.setZ(newValue ?? 0);
-              onCommit();
-            }}
-          />
-        </div>
-
-          <SpatialCoordinatePreview
-            x={target?.getX() ?? 0}
-            y={target?.getY() ?? 0}
-            z={target?.getZ() ?? 0}
-            details={coordinatePreviewDetails}
-          />
+        {advancedOptions}
       </section>
     </section>
   );

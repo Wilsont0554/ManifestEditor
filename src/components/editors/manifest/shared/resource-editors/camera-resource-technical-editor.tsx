@@ -27,8 +27,7 @@ function CameraResourceTechnicalEditor({
   onCommit,
 }) {
   
-  const { advancedView } =
-    useContext(isAdvancedViewContext);
+  const { advancedView } = useContext(isAdvancedViewContext);
   const cameraType = resource.getType();
   const target = annotation.getTarget();
   const coordinatePreviewDetails = [
@@ -46,7 +45,6 @@ function CameraResourceTechnicalEditor({
           value: `${resource.getFieldOfView() ?? 0}\u00b0`,
         },
   ];
-
   let advancedOptions = <></>;
 
   function handleCameraTypeChange(newValue: string): void {
@@ -121,7 +119,7 @@ function CameraResourceTechnicalEditor({
             onCommit();
           }}
         />
-        </section>
+      </section>
     </>
   }
   else {
