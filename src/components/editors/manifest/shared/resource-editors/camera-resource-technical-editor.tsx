@@ -1,6 +1,7 @@
 import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
 import TechnicalOptionGroup from "../technical-option-group";
 import NumericDraftInput from "../inputs/numeric-draft-input";
+import CameraPresets from "../inputs/camera-presents";
 
 import {
   cameraContentResourceTypes,
@@ -52,6 +53,8 @@ function CameraResourceTechnicalEditor({
           selectedVariant="pink"
         />
       </section>
+
+<CameraPresets id={idPrefix} resource={resource} annotation={annotation} onCommit={onCommit}></CameraPresets>
 
       <section className="grid gap-4 sm:grid-cols-2">
         <NumericDraftInput
