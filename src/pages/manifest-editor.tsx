@@ -244,6 +244,7 @@ function ManifestEditorPage() {
       annotation.setContentResource(
         new Camera("", "OrthographicCamera"),
       );
+      annotation.setZ(1);
     }
 
     annotationPage.addAnnotation(annotation);

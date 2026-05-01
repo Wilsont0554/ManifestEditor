@@ -10,6 +10,7 @@ import NumericDraftInput from "../inputs/numeric-draft-input";
 import { clampNumber } from "@/utils/content-resource";
 import { transformTypes } from "@/ManifestClasses/Transform";
 import SoftActionButton from "../inputs/soft-action-button";
+import LightPresets from "../inputs/light-presets";
 
 const lightTypeOptions = Object.keys(lightContentResourceTypes).map((value) => ({
   value,
@@ -218,6 +219,8 @@ function LightResourceTechnicalEditor({
 
       <section className="space-y-4">
         <p className="text-base font-semibold text-slate-950">Coordinates</p>
+
+      <LightPresets id={idPrefix} resource={resource} annotation={annotation} onCommit={onCommit}/>
 
         <div className="grid gap-4 sm:grid-cols-3">
           <NumericDraftInput

@@ -1,16 +1,13 @@
-import { cameraPresets, clampNumber, getResourceTypeItems } from "@/utils/content-resource";
+import { lightPresets, getResourceTypeItems } from "@/utils/content-resource";
 import ManifestField from "./manifest-field";
 import Transform from "@/ManifestClasses/Transform";
-import { Box3, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import Annotation from "@/ManifestClasses/Annotation";
-import NumericDraftInput from "./numeric-draft-input";
 import * as THREE from 'three';
 import { useContext } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
 import ContentResource from "@/ManifestClasses/ContentResource";
 
-function CameraPresets({annotation, resource, onCommit, id}){
+function LightPresets({annotation, resource, onCommit, id}){
   const { manifestObj } = useContext(manifestObjContext);
 
     async function test(event){
@@ -49,11 +46,11 @@ function CameraPresets({annotation, resource, onCommit, id}){
             const size = new THREE.Vector3();
             box.getSize(size);
             
-            if (event == "Zoom Out"){
+            if (event == "Right Light"){
                 resource.clearTransforms();
-                annotation.setX(0)
-                annotation.setY(Math.max(size.y, size.y, size.x) / 2);
-                annotation.setZ(Math.max(size.y, size.y, size.x) * 2);
+                annotation.setX(size.x * 4)
+                annotation.setY(size.y * 5);
+                annotation.setZ(size.z * 10);
                 
             }
             else if (event == "Top Right"){
@@ -109,7 +106,7 @@ function CameraPresets({annotation, resource, onCommit, id}){
                         test(event.target.value);
                     }}
                 >
-                  {cameraPresets.map((option, index) => (
+                  {lightPresets.map((option, index) => (
                     <option key={index} value={option}>
                       {option}
                     </option>
@@ -118,4 +115,4 @@ function CameraPresets({annotation, resource, onCommit, id}){
               </ManifestField>
         </div>
     )
-} export default CameraPresets
+} export default LightPresets

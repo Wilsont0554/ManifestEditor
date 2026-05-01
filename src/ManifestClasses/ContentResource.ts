@@ -168,6 +168,10 @@ class ContentResource {
         return this.transforms;
     }
 
+    setTransforms(newTransform: Transform[]): void{
+        this.transforms = newTransform;
+    }
+
     getTransfroms(): Transform[] {
         return this.getTransforms();
     }
