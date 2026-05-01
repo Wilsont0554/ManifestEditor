@@ -7,6 +7,26 @@ afterEach(() => {
 });
 
 describe("useDebouncedCallback", () => {
+  it("multiple rapid calls fire callback only once", () => {
+    vi.useFakeTimers();
+    const callback = vi.fn();
+
+    const { result } = renderHook(() => useDebouncedCallback(callback, 300));
+
+    act(() => {
+      result.current("first");
+      result.current("second");
+      result.current("third");
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith("third");
+  });
+
   it("debounces callback invocation", () => {
     vi.useFakeTimers();
     const callback = vi.fn();

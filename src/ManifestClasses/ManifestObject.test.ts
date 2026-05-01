@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
 describe("ManifestObject", () => {
@@ -52,5 +52,63 @@ describe("ManifestObject", () => {
 
     expect(manifest.getRights()).toBe("");
     expect(manifest.getNavDate()).toBe("");
+  });
+
+  it("sets and retrieves label value and language", () => {
+    const manifest = new ManifestObject("Scene");
+
+    manifest.setLabel("My Manifest");
+    expect(manifest.getLabelValue()).toBe("My Manifest");
+
+    manifest.setLabelLanguage("fr");
+    expect(manifest.getLabelLanguage()).toBe("fr");
+  });
+
+  it("sets and retrieves summary value", () => {
+    const manifest = new ManifestObject("Scene");
+
+    manifest.setSummary("A short description");
+    expect(manifest.getSummaryValue()).toBe("A short description");
+  });
+
+  it("sets and retrieves viewing direction", () => {
+    const manifest = new ManifestObject("Scene");
+
+    manifest.setViewingDirection("left-to-right");
+    expect(manifest.getViewingDirection()).toBe("left-to-right");
+
+    manifest.setViewingDirection("");
+    expect(manifest.getViewingDirection()).toBe("");
+  });
+
+  it("clone produces an independent copy", () => {
+    const manifest = new ManifestObject("Scene");
+    manifest.setLabel("Original");
+    manifest.setRights("https://rights.example");
+
+    const cloned = manifest.clone();
+
+    expect(cloned.getLabelValue()).toBe("Original");
+    expect(cloned.getRights()).toBe("https://rights.example");
+
+    manifest.setLabel("Changed");
+    expect(cloned.getLabelValue()).toBe("Original");
+  });
+
+  it("getId returns the manifest id", () => {
+    const manifest = new ManifestObject("Scene");
+    manifest.setId("https://example.org/iiif/my-id");
+
+    expect(manifest.getId()).toBe("https://example.org/iiif/my-id");
+  });
+
+  it("auto-advance behavior is stored and cleared", () => {
+    const manifest = new ManifestObject("Scene");
+
+    manifest.setAutoAdvanceBehavior("auto-advance");
+    expect(manifest.getAutoAdvanceBehavior()).toBe("auto-advance");
+
+    manifest.setAutoAdvanceBehavior("");
+    expect(manifest.getAutoAdvanceBehavior()).toBe("");
   });
 });

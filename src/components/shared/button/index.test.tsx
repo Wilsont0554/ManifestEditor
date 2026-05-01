@@ -23,4 +23,33 @@ describe("Button", () => {
       "button",
     );
   });
+
+  it("accepts type=submit override", () => {
+    render(<Button type="submit">Submit</Button>);
+
+    expect(screen.getByRole("button", { name: "Submit" })).toHaveAttribute("type", "submit");
+  });
+
+  it("is disabled when disabled prop is passed", () => {
+    render(<Button disabled>Disabled</Button>);
+
+    expect(screen.getByRole("button", { name: "Disabled" })).toBeDisabled();
+  });
+
+  it("merges custom className onto the button", () => {
+    render(<Button className="my-custom-class">Styled</Button>);
+
+    expect(screen.getByRole("button", { name: "Styled" })).toHaveClass("my-custom-class");
+  });
+
+  it("does not fire click handler when disabled", async () => {
+    const handleClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Button disabled onClick={handleClick}>No Click</Button>);
+
+    await user.click(screen.getByRole("button", { name: "No Click" }));
+
+    expect(handleClick).not.toHaveBeenCalled();
+  });
 });
