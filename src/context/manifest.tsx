@@ -35,7 +35,12 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
      */
     async function loadManifest() {
       if (!id) {
-        reRoute("/404");
+        reRoute("/404", {
+          state: {
+            errorMsg:
+              "This manifest file does not have an ID provided, please import or create a new manifest with a valid ID to continue",
+          },
+        });
       }
 
       if (importedManifest) {
@@ -44,7 +49,12 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
       // CASE 1: manifest is loaded as an example
       if (isExampleManifest) {
-        if (!loadManifest) reRoute("/404");
+        if (!loadManifest)
+          reRoute("/404", {
+            state: {
+              errorMsg: "Cannot find example manifest, maybe it was removed",
+            },
+          });
         setManifestObj(loadedManifest!);
         return true;
       }
@@ -64,8 +74,15 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
       // CASE 3: manifest that previously edited by user and is accessed by clicking project in homepage
       const manifestFromDB = await db.getProject(id!);
       if (isInterrupted) return false;
-      if (!manifestFromDB) reRoute("/404");
-      loadedManifest = createManifestObjectFromUpload(manifestFromDB as ManifestObject);
+      if (!manifestFromDB)
+        reRoute("/404", {
+          state: {
+            errorMsg: "Cannot find manifest. Please import or create a new one",
+          },
+        });
+      loadedManifest = createManifestObjectFromUpload(
+        manifestFromDB as ManifestObject,
+      );
       setManifestObj(loadedManifest);
       return true;
     }
@@ -82,7 +99,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
   /**
    * debounced version of the function that saves manifest to indexedDB
-   * save is delayed by 500ms 
+   * save is delayed by 500ms
    */
   const saveManifestToDB = useDebouncedCallback(() => {
     if (!isDBLoaded || !id || isExampleManifest) return;
