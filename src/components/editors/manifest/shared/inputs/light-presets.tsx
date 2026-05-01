@@ -3,12 +3,13 @@ import ManifestField from "./manifest-field";
 import Transform from "@/ManifestClasses/Transform";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
 import ContentResource from "@/ManifestClasses/ContentResource";
 
 function LightPresets({annotation, resource, onCommit, id}){
-  const { manifestObj } = useContext(manifestObjContext);
+    const { manifestObj } = useContext(manifestObjContext);
+    const [selectedPreset, setSelectedPreset] = useState("Origin");
 
     async function test(event){
         let allResources: string[] | undefined[]//manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations()
@@ -45,20 +46,21 @@ function LightPresets({annotation, resource, onCommit, id}){
             // Usage: Get size or center
             const size = new THREE.Vector3();
             box.getSize(size);
-            
+            resource.clearTransforms();
+            annotation.setX(0)
+            annotation.setY(0);
+            annotation.setZ(0);
+
             if (event == "Right Light"){
-                resource.clearTransforms();
-                annotation.setX(size.x * 4)
-                annotation.setY(size.y * 5);
-                annotation.setZ(size.z * 10);
-                
+                resource.setType("DirectionalLight");
+                const rotateZ = new Transform;
+                rotateZ.setZ(-100);
+                const rotateY = new Transform;
+                rotateY.setZ(-10);
+                const allTransforms = [rotateZ, rotateY];
+                resource.setTransforms(allTransforms);
             }
             else if (event == "Top Right"){
-                resource.clearTransforms();
-                annotation.setX(0)
-                annotation.setY(0);
-                annotation.setZ(0);
-
                 const translateY = new Transform;
                 translateY.setType("TranslateTransform")
                 translateY.setY(Math.max(size.y, size.y, size.x) / 2);
@@ -75,11 +77,7 @@ function LightPresets({annotation, resource, onCommit, id}){
                 console.log('test');
             }
             else if (event == "Origin"){
-                resource.clearTransforms();
-
-                annotation.setX(0)
-                annotation.setY(0)
-                annotation.setZ(0)
+                console.log('reset to origin');
             }         
 
             console.log('Total Size:', size);
@@ -95,14 +93,15 @@ function LightPresets({annotation, resource, onCommit, id}){
         <div id={id}>
             <ManifestField
                 label="Transform Type"
-                htmlFor={``}
+                htmlFor={`${id}-transform-type`}
                 className="space-y-2"
               >
                 <select
-                    id={``}
-                    value={``}
+                    id={`${id}-transform-type`}
+                    value={selectedPreset}
                     className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
                     onChange={(event) => {
+                        setSelectedPreset(event.target.value)
                         test(event.target.value);
                     }}
                 >
