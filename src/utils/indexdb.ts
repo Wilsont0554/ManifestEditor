@@ -1,3 +1,5 @@
+import ManifestObject from "@/ManifestClasses/ManifestObject";
+
 /**
  * Utility class for handling IndexedDB operations related to saving and retrieving IIIF manifest data.
  * We use IndexedDB to persist the latest manifest data locally in the user's browser.
@@ -23,11 +25,9 @@ export class IndexedDB {
       return Promise.resolve(this.db);
     }
 
-    // IndexedDB is unavailable in Safari private browsing mode.
+    // IndexedDB is unavailable in Safari private browsing mode
     if (!window.indexedDB) {
-      return Promise.reject(
-        new Error("IndexedDB is not available in this browser or context"),
-      );
+      return Promise.reject(new Error("IndexedDB is not available in this browser or context"));
     }
 
     return new Promise((resolve, reject) => {
@@ -54,10 +54,10 @@ export class IndexedDB {
 
   /**
    * Saves a manifest object to the IndexedDB under the "current" key in the "projects" object store.
-   * @param manifest the manifest object you want to store to IndexedDB
+   * @param manifest the manifest object you want to store to indexDB
    * @returns A promise resolving to the saved manifest object
    */
-  saveProject(manifest: object) {
+  saveProject(manifest: object, id: string) {
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error("Database not open"));
@@ -66,16 +66,23 @@ export class IndexedDB {
 
       const transaction = this.db.transaction(["projects"], "readwrite");
       const store = transaction.objectStore("projects");
-      const request = store.put(manifest, "current");
+      const now = new Date();
+      const manifestWithETag = {
+        ...manifest, 
+        editedAt: now.toISOString(),
+      };
+      const request = store.put(manifestWithETag, id);
 
       request.onsuccess = () => {
-        resolve(manifest);
+        resolve(manifestWithETag);
       };
 
       request.onerror = (event) => {
-        const error = (event.target as IDBRequest).error;
-        reject(error);
-        console.error("Failed to save project to IndexedDB:", error);
+        reject((event.target as IDBRequest).error);
+        console.error(
+          "Failed to save project to IndexedDB:",
+          (event.target as IDBRequest).error
+        );
       };
     });
   }
@@ -103,6 +110,54 @@ export class IndexedDB {
       request.onerror = (event) => {
         reject((event.target as IDBRequest).error);
       };
+    });
+  }
+
+  /**
+   * Get All Projects
+   * @returns A promise resolving to an array of all manifest objects stored in the "projects" object store
+   */
+  getAllProjects() {
+    return new Promise<object[]>((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error("Database not open"));
+        return;
+      } else {
+        const transaction = this.db.transaction(["projects"], "readonly");
+        const store = transaction.objectStore("projects");
+        const request = store.getAll();
+        request.onsuccess = () => {
+          resolve(request.result);
+        };
+        request.onerror = (event) => {
+          reject((event.target as IDBRequest).error);
+        };
+      }
+    });
+  }
+
+  /**
+   * Delete a project by ID
+   * @param id the ID of the manifest object to delete from the "projects" object store
+   * @return A promise that resolves when the deletion is complete
+   */
+  deleteProject(id: string) {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error("Database not open"));
+        return;
+      }
+      const transaction = this.db.transaction(["projects"], "readwrite");
+      const store = transaction.objectStore("projects");
+      const request = store.delete(id);
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = (event) => {
+        reject((event.target as IDBRequest).error);
+      }
     });
   }
 }

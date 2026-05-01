@@ -15,9 +15,11 @@
   },
   "dependencies": {
     "json-edit-react": "^1.29.0",
+    "lodash.debounce": "^4.0.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router": "^7.13.1",
+    "uuid": "^14.0.0",
     "vite-tsconfig-paths": "^6.1.1"
   },
   "devDependencies": {

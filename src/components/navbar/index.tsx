@@ -1,7 +1,6 @@
 import { NavLink } from "react-router";
+import CreateNewManifestLink from "@/components/navbar/createNewManifestLink";
 
-const HOME_ROUTE = "/ManifestEditor/manifest-editor/home";
-const EDITOR_ROUTE = "/ManifestEditor/manifest-editor/editor";
 const LOGO_SRC = `${import.meta.env.BASE_URL}iiif3dlogo.png`;
 
 function Navbar() {
@@ -13,9 +12,9 @@ function Navbar() {
     <header className="border-b border-slate-300 bg-slate-50">
       <div className="mx-auto flex w-full flex-col gap-3 px-5 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <NavLink
-          to={HOME_ROUTE}
-          className="flex w-fit items-center gap-3 text-2xl font-bold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-3xl"
+          to='/'
           aria-label="Manifest Editor home"
+          className="flex w-fit items-center gap-3 text-2xl font-bold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-3xl"
         >
           <img
             src={LOGO_SRC}
@@ -26,7 +25,7 @@ function Navbar() {
         </NavLink>
         <nav className="flex flex-wrap items-center gap-10">
           <NavLink
-            to={HOME_ROUTE}
+            to='/'
             className={({ isActive }) =>
               `rounded-md px-3 py-1 text-sm font-medium transition ${isActive ? linkActiveStyle : linkInactiveStyle}`
             }
@@ -34,13 +33,14 @@ function Navbar() {
             Home
           </NavLink>
           <NavLink
-            to={EDITOR_ROUTE}
+            to='/gallery'
             className={({ isActive }) =>
               `rounded-md px-3 py-1 text-sm font-medium transition ${isActive ? linkActiveStyle : linkInactiveStyle}`
-            }
+            }          
           >
-            Manifest Editor
+            Gallery
           </NavLink>
+          <CreateNewManifestLink linkActiveStyle={linkActiveStyle} linkInactiveStyle={linkInactiveStyle}/>
           <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer" className={linkInactiveStyle}>
             Github
           </a>

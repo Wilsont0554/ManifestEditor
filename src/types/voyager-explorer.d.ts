@@ -9,6 +9,8 @@ declare module "react/jsx-runtime" {
       > & {
         document?: string;
         prompt?: string;
+        uimode?: string;
+        controls?: string;
       };
     }
   }

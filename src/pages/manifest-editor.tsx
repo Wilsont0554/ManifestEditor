@@ -11,6 +11,9 @@ import ContentResourceModal, {
 } from "@components/editors/manifest/content-resource-modal";
 import ManifestComponent from "@/components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
+import { ManifestObjProvider } from "@/context/manifest";
+import { useParams } from "react-router";
+import { setupVoyagerScript } from "@/utils/voyager";
 import CreateBar from "@/components/shared/createBar/CreateBar";
 import ImportExportHandler from "@/components/shared/importExport/importExportHandler";
 import VoyagerStage from "@/components/shared/manifest-editor/voyager-stage";
@@ -54,6 +57,15 @@ interface ContentResourceModalSnapshot {
   selectedMetadataAnnotationIndex: number;
 }
 
+function HydratedManifestEditorPage() {
+  const { id } = useParams();
+  return (
+    <ManifestObjProvider id={id}>
+      <ManifestEditorPage />
+    </ManifestObjProvider>
+  );
+}
+
 function ManifestEditorPage() {
   const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
     useState(false);
@@ -83,6 +95,7 @@ function ManifestEditorPage() {
     () => serializeManifestForExport(manifestObj),
     [manifestObj],
   );
+  
   const liveViewerManifestUrl = useMemo(
     () =>
       `data:application/json;charset=utf-8,${encodeURIComponent(
@@ -223,7 +236,9 @@ function ManifestEditorPage() {
 
     if (snapshot) {
       setManifestObj(snapshot.manifestObj);
-      setSelectedMetadataAnnotationIndex(snapshot.selectedMetadataAnnotationIndex);
+      setSelectedMetadataAnnotationIndex(
+        snapshot.selectedMetadataAnnotationIndex,
+      );
     }
 
     clearContentResourceModalSnapshot();
@@ -378,4 +393,4 @@ function ManifestEditorPage() {
   );
 }
 
-export default ManifestEditorPage;
+export default HydratedManifestEditorPage;
