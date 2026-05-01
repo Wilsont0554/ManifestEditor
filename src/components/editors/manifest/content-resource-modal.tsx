@@ -1,5 +1,6 @@
-import {
+﻿import {
   type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
   useContext,
   useEffect,
   useRef,
@@ -9,17 +10,34 @@ import Button from "@/components/shared/button";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
+import { type EditableContentResourceType } from "@/utils/content-resource";
 import CameraResourceTechnicalEditor from "./shared/resource-editors/camera-resource-technical-editor";
 import ContentResourceEditor from "./shared/resource-editors/content-resource-editor";
 import LightResourceTechnicalEditor from "./shared/resource-editors/light-resource-technical-editor";
 import SoftActionButton from "./shared/inputs/soft-action-button";
 import TextAnnotationEditor from "./shared/resource-editors/text-annotation-editor";
-import ContentResource from "@/ManifestClasses/ContentResource";
 
 export type ContentResourceModalView = "picker" | "editor";
 
 const dialogTitleId = "content-resource-modal-title";
 const dialogDescriptionId = "content-resource-modal-description";
+
+interface ContentResourceModalProps {
+  isOpen: boolean;
+  view: ContentResourceModalView;
+  selectedAnnotationIndex: number;
+  allowedTypes?: EditableContentResourceType[];
+  onCancel: () => void;
+  onSave: () => void;
+  onSelectType: (type: EditableContentResourceType) => void;
+}
+
+interface ContentResourceOption {
+  value: EditableContentResourceType;
+  title: string;
+  description: string;
+  icon: ReactNode;
+}
 
 function ImageIcon() {
   return (
@@ -160,7 +178,7 @@ function CameraIcon() {
   );
 }
 
-const baseContentResourceOptions = [
+const baseContentResourceOptions: ContentResourceOption[] = [
   {
     value: "Image",
     title: "Image",
@@ -195,7 +213,7 @@ function ContentResourceModal({
   onCancel,
   onSave,
   onSelectType,
-}) {
+}: ContentResourceModalProps) {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
   const isSceneContainer = manifestObj.getContainerObj().getType() === "Scene";
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -204,22 +222,18 @@ function ContentResourceModal({
     .getContainerObj()
     .getAnnotationPage()
     .getAllAnnotations();
-
-  const selectedAnnotation = annotations[selectedAnnotationIndex];
+  const selectedAnnotation =
+    view === "editor"
+      ? annotations[selectedAnnotationIndex] ?? null
+      : null;
   const selectedResource = selectedAnnotation?.getContentResource() ?? null;
-  const contentResourceOptions = baseContentResourceOptions.filter((option) => {
-    const isSceneOnlyOption = option.value === "Light" || option.value === "Camera";
-
-    if (isSceneOnlyOption && !isSceneContainer) {
-      return false;
-    }
-
-    if (!allowedTypes || allowedTypes.length === 0) {
-      return true;
-    }
-
-    return allowedTypes.includes(option.value);
-  });
+  const selectedTextAnnotation =
+    selectedResource instanceof TextAnnotation ? selectedResource : null;
+  const contentResourceOptions = baseContentResourceOptions.filter(
+    (option) =>
+      ((option.value !== "Light" && option.value !== "Camera") || isSceneContainer) &&
+      (!allowedTypes || allowedTypes.includes(option.value)),
+  );
 
   useEffect(() => {
     if (!isOpen) {
@@ -282,6 +296,10 @@ function ContentResourceModal({
     return null;
   }
 
+  const canSave = Boolean(
+    selectedResource,
+  );
+
   return (
     <div className="absolute inset-0 z-30">
       <div
@@ -308,9 +326,18 @@ function ContentResourceModal({
                 id={dialogTitleId}
                 className="text-2xl font-semibold tracking-tight text-slate-950"
               >
-                
+                {view === "picker"
+                  ? "Add content"
+                  : selectedTextAnnotation
+                    ? "Text annotation"
+                    : "Content resource"}
               </h2>
               <p id={dialogDescriptionId} className="text-sm text-slate-500">
+                {view === "picker"
+                  ? "Choose the content resource type you want to add."
+                  : selectedTextAnnotation
+                    ? "Complete the text annotation details below."
+                    : "Complete the content resource details below."}
               </p>
             </div>
 
@@ -349,30 +376,30 @@ function ContentResourceModal({
                   </button>
                 ))}
               </div>
-            ) : selectedResource instanceof TextAnnotation ? (
+            ) : selectedTextAnnotation ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  New Text Annotation
+                  Text Annotation
                 </button>
 
                 <TextAnnotationEditor
                   annotationParent={selectedAnnotation}
-                  annotation={selectedResource}
+                  annotation={selectedTextAnnotation}
                   idPrefix={`text-annotation-modal-${selectedAnnotationIndex}`}
                   onCommit={commitManifestChange}
                   className="pt-5"
                 />
               </section>
-            ) : selectedResource instanceof ContentResource ? (
+            ) : selectedAnnotation && selectedResource ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  New Resource
+                  Content Resource
                 </button>
 
                 <ContentResourceEditor
@@ -427,6 +454,7 @@ function ContentResourceModal({
                 type="button"
                 className="min-w-24 justify-center"
                 onClick={onSave}
+                disabled={!canSave}
               >
                 Save
               </Button>

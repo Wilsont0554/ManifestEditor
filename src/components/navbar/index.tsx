@@ -2,6 +2,7 @@ import { NavLink } from "react-router";
 
 const HOME_ROUTE = "/ManifestEditor/manifest-editor/home";
 const EDITOR_ROUTE = "/ManifestEditor/manifest-editor/editor";
+const LOGO_SRC = `${import.meta.env.BASE_URL}iiif3dlogo.png`;
 
 function Navbar() {
   const linkActiveStyle = "bg-slate-900 text-white";
@@ -13,9 +14,15 @@ function Navbar() {
       <div className="mx-auto flex w-full flex-col gap-3 px-5 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <NavLink
           to={HOME_ROUTE}
-          className="w-fit text-2xl font-bold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-3xl"
+          className="flex w-fit items-center gap-3 text-2xl font-bold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-3xl"
+          aria-label="Manifest Editor home"
         >
-          Manifest Editor
+          <img
+            src={LOGO_SRC}
+            alt=""
+            className="h-12 w-12 rounded-xl object-contain shadow-sm ring-1 ring-slate-200 sm:h-14 sm:w-14"
+          />
+          <span>Manifest Editor</span>
         </NavLink>
         <nav className="flex flex-wrap items-center gap-10">
           <NavLink
