@@ -1,6 +1,8 @@
 import {
   type MouseEvent as ReactMouseEvent,
+  useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   useContext,
@@ -30,10 +32,20 @@ import Camera from "@/ManifestClasses/Camera";
 import { useParams } from "react-router";
 import { setupVoyagerScript } from "@/utils/voyager";
 
-const DEFAULT_INSPECTOR_WIDTH = 720;
+const DEFAULT_INSPECTOR_WIDTH = 560;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
+const VOYAGER_SCRIPT_SRC =
+  "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js";
+
+const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
+const ENVIRONMENT_MODAL_TYPES: EditableContentResourceType[] = [
+  "Light",
+  "Camera",
+];
+
+type ImportExportType = "none" | "import" | "export";
 
 interface ResizeState {
   startX: number;
@@ -63,20 +75,20 @@ function ManifestEditorPage() {
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
   const [contentResourceModalTypes, setContentResourceModalTypes] =
-    useState<EditableContentResourceType[]>(ASSET_MODAL_TYPES);
+    useState<EditableContentResourceType[] | undefined>(undefined);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
-
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
   const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
     useState(0);
-
   const [gistId, setGistId] = useState<string | null>(null);
-  const resizeStateRef = useRef<ResizeState | null>(null);
   const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
-  const [importExportType, setImportExportType] = useState("none");
+  const [importExportType, setImportExportType] =
+    useState<ImportExportType>("none");
+  const [voyagerUrl, setVoyagerUrl] = useState("");
 
+  const resizeStateRef = useRef<ResizeState | null>(null);
   const contentResourceModalSnapshotRef =
     useRef<ContentResourceModalSnapshot | null>(null);
   const { manifestObj, updateManifestObj, setManifestObj } =
@@ -119,9 +131,7 @@ function ManifestEditorPage() {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setVoyagerUrl((currentUrl) =>
-        currentUrl === liveViewerManifestUrl
-          ? currentUrl
-          : liveViewerManifestUrl,
+        currentUrl === liveViewerManifestUrl ? currentUrl : liveViewerManifestUrl,
       );
     }, 250);
 
@@ -173,7 +183,6 @@ function ManifestEditorPage() {
       startX: event.clientX,
       startWidth: inspectorWidth,
     };
-
     document.body.style.userSelect = "none";
     document.body.style.cursor = "col-resize";
   }
@@ -194,22 +203,30 @@ function ManifestEditorPage() {
     contentResourceModalSnapshotRef.current = null;
   }
 
-  function handleOpenContentResourceModal(): void {
+  function openContentResourceModal(
+    allowedTypes?: EditableContentResourceType[],
+  ): void {
     captureContentResourceModalSnapshot();
-    setContentResourceModalTypes(ASSET_MODAL_TYPES);
+    setContentResourceModalTypes(allowedTypes);
     setContentResourceModalView("picker");
     setIsContentResourceModalOpen(true);
   }
 
-  function handleOpenTempModal(): void {
-    captureContentResourceModalSnapshot();
-    setContentResourceModalTypes(TEMP_MODAL_TYPES);
-    setContentResourceModalView("picker");
-    setIsContentResourceModalOpen(true);
+  function handleOpenContentResourceModal(): void {
+    openContentResourceModal(undefined);
+  }
+
+  function handleOpenAssetModal(): void {
+    openContentResourceModal(ASSET_MODAL_TYPES);
+  }
+
+  function handleOpenEnvironmentModal(): void {
+    openContentResourceModal(ENVIRONMENT_MODAL_TYPES);
   }
 
   function handleCloseContentResourceModal(): void {
     setIsContentResourceModalOpen(false);
+    setContentResourceModalTypes(undefined);
     setContentResourceModalView("picker");
   }
 
@@ -236,7 +253,6 @@ function ManifestEditorPage() {
     type: EditableContentResourceType,
   ): void {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
-
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1);
     if (type == "Model") {
@@ -263,7 +279,6 @@ function ManifestEditorPage() {
 
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
-    const textAnnotation = new TextAnnotation(nextAnnotationIndex + 1);
     const annotation = new Annotation(nextAnnotationIndex + 1, ["commenting"]);
 
     annotation.setContentResource(textAnnotation);
@@ -278,6 +293,21 @@ function ManifestEditorPage() {
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;
+  const importExportMenu =
+    importExportType === "none" ? null : (
+      <ImportExportHandler
+        createManifestObjectFromUpload={createManifestObjectFromUpload}
+        gistId={gistId}
+        importExportType={importExportType}
+        isAutoUpdateEnabled={isAutoUpdateEnabled}
+        manifestObj={manifestObj}
+        serializedManifest={serializedManifest}
+        setGistId={setGistId}
+        setImportExportType={setImportExportType}
+        setIsAutoUpdateEnabled={setIsAutoUpdateEnabled}
+        setManifestObj={setManifestObj}
+      />
+    );
 
   return (
       <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-slate-100">
