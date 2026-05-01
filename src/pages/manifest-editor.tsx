@@ -5,9 +5,6 @@ import {
   useMemo,
   useRef,
   useState,
-  useContext,
-  useMemo,
-  useCallback,
 } from "react";
 import ContentResourceModal, {
   type ContentResourceModalView,
@@ -57,9 +54,6 @@ interface ContentResourceModalSnapshot {
   selectedMetadataAnnotationIndex: number;
 }
 
-const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
-const TEMP_MODAL_TYPES: EditableContentResourceType[] = ["Light", "Camera"];
-
 function HydratedManifestEditorPage() {
   const { id } = useParams();
   return (
@@ -86,7 +80,6 @@ function ManifestEditorPage() {
   const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
   const [importExportType, setImportExportType] =
     useState<ImportExportType>("none");
-  const [voyagerUrl, setVoyagerUrl] = useState("");
 
   const resizeStateRef = useRef<ResizeState | null>(null);
   const contentResourceModalSnapshotRef =
@@ -107,26 +100,6 @@ function ManifestEditorPage() {
     [serializedManifest],
   );
   const [voyagerUrl, setVoyagerUrl] = useState(liveViewerManifestUrl);
-
-  let importExportMenu;
-  if (importExportType != "none") {
-    importExportMenu = (
-      <ImportExportHandler
-        createManifestObjectFromUpload={createManifestObjectFromUpload}
-        setIsAutoUpdateEnabled={setIsAutoUpdateEnabled}
-        isAutoUpdateEnabled={isAutoUpdateEnabled}
-        setImportExportType={setImportExportType}
-        serializedManifest={serializedManifest}
-        importExportType={importExportType}
-        setManifestObj={setManifestObj}
-        manifestObj={manifestObj}
-        setGistId={setGistId}
-        gistId={gistId}
-      />
-    );
-  } else {
-    importExportMenu = undefined;
-  }
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -280,6 +253,7 @@ function ManifestEditorPage() {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1, ["commenting"]);
+    const textAnnotation = new TextAnnotation();
 
     annotation.setContentResource(textAnnotation);
     annotationPage.addAnnotation(annotation);
@@ -331,7 +305,7 @@ function ManifestEditorPage() {
             isAutoUpdateEnabled={isAutoUpdateEnabled}
             gistId={gistId}
             handleOpenContentResourceModal={handleOpenContentResourceModal}
-            handleOpenTempModal={handleOpenTempModal}
+            handleOpenTempModal={handleOpenEnvironmentModal}
             handleCreateTextAnnotation={handleCreateTextAnnotation}
           />
 
