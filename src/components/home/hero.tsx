@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import Icon from "@/components/icon";
+import CreateNewManifestLink from "@/components/navbar/createNewManifestLink";
 
 export default function Hero() {
     const HERO_IMAGE_SRC = `${import.meta.env.BASE_URL}iiif3dlogo.png`;
@@ -19,13 +20,13 @@ export default function Hero() {
                 results live, and export ready-to-share manifests.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <NavLink
-                  to='/editor'
-                  className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-pink-100"
+                <CreateNewManifestLink
+                  linkInactiveStyle="bg-white text-slate-950 hover:bg-pink-100"
+                  linkActiveStyle="bg-white text-slate-950 hover:bg-pink-100"
                 >
                   <Icon name="clipboard" className="h-4 w-4" />
                   Open Manifest Editor
-                </NavLink>
+                </CreateNewManifestLink>
                 <a
                   href="https://preview.iiif.io/api/full_manifests/presentation/4.0/"
                   target="_blank"
