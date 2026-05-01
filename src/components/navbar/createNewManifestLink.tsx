@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
 type Props = {
@@ -10,8 +10,9 @@ type Props = {
 export default function CreateNewManifestLink(props: Props) {
   const { linkActiveStyle, linkInactiveStyle, children } = props;
   const reRoute = useNavigate();
-  function handleCreateNewManifest(e: React.MouseEvent<HTMLAnchorElement>) {
-    e.preventDefault();
+  const location = useLocation();
+
+  function handleCreateNewManifest() {
     const newManifest = new ManifestObject("scene");
     const newId = newManifest.getUniqueIdCode();
     reRoute(`/editor/${newId}`, {
@@ -19,11 +20,13 @@ export default function CreateNewManifestLink(props: Props) {
     });
   }
 
+  const isActive = location.pathname.startsWith("/editor/");
+
   return (
-    <NavLink
-      to="/editor"
+    <button
+      type="button"
       onClick={handleCreateNewManifest}
-      className={({ isActive }) =>
+      className={
         `rounded-md px-3 py-1 
          text-sm font-medium transition 
          flex gap-2 items-center justify-center
@@ -31,6 +34,6 @@ export default function CreateNewManifestLink(props: Props) {
       }
     >
       {children ? children : "Manifest Editor"}
-    </NavLink>
+    </button>
   );
 }

@@ -14,14 +14,13 @@ export default function CallToAction() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-pink-50"
+              <CreateNewManifestLink
+                linkInactiveStyle="bg-white text-slate-950 hover:bg-pink-50"
+                linkActiveStyle="bg-white text-slate-950 hover:bg-pink-50"
               >
-                <CreateNewManifestLink>
-                  <Icon name="clipboard" className="h-4 w-4" />
-                  Open Manifest Editor
-                </CreateNewManifestLink>
-              </button>
+                <Icon name="clipboard" className="h-4 w-4" />
+                Open Manifest Editor
+              </CreateNewManifestLink>
               <a
                 href="https://preview.iiif.io/api/full_manifests/presentation/4.0/"
                 target="_blank"
