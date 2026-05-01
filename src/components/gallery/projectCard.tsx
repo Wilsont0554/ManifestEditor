@@ -7,15 +7,26 @@ type Props = {
 };
 
 /**
- * 
+ *
  * @param id - manifest id
  * @param manifest - the manifest object
- * @returns the card component displaying a manifest project in the gallery. 
+ * @returns the card component displaying a manifest project in the gallery.
  */
 export default function ProjectCard({ id, manifest }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const editedAt = manifest["editedAt"] ? new Date(manifest["editedAt"]) : null;
 
+  function parseEditedTime() {
+    if (!editedAt) return null;
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    }).format(editedAt);
+  }
   /**
    * Encode the manifest as a data URL for the voyager preview
    */
@@ -40,7 +51,6 @@ export default function ProjectCard({ id, manifest }: Props) {
   }, []);
 
   const label = manifest["label"]?.en?.[0] ?? "Untitled Manifest";
-  const editedAt = manifest["editedAt"] ? new Date(manifest["editedAt"]) : null;
 
   return (
     <Link
@@ -79,19 +89,12 @@ export default function ProjectCard({ id, manifest }: Props) {
         >
           {label}
         </p>
-        <p
-          className="truncate text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400"
-          title={id}
-        >
-          {id}
-        </p>
         {editedAt && (
-          <p className="text-[10px] font-medium tracking-[0.12em] text-slate-400">
-            Edited: {editedAt.toLocaleDateString()}
+          <p className="text-[10px] tracking-[0.12em] text-slate-400">
+            Updated {parseEditedTime()}
           </p>
         )}
       </div>
-
       <span className="pointer-events-none absolute inset-x-2.5 bottom-1.5 h-px scale-x-0 bg-slate-900 transition-transform duration-300 origin-left group-hover:scale-x-100" />
     </Link>
   );
