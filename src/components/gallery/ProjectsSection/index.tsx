@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SectionHeading from "@/components/gallery/SectionHeading";
 import TabButton from "./TabButton";
 import MyProjectsTab from "./MyProjectsTab";
@@ -22,6 +22,12 @@ export default function ProjectsSection({ projects }: Props) {
     projects: projects?.length ?? 0,
     examples: 0,
   };
+
+  useEffect(() => {
+    if (projects && projects.length > 0) {
+      setTab("projects");
+    }
+  }, [projects]);
 
   return (
     <section>
