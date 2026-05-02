@@ -4,7 +4,10 @@ type Props = {
 }
 
 /**
- * Tooltip-style popover menu that floats below the three dots button
+ * Tooltip-style popover menu that floats below the three dots button in Kebab Menu
+ * @Props isOpen - whether the menu is open or not, controls the visibility of the menu
+ * @Props children - MenuItem components to be rendered within the menu list
+ * @returns a popover menu component to be rendered within the KebabMenu component
  */
 export default function MenuList(props: Props) {
   const { isOpen, children } = props;

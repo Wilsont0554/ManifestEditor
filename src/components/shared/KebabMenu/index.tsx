@@ -9,9 +9,19 @@ type Props = {
 };
 
 /**
- * Three dots button that toggles a popover menu
+ * The overall Kebab or (⋮) Menu with button to trigger the popover and a menu list that floats below the button.
+ * The menu will close when clicking outside of it. 
+ * @Props children - MenuItem components to be rendered within the menu list
+ * @Props className - additional classnames to position the menu
+ * @return a three dots button that opens a menu list when clicked, and the menu list will close when clicking outside of it.
+ * Example usage:
+ * 
+ * <KebabMenu>
+ *   <MenuItem onSelect={handleExport}>Export</MenuItem>
+ *   <MenuItem tone="danger" onSelect={handleDelete}>Delete</MenuItem>
+ * </KebabMenu>
  */
-export default function ThreeDotsMenuBtn({ children, className }: Props) {
+export default function KebabMenu({ children, className }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 

@@ -7,11 +7,11 @@ type Props = {
 };
 
 /**
- * A single row inside {@link ThreeDotsMenu}. 
+ * A single row or item inside {@link KebabMenu}. 
  * @Props - tone: the color tone of the menu item, can be "neutral" or "danger"
  * @Props - onSelect: callback function when the menu item is selected
  * @Props - children: the content of the menu item
- * @returns a menu item component to be rendered within the ThreeDotsMenu component
+ * @returns a menu item component to be rendered within the KebabMenu component
  */
 export default function MenuItem(props: Props) {
   const { tone = "neutral", onSelect, children } = props;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
-import ThreeDotsMenu from "../shared/threeDotsMenu/index";
-import MenuItem from "../shared/threeDotsMenu/MenuItem";
+import ThreeDotsMenu from "../shared/KebabMenu/index";
+import MenuItem from "../shared/KebabMenu/MenuItem";
 import { downloadJsonFile } from "@/utils/file";
 
 type Props = {
