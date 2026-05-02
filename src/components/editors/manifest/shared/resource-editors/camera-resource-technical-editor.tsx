@@ -128,7 +128,68 @@ function CameraResourceTechnicalEditor({
             onCommit();
           }}
         />
-        {transforms.map((transform, index) => (
+      </section>
+    </>
+  }
+  else {
+    advancedOptions = <>
+            <NumericDraftInput
+              id={`${idPrefix}-x`}
+              label="X"
+              value={(target?.getX() ?? 0).toString()}
+              step={COORD_STEP}
+              placeholder="0"
+              onCommit={(newValue) => {
+                annotation.setX(newValue ?? 0);
+                onCommit();
+              }}
+            />
+
+            <NumericDraftInput
+              id={`${idPrefix}-y`}
+              label="Y"
+              value={(target?.getY() ?? 0).toString()}
+              step={COORD_STEP}
+              placeholder="0"
+              onCommit={(newValue) => {
+                annotation.setY(newValue ?? 0);
+                onCommit();
+              }}
+            />
+
+            <NumericDraftInput
+              id={`${idPrefix}-z`}
+              label="Z"
+              value={(target?.getZ() ?? 0).toString()}
+              step={COORD_STEP}
+              placeholder="0"
+              onCommit={(newValue) => {
+                annotation.setZ(newValue ?? 0);
+                onCommit();
+              }}
+            />
+
+            <section className="space-y-4 rounded-xl border border-dashed border-pink-200 bg-white p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="space-y-1">
+              <p className="text-base font-semibold text-slate-950">Transforms</p>
+              <p className="text-sm leading-6 text-slate-500">
+                Add optional rotate, scale, or translate transforms for this
+                model.
+              </p>
+            </div>
+
+            <SoftActionButton
+              onClick={() => {
+                resource.addTransform("TranslateTransform");
+                onCommit();
+              }}
+            >
+              Add Transform
+            </SoftActionButton>
+          </div>
+
+          {transforms.map((transform, index) => (
             <section
               key={`${idPrefix}-transform-${index}`}
               className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4"
@@ -207,48 +268,7 @@ function CameraResourceTechnicalEditor({
               </div>
             </section>
           ))}
-      </section>
-    </>
-  }
-  else {
-    advancedOptions = <>
-      <div className="grid gap-4 sm:grid-cols-3">
-            <NumericDraftInput
-              id={`${idPrefix}-x`}
-              label="X"
-              value={(target?.getX() ?? 0).toString()}
-              step={COORD_STEP}
-              placeholder="0"
-              onCommit={(newValue) => {
-                annotation.setX(newValue ?? 0);
-                onCommit();
-              }}
-            />
-
-            <NumericDraftInput
-              id={`${idPrefix}-y`}
-              label="Y"
-              value={(target?.getY() ?? 0).toString()}
-              step={COORD_STEP}
-              placeholder="0"
-              onCommit={(newValue) => {
-                annotation.setY(newValue ?? 0);
-                onCommit();
-              }}
-            />
-
-            <NumericDraftInput
-              id={`${idPrefix}-z`}
-              label="Z"
-              value={(target?.getZ() ?? 0).toString()}
-              step={COORD_STEP}
-              placeholder="0"
-              onCommit={(newValue) => {
-                annotation.setZ(newValue ?? 0);
-                onCommit();
-              }}
-            />
-      </div>
+        </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
         <NumericDraftInput
@@ -290,12 +310,14 @@ function CameraResourceTechnicalEditor({
         />
       </section>
 
+      
+
       <SpatialCoordinatePreview
         x={target?.getX() ?? 0}
         y={target?.getY() ?? 0}
         z={target?.getZ() ?? 0}
         details={coordinatePreviewDetails}
-      /></>
+    /></>
   }
 
   return (
