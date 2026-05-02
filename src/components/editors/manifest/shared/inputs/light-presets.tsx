@@ -60,7 +60,8 @@ function LightPresets({annotation, resource, onCommit, id}){
                 const allTransforms = [rotateZ, rotateY];
                 resource.setTransforms(allTransforms);
             }
-            else if (event == "Top Right"){
+            else if (event == "Top Light"){
+                resource.setType("DirectionalLight");
                 const translateY = new Transform;
                 translateY.setType("TranslateTransform")
                 translateY.setY(Math.max(size.y, size.y, size.x) / 2);
@@ -92,7 +93,7 @@ function LightPresets({annotation, resource, onCommit, id}){
     return(
         <div id={id}>
             <ManifestField
-                label="Transform Type"
+                label="Lighting Presets"
                 htmlFor={`${id}-transform-type`}
                 className="space-y-2"
               >
@@ -111,7 +112,7 @@ function LightPresets({annotation, resource, onCommit, id}){
                     </option>
                   ))}
                 </select>
-              </ManifestField>
+            </ManifestField>
         </div>
     )
 } export default LightPresets

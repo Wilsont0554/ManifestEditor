@@ -132,12 +132,28 @@ function LightResourceTechnicalEditor({
     <section className="space-y-6">
       <section className="space-y-3">
         <p className="text-base font-semibold text-slate-950">Light Type</p>
-        <TechnicalOptionGroup
-          options={lightTypeOptions}
-          value={lightType}
-          onChange={handleLightTypeChange}
-          selectedVariant="pink"
-        />
+        <ManifestField
+                label="Lighting Type"
+                htmlFor={`${idPrefix}-transform-type`}
+                className="space-y-2"
+              >
+                <select
+                    id={`${idPrefix}-transform-type`}
+                    value={lightType}
+                    className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
+                    onChange={(event) => {
+                        handleLightTypeChange(event.target.value)
+                    }}
+                >
+                  {lightTypeOptions.map((option, index) => (
+                    <option key={index} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+        </ManifestField>
+
+        <LightPresets id={idPrefix} resource={resource} annotation={annotation} onCommit={onCommit}/>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-[auto_1fr]">
@@ -219,8 +235,6 @@ function LightResourceTechnicalEditor({
 
       <section className="space-y-4">
         <p className="text-base font-semibold text-slate-950">Coordinates</p>
-
-      <LightPresets id={idPrefix} resource={resource} annotation={annotation} onCommit={onCommit}/>
 
         <div className="grid gap-4 sm:grid-cols-3">
           <NumericDraftInput
