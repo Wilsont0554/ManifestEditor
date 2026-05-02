@@ -1,5 +1,7 @@
+import Annotation from "@/ManifestClasses/Annotation";
 import ContentResource from "@/ManifestClasses/ContentResource";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
+import { Manifest } from "vite";
 
 export const cameraPresets = ["Origin", "Zoom Out", "Top Right"] as const
 export const lightPresets = ["Origin", "Top Light", "Right Light"] as const
@@ -69,4 +71,18 @@ export function clampNumber(value: number, min?: number, max?: number): number {
   }
 
   return nextValue;
+}
+
+export function getAllContentResourceIDs(manifestObj: ManifestObject){
+  const annotations = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations();
+  const idArray: Annotation[] = [];
+
+  annotations.map((annotation) => {
+    if (annotation!.getContentResource()!.constructor == ContentResource){
+      idArray.push(annotation);
+    }
+  })
+
+  return idArray;
+
 }

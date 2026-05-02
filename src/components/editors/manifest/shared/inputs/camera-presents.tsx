@@ -1,12 +1,9 @@
-import { cameraPresets, clampNumber, getResourceTypeItems } from "@/utils/content-resource";
+import { cameraPresets, getResourceTypeItems } from "@/utils/content-resource";
 import ManifestField from "./manifest-field";
 import Transform from "@/ManifestClasses/Transform";
-import { Box3, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import Annotation from "@/ManifestClasses/Annotation";
-import NumericDraftInput from "./numeric-draft-input";
 import * as THREE from 'three';
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { manifestObjContext } from "@/context/manifest-context";
 import ContentResource from "@/ManifestClasses/ContentResource";
 
@@ -98,7 +95,7 @@ function CameraPresets({annotation, resource, onCommit, id}){
     return(
         <div id={id}>
             <ManifestField
-                label="Transform Type"
+                label="Camera Presets"
                 htmlFor={``}
                 className="space-y-2"
               >

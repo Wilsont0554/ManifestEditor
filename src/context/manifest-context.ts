@@ -10,7 +10,9 @@ export type ManifestObjContext = {
   // ) => (value: T) => void;
 };
 
+
 const defaultManifestObj = new ManifestObject("Scene");
+const defaultAdvancedView = false;
 
 export const manifestObjContext = createContext<ManifestObjContext>({
   manifestObj: defaultManifestObj,
@@ -20,3 +22,14 @@ export const manifestObjContext = createContext<ManifestObjContext>({
   //   return (_value: T) => {};
   // },
 });
+
+export type isAdvancedView = {
+  advancedView: boolean;
+  toggleAdvancedView: () => void;
+}
+
+export const isAdvancedViewContext = createContext<isAdvancedView>({
+  advancedView: defaultAdvancedView,
+  toggleAdvancedView: () => {}
+  
+})
