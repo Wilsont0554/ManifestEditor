@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
+import ThreeDotsMenu from "../shared/threeDotsMenu/index";
+import MenuItem from "../shared/threeDotsMenu/MenuItem";
+import { downloadJsonFile } from "@/utils/file";
 
 type Props = {
   id: string;
   manifest: object;
+  isExample?: boolean;
+  onDelete?: (id: string) => void;
 };
 
 /**
@@ -12,7 +17,8 @@ type Props = {
  * @param manifest - the manifest object
  * @returns the card component displaying a manifest project in the gallery.
  */
-export default function ProjectCard({ id, manifest }: Props) {
+export default function ProjectCard(props: Props) {
+  const { id, manifest, isExample = false, onDelete } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const editedAt = manifest["editedAt"] ? new Date(manifest["editedAt"]) : null;
@@ -27,6 +33,17 @@ export default function ProjectCard({ id, manifest }: Props) {
       year: "numeric",
     }).format(editedAt);
   }
+
+  const handleDeleteProject = () => {
+    console.log("Deleting project with id:", id);
+    onDelete && onDelete(id);
+  };
+
+  const handleExportProject = () => {
+    const fileName = `${manifest["label"]?.en?.[0] ?? "manifest"}.json`;
+    downloadJsonFile(manifest, fileName);
+  };
+
   /**
    * Encode the manifest as a data URL for the voyager preview
    */
@@ -56,6 +73,7 @@ export default function ProjectCard({ id, manifest }: Props) {
     <Link
       to={"/editor/" + id}
       className="group relative flex flex-col overflow-hidden rounded-sm border border-slate-300/70 bg-white transition-all duration-300 hover:border-slate-900 hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.45)] hover:-translate-y-1"
+      state={{ isExample: isExample }}
     >
       <div
         ref={cardRef}
@@ -80,6 +98,15 @@ export default function ProjectCard({ id, manifest }: Props) {
           </div>
         )}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
+        <ThreeDotsMenu className="absolute right-2 top-2 z-100">
+          <MenuItem onSelect={handleExportProject}>
+            Download JSON
+          </MenuItem>
+          <div className="border-t border-slate-200 my-1" />
+          {!isExample && <MenuItem tone="danger" onSelect={handleDeleteProject}>
+            Delete
+          </MenuItem>}
+        </ThreeDotsMenu>
       </div>
 
       <div className="flex flex-col gap-0.5 px-2.5 py-2">
