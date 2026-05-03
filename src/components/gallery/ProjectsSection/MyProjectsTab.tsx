@@ -4,6 +4,7 @@ import SkeletonCard from "./SkeletonCard";
 
 type Props = {
   projects: object[] | null;
+  onDeleteProjectById: (id: string) => void;
 };
 
 /**
@@ -14,7 +15,7 @@ type Props = {
  *  - non-empty list → grid of ProjectCard tiles, one per saved manifest
  * @param projects user manifests from IndexedDB, or null while loading
  */
-export default function MyProjectsTab({ projects }: Props) {
+export default function MyProjectsTab({ projects, onDeleteProjectById }: Props) {
   
   const sortedProjects = projects ? [...projects].sort((a, b) => {
     const dateA = a["editedAt"] ? new Date(a["editedAt"]) : new Date(0);
@@ -49,7 +50,7 @@ export default function MyProjectsTab({ projects }: Props) {
     <ProjectGrid>
       {sortedProjects.map((p, i) => {
         const id = p["id"].split("/").pop() ?? "invalid-id";
-        return <ProjectCard key={id} id={id} manifest={p} index={i} />;
+        return <ProjectCard key={id} id={id} manifest={p} onDelete={onDeleteProjectById}/>;
       })}
     </ProjectGrid>
   );

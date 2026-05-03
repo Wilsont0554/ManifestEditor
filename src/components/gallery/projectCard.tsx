@@ -1,22 +1,48 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
+import ThreeDotsMenu from "../shared/KebabMenu/index";
+import MenuItem from "../shared/KebabMenu/MenuItem";
+import { downloadJsonFile } from "@/utils/file";
 
 type Props = {
   id: string;
   manifest: object;
-  index: number;
+  isExample?: boolean;
+  onDelete?: (id: string) => void;
 };
 
 /**
- * 
+ *
  * @param id - manifest id
  * @param manifest - the manifest object
- * @param index - the index of the manifest in the list of projects, used for display purposes
- * @returns the card component displaying a manifest project in the gallery. 
+ * @returns the card component displaying a manifest project in the gallery.
  */
-export default function ProjectCard({ id, manifest, index }: Props) {
+export default function ProjectCard(props: Props) {
+  const { id, manifest, isExample = false, onDelete } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const editedAt = manifest["editedAt"] ? new Date(manifest["editedAt"]) : null;
+
+  function parseEditedTime() {
+    if (!editedAt) return null;
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    }).format(editedAt);
+  }
+
+  const handleDeleteProject = () => {
+    console.log("Deleting project with id:", id);
+    onDelete && onDelete(id);
+  };
+
+  const handleExportProject = () => {
+    const fileName = `${manifest["label"]?.en?.[0] ?? "manifest"}.json`;
+    downloadJsonFile(manifest, fileName);
+  };
 
   /**
    * Encode the manifest as a data URL for the voyager preview
@@ -42,17 +68,13 @@ export default function ProjectCard({ id, manifest, index }: Props) {
   }, []);
 
   const label = manifest["label"]?.en?.[0] ?? "Untitled Manifest";
-  const indexLabel = String(index + 1).padStart(3, "0");
-  const editedAt = manifest["editedAt"] ? new Date(manifest["editedAt"]) : null;
 
   return (
     <Link
       to={"/editor/" + id}
       className="group relative flex flex-col overflow-hidden rounded-sm border border-slate-300/70 bg-white transition-all duration-300 hover:border-slate-900 hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.45)] hover:-translate-y-1"
+      state={{ isExample: isExample }}
     >
-      <span className="pointer-events-none absolute left-2 top-2 z-10 text-[10px] font-semibold tracking-[0.15em] text-slate-500 group-hover:text-slate-900 transition-colors">
-        № {indexLabel}
-      </span>
       <div
         ref={cardRef}
         className="relative aspect-square w-full overflow-hidden bg-[radial-gradient(circle_at_50%_30%,#f8fafc_0%,#e2e8f0_100%)]"
@@ -76,6 +98,15 @@ export default function ProjectCard({ id, manifest, index }: Props) {
           </div>
         )}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent" />
+        <ThreeDotsMenu className="absolute right-2 top-2 z-100">
+          <MenuItem onSelect={handleExportProject}>
+            Download JSON
+          </MenuItem>
+          <div className="border-t border-slate-200 my-1" />
+          {!isExample && <MenuItem tone="danger" onSelect={handleDeleteProject}>
+            Delete
+          </MenuItem>}
+        </ThreeDotsMenu>
       </div>
 
       <div className="flex flex-col gap-0.5 px-2.5 py-2">
@@ -85,19 +116,12 @@ export default function ProjectCard({ id, manifest, index }: Props) {
         >
           {label}
         </p>
-        <p
-          className="truncate text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400"
-          title={id}
-        >
-          {id}
-        </p>
         {editedAt && (
-          <p className="text-[10px] font-medium tracking-[0.12em] text-slate-400">
-            Edited: {editedAt.toLocaleDateString()}
+          <p className="text-[10px] tracking-[0.12em] text-slate-400">
+            Updated {parseEditedTime()}
           </p>
         )}
       </div>
-
       <span className="pointer-events-none absolute inset-x-2.5 bottom-1.5 h-px scale-x-0 bg-slate-900 transition-transform duration-300 origin-left group-hover:scale-x-100" />
     </Link>
   );

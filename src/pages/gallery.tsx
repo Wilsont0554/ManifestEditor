@@ -36,10 +36,10 @@ export default function Gallery() {
   /**
    * Handle delete manifest
    */
-  async function handleDelete(id: string) {
+  async function handleDeleteProjectById(id: string) {
     try {
       await db.deleteProject(id);
-      setProjects((prev) => prev?.filter((proj: any) => proj.id !== id) ?? null);
+      setProjects((prev) => prev?.filter((proj: any) => proj.id.split('/').pop() !== id) ?? null);
     }
     catch (err) {
       console.error("Failed to delete manifest from IndexedDB:", err);
@@ -49,7 +49,7 @@ export default function Gallery() {
   return (
     <Layout>
       <GettingStartedSection />
-      <ProjectsSection projects={projects} />
+      <ProjectsSection projects={projects} onDeleteProjectById={handleDeleteProjectById} />
     </Layout>
   );
 }

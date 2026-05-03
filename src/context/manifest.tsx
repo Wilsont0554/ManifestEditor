@@ -90,7 +90,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
   /**
    * debounced version of the function that saves manifest to indexedDB
-   * save is delayed by 500ms 
+   * save is delayed by 500ms
    */
   const saveManifestToDB = useDebouncedCallback(() => {
     if (!isDBLoaded || !id || isExampleManifest) return;

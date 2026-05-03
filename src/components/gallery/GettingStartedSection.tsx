@@ -10,9 +10,8 @@ import SectionHeading from "@/components/gallery/SectionHeading";
  */
 export default function GettingStartedSection() {
   return (
-    <section className="mb-14">
+    <section className="mb-10">
       <SectionHeading
-        eyebrow="01"
         title="Getting started"
         description="Three ways to spin up a manifest."
       />

@@ -1,39 +1,51 @@
 import {
   type MouseEvent as ReactMouseEvent,
+  useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
-  useContext,
-  useMemo,
-  useCallback,
 } from "react";
 import ContentResourceModal, {
   type ContentResourceModalView,
 } from "@components/editors/manifest/content-resource-modal";
 import ManifestComponent from "@/components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
-import { manifestObjContext } from "@/context/manifest-context";
-import {
-  createManifestObjectFromUpload,
-  serializeManifestForExport,
-} from "@/utils/file";
+import { ManifestObjProvider } from "@/context/manifest";
+import { useParams } from "react-router";
+import { setupVoyagerScript } from "@/utils/voyager";
+import CreateBar from "@/components/shared/createBar/CreateBar";
+import ImportExportHandler from "@/components/shared/importExport/importExportHandler";
+import VoyagerStage from "@/components/shared/manifest-editor/voyager-stage";
 import Annotation from "@/ManifestClasses/Annotation";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import { ManifestObjProvider } from "@/context/manifest";
-import { type EditableContentResourceType } from "@/utils/content-resource";
-import CreateBar from "@/components/shared/createBar/CreateBar";
-import ImportExportHandler from "@/components/shared/importExport/importExportHandler";
-import ContentResource from "@/ManifestClasses/ContentResource";
-import Light from "@/ManifestClasses/Light";
-import Camera from "@/ManifestClasses/Camera";
-import { useParams } from "react-router";
-import { setupVoyagerScript } from "@/utils/voyager";
+import { manifestObjContext } from "@/context/manifest-context";
+import { type IiifContainerType } from "@/types/iiif";
+import {
+  createDefaultContentResource,
+  type EditableContentResourceType,
+} from "@/utils/content-resource";
+import {
+  createManifestObjectFromUpload,
+  downloadJsonFile,
+  serializeManifestForExport,
+} from "@/utils/file";
 
-const DEFAULT_INSPECTOR_WIDTH = 720;
+const DEFAULT_INSPECTOR_WIDTH = 560;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
+const VOYAGER_SCRIPT_SRC =
+  "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js";
+
+const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
+const ENVIRONMENT_MODAL_TYPES: EditableContentResourceType[] = [
+  "Light",
+  "Camera",
+];
+
+type ImportExportType = "none" | "import" | "export";
 
 interface ResizeState {
   startX: number;
@@ -44,9 +56,6 @@ interface ContentResourceModalSnapshot {
   manifestObj: ManifestObject;
   selectedMetadataAnnotationIndex: number;
 }
-
-const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
-const TEMP_MODAL_TYPES: EditableContentResourceType[] = ["Light", "Camera"];
 
 function HydratedManifestEditorPage() {
   const { id } = useParams();
@@ -63,20 +72,20 @@ function ManifestEditorPage() {
   const [contentResourceModalView, setContentResourceModalView] =
     useState<ContentResourceModalView>("picker");
   const [contentResourceModalTypes, setContentResourceModalTypes] =
-    useState<EditableContentResourceType[]>(ASSET_MODAL_TYPES);
+    useState<EditableContentResourceType[] | undefined>(undefined);
   const [isInspectorOpen, setIsInspectorOpen] = useState(true);
-
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
   const [selectedMetadataAnnotationIndex, setSelectedMetadataAnnotationIndex] =
     useState(0);
-
   const [gistId, setGistId] = useState<string | null>(null);
-  const resizeStateRef = useRef<ResizeState | null>(null);
   const [isAutoUpdateEnabled, setIsAutoUpdateEnabled] = useState(false);
-  const [importExportType, setImportExportType] = useState("none");
+  const [importExportType, setImportExportType] =
+    useState<ImportExportType>("none");
+  const [voyagerUrl, setVoyagerUrl] = useState("");
 
+  const resizeStateRef = useRef<ResizeState | null>(null);
   const contentResourceModalSnapshotRef =
     useRef<ContentResourceModalSnapshot | null>(null);
   const { manifestObj, updateManifestObj, setManifestObj } =
@@ -86,7 +95,7 @@ function ManifestEditorPage() {
     () => serializeManifestForExport(manifestObj),
     [manifestObj],
   );
-
+  
   const liveViewerManifestUrl = useMemo(
     () =>
       `data:application/json;charset=utf-8,${encodeURIComponent(
@@ -94,34 +103,15 @@ function ManifestEditorPage() {
       )}`,
     [serializedManifest],
   );
-  const [voyagerUrl, setVoyagerUrl] = useState(liveViewerManifestUrl);
 
-  let importExportMenu;
-  if (importExportType != "none") {
-    importExportMenu = (
-      <ImportExportHandler
-        createManifestObjectFromUpload={createManifestObjectFromUpload}
-        setIsAutoUpdateEnabled={setIsAutoUpdateEnabled}
-        isAutoUpdateEnabled={isAutoUpdateEnabled}
-        setImportExportType={setImportExportType}
-        serializedManifest={serializedManifest}
-        importExportType={importExportType}
-        setManifestObj={setManifestObj}
-        manifestObj={manifestObj}
-        setGistId={setGistId}
-        gistId={gistId}
-      />
-    );
-  } else {
-    importExportMenu = undefined;
-  }
+  useEffect(() => {
+    setVoyagerUrl(liveViewerManifestUrl);
+  }, [liveViewerManifestUrl]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setVoyagerUrl((currentUrl) =>
-        currentUrl === liveViewerManifestUrl
-          ? currentUrl
-          : liveViewerManifestUrl,
+        currentUrl === liveViewerManifestUrl ? currentUrl : liveViewerManifestUrl,
       );
     }, 250);
 
@@ -131,7 +121,28 @@ function ManifestEditorPage() {
   }, [liveViewerManifestUrl]);
 
   useEffect(() => {
-    setupVoyagerScript();
+    if (customElements.get("voyager-explorer")) {
+      setIsInspectorOpen(true);
+      return;
+    }
+
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[data-voyager-explorer="true"]',
+    );
+    const handleLoad = () => setIsInspectorOpen(true);
+
+    if (existingScript) {
+      existingScript.addEventListener("load", handleLoad);
+      return () => existingScript.removeEventListener("load", handleLoad);
+    }
+
+    const scriptTag = document.createElement("script");
+    scriptTag.src = VOYAGER_SCRIPT_SRC;
+    scriptTag.dataset.voyagerExplorer = "true";
+    scriptTag.addEventListener("load", handleLoad);
+    document.body.appendChild(scriptTag);
+
+    return () => scriptTag.removeEventListener("load", handleLoad);
   }, []);
 
   useEffect(() => {
@@ -173,7 +184,6 @@ function ManifestEditorPage() {
       startX: event.clientX,
       startWidth: inspectorWidth,
     };
-
     document.body.style.userSelect = "none";
     document.body.style.cursor = "col-resize";
   }
@@ -194,22 +204,30 @@ function ManifestEditorPage() {
     contentResourceModalSnapshotRef.current = null;
   }
 
-  function handleOpenContentResourceModal(): void {
+  function openContentResourceModal(
+    allowedTypes?: EditableContentResourceType[],
+  ): void {
     captureContentResourceModalSnapshot();
-    setContentResourceModalTypes(ASSET_MODAL_TYPES);
+    setContentResourceModalTypes(allowedTypes);
     setContentResourceModalView("picker");
     setIsContentResourceModalOpen(true);
   }
 
-  function handleOpenTempModal(): void {
-    captureContentResourceModalSnapshot();
-    setContentResourceModalTypes(TEMP_MODAL_TYPES);
-    setContentResourceModalView("picker");
-    setIsContentResourceModalOpen(true);
+  function handleOpenContentResourceModal(): void {
+    openContentResourceModal(undefined);
+  }
+
+  function handleOpenAssetModal(): void {
+    openContentResourceModal(ASSET_MODAL_TYPES);
+  }
+
+  function handleOpenEnvironmentModal(): void {
+    openContentResourceModal(ENVIRONMENT_MODAL_TYPES);
   }
 
   function handleCloseContentResourceModal(): void {
     setIsContentResourceModalOpen(false);
+    setContentResourceModalTypes(undefined);
     setContentResourceModalView("picker");
   }
 
@@ -236,21 +254,12 @@ function ManifestEditorPage() {
     type: EditableContentResourceType,
   ): void {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
-
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1);
-    if (type == "Model") {
-      annotation.setContentResource(
-        new ContentResource("", "Model", "model/gltf-binary"),
-      );
-    } else if (type == "Image") {
-      annotation.setContentResource(new ContentResource("", "Image", "jpeg"));
-    } else if (type === "Light") {
-      annotation.setContentResource(new Light("", "AmbientLight"));
-    } else if (type === "Camera") {
-      annotation.setContentResource(new Camera("", "OrthographicCamera"));
-    }
 
+    annotation.setContentResource(
+      createDefaultContentResource(type, nextAnnotationIndex),
+    );
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
@@ -263,93 +272,124 @@ function ManifestEditorPage() {
 
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
-    const textAnnotation = new TextAnnotation(nextAnnotationIndex + 1);
     const annotation = new Annotation(nextAnnotationIndex + 1, ["commenting"]);
 
-    annotation.setContentResource(textAnnotation);
+    annotation.setContentResource(new TextAnnotation(nextAnnotationIndex + 1));
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
     setContentResourceModalView("editor");
     setIsContentResourceModalOpen(true);
     updateManifestObj();
-  } 
+  }
 
+  function handleContainerTypeChange(nextType: IiifContainerType): void {
+    manifestObj.getContainerObj().setType(nextType);
+    updateManifestObj();
+  }
+
+  function handleDownloadManifest(): void {
+    downloadJsonFile(serializedManifest, "manifest");
+  }
+
+  const container = manifestObj.getContainerObj();
+  const annotationPage = container.getAnnotationPage();
+  const manifestLabel = manifestObj.getLabelValue().trim();
+  const manifestTitle =
+    manifestLabel.length > 0 ? manifestLabel : "Untitled Manifest";
+  const hasStageContent = annotationPage.getAllAnnotations().length > 0;
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
     : undefined;
+  const importExportMenu =
+    importExportType === "none" ? null : (
+      <ImportExportHandler
+        createManifestObjectFromUpload={createManifestObjectFromUpload}
+        gistId={gistId}
+        importExportType={importExportType}
+        isAutoUpdateEnabled={isAutoUpdateEnabled}
+        manifestObj={manifestObj}
+        serializedManifest={serializedManifest}
+        setGistId={setGistId}
+        setImportExportType={setImportExportType}
+        setIsAutoUpdateEnabled={setIsAutoUpdateEnabled}
+        setManifestObj={setManifestObj}
+      />
+    );
 
   return (
-      <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-slate-100">
-        <ContentResourceModal
-          isOpen={isContentResourceModalOpen}
-          view={contentResourceModalView}
-          selectedAnnotationIndex={selectedMetadataAnnotationIndex}
-          allowedTypes={contentResourceModalTypes}
-          onCancel={handleCancelContentResourceModal}
-          onSave={handleSaveContentResourceModal}
-          onSelectType={handleCreateContentResource}
-        />
+    <section className="relative h-full min-h-0 w-full overflow-hidden border-t border-slate-200 bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f8fafc_42%,_#eef2f7_100%)]">
+      <ContentResourceModal
+        isOpen={isContentResourceModalOpen}
+        view={contentResourceModalView}
+        selectedAnnotationIndex={selectedMetadataAnnotationIndex}
+        allowedTypes={contentResourceModalTypes}
+        onCancel={handleCancelContentResourceModal}
+        onSave={handleSaveContentResourceModal}
+        onSelectType={handleCreateContentResource}
+      />
 
-        <div
-          className="h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
-          style={{
-            paddingRight: inspectorDockPadding,
-          }}
-        >
+      <div
+        className="h-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8"
+        style={{ paddingRight: inspectorDockPadding }}
+      >
+        <div className="mx-auto max-w-[1600px] space-y-5 pb-6">
           <CreateBar
-            isAutoUpdateEnabled={isAutoUpdateEnabled}
-            gistId={gistId}
-            handleOpenContentResourceModal={handleOpenContentResourceModal}
-            handleOpenTempModal={handleOpenTempModal}
+            containerType={container.getType()}
             handleCreateTextAnnotation={handleCreateTextAnnotation}
+            handleOpenContentResourceModal={handleOpenAssetModal}
+            handleOpenTempModal={handleOpenEnvironmentModal}
+            onContainerTypeChange={handleContainerTypeChange}
+            onDownload={handleDownloadManifest}
+            onExport={() => setImportExportType("export")}
+            onImport={() => setImportExportType("import")}
           />
 
-          <div className="mainWindow overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="voyagerWindow">
-              <voyager-explorer
-                prompt="false"
-                key={voyagerUrl}
-                document={voyagerUrl}
-                id="voyager"
-                style={{ width: "500px", height: "500px" }}
-              ></voyager-explorer>
-            </div>
-          </div>
+          <VoyagerStage
+            containerType={container.getType()}
+            hasStageContent={hasStageContent}
+            isInspectorOpen={isInspectorOpen}
+            manifestTitle={manifestTitle}
+            serializedManifest={serializedManifest}
+            voyagerUrl={voyagerUrl}
+            onCreateTextAnnotation={handleCreateTextAnnotation}
+            onOpenContentResourceModal={handleOpenContentResourceModal}
+            onToggleInspector={() => setIsInspectorOpen((currentValue) => !currentValue)}
+          />
+
           {importExportMenu}
         </div>
+      </div>
 
-        {isInspectorOpen ? (
-          <ManifestComponent
-            width={inspectorWidth}
-            activeTab={activeManifestTab}
-            onActiveTabChange={setActiveManifestTab}
-            selectedMetadataAnnotationIndex={selectedMetadataAnnotationIndex}
-            onSelectedMetadataAnnotationIndexChange={
-              setSelectedMetadataAnnotationIndex
-            }
-            onImportClick={() => setImportExportType("import")}
-            onExportClick={() => setImportExportType("export")}
-            onClose={() => setIsInspectorOpen(false)}
-            onReset={handleResetInspector}
-            onResizeStart={handleResizeStart}
-          />
-        ) : (
-          <div className="absolute inset-y-0 right-0 z-20 flex items-center border-l border-slate-200 bg-white px-1">
-            <div className="flex h-full flex-col items-center justify-center">
-              <button
-                type="button"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-xl text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
-                onClick={() => setIsInspectorOpen(true)}
-                aria-label="Open inspector"
-                title="Open panel"
-              >
-                &lsaquo;
-              </button>
-            </div>
+      {isInspectorOpen ? (
+        <ManifestComponent
+          width={inspectorWidth}
+          activeTab={activeManifestTab}
+          onActiveTabChange={setActiveManifestTab}
+          selectedMetadataAnnotationIndex={selectedMetadataAnnotationIndex}
+          onSelectedMetadataAnnotationIndexChange={
+            setSelectedMetadataAnnotationIndex
+          }
+          onClose={() => setIsInspectorOpen(false)}
+          onReset={handleResetInspector}
+          onResizeStart={handleResizeStart}
+        />
+      ) : (
+        <div className="absolute inset-y-0 right-0 z-20 flex items-center border-l border-slate-200 bg-white px-1">
+          <div className="flex h-full flex-col items-center justify-center">
+            <button
+              type="button"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-xl text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+              onClick={() => setIsInspectorOpen(true)}
+              aria-label="Open inspector"
+              title="Open panel"
+            >
+              &lsaquo;
+            </button>
           </div>
-        )}
-      </section>
+        </div>
+      )}
+    </section>
   );
 }
 

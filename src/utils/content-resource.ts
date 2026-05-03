@@ -1,4 +1,6 @@
+import Camera from "@/ManifestClasses/Camera";
 import ContentResource from "@/ManifestClasses/ContentResource";
+import Light from "@/ManifestClasses/Light";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 
 export const contentResourceTypeToFormat = {
@@ -26,6 +28,21 @@ export type EditableContentResourceType =
   | keyof typeof contentResourceTypeToFormat
   | "Light"
   | "Camera";
+
+export function createDefaultContentResource(
+  type: EditableContentResourceType = "Model",
+  _annotationIndex?: number,
+): ContentResource {
+  if (type === "Light") {
+    return new Light("", "AmbientLight");
+  }
+
+  if (type === "Camera") {
+    return new Camera("", "OrthographicCamera");
+  }
+
+  return new ContentResource("", type, contentResourceTypeToFormat[type]);
+}
 
 export function getResourceTypeItems(manifestObj: ManifestObject, resourceType: object) {
   let resourceNumber = 0;
