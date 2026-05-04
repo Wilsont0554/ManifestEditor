@@ -1,4 +1,3 @@
-import { NavLink } from "react-router";
 import Icon from "@/components/icon";
 import CreateNewManifestLink from "@/components/navbar/createNewManifestLink";
 

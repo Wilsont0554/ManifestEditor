@@ -13,7 +13,7 @@ import ManifestComponent from "@/components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
 import { ManifestObjProvider } from "@/context/manifest";
 import { useParams } from "react-router";
-import { setupVoyagerScript } from "@/utils/voyager";
+
 import CreateBar from "@/components/shared/createBar/CreateBar";
 import ImportExportHandler from "@/components/shared/importExport/importExportHandler";
 import VoyagerStage from "@/components/shared/manifest-editor/voyager-stage";
@@ -127,27 +127,21 @@ function ManifestEditorPage() {
 
   useEffect(() => {
     if (customElements.get("voyager-explorer")) {
-      setIsInspectorOpen(true);
       return;
     }
 
     const existingScript = document.querySelector<HTMLScriptElement>(
       'script[data-voyager-explorer="true"]',
     );
-    const handleLoad = () => setIsInspectorOpen(true);
 
     if (existingScript) {
-      existingScript.addEventListener("load", handleLoad);
-      return () => existingScript.removeEventListener("load", handleLoad);
+      return;
     }
 
     const scriptTag = document.createElement("script");
     scriptTag.src = VOYAGER_SCRIPT_SRC;
     scriptTag.dataset.voyagerExplorer = "true";
-    scriptTag.addEventListener("load", handleLoad);
     document.body.appendChild(scriptTag);
-
-    return () => scriptTag.removeEventListener("load", handleLoad);
   }, []);
 
   useEffect(() => {
@@ -313,7 +307,6 @@ function ManifestEditorPage() {
         gistId={gistId}
         importExportType={importExportType}
         isAutoUpdateEnabled={isAutoUpdateEnabled}
-        manifestObj={manifestObj}
         serializedManifest={serializedManifest}
         setGistId={setGistId}
         setImportExportType={setImportExportType}

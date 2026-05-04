@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";

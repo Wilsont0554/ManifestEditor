@@ -1,5 +1,3 @@
-import ManifestObject from "@/ManifestClasses/ManifestObject";
-
 /**
  * Utility class for handling IndexedDB operations related to saving and retrieving IIIF manifest data.
  * We use IndexedDB to persist the latest manifest data locally in the user's browser.

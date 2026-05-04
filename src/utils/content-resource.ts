@@ -21,9 +21,9 @@ export const cameraContentResourceTypes = {
 } as const;
 
 export type LightContentResourceType =
-  (typeof lightContentResourceTypes)[keyof typeof lightContentResourceTypes];
+  keyof typeof lightContentResourceTypes;
 export type SupportedCameraContentResourceType =
-  (typeof cameraContentResourceTypes)[keyof typeof cameraContentResourceTypes];
+  keyof typeof cameraContentResourceTypes;
 export type EditableContentResourceType =
   | keyof typeof contentResourceTypeToFormat
   | "Light"

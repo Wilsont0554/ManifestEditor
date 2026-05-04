@@ -2,7 +2,7 @@ import type { MouseEvent, ReactNode } from "react";
 
 type Props = {
   tone?: "neutral" | "danger";
-  onSelect: (...args: any[]) => void;
+  onSelect: () => void;
   children: ReactNode;
 };
 

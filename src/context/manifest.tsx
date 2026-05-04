@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
 import { IndexedDB } from "@/utils/indexdb";
@@ -25,7 +25,6 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
   //load manifestObj on page load
   useEffect(() => {
-    setIsDBLoaded(false);
     let isInterrupted = false;
     let loadedManifest: ManifestObject | null = null;
 
@@ -86,7 +85,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
     return () => {
       isInterrupted = true;
     };
-  }, [id, isExampleManifest, importedManifest]);
+  }, [id, importedManifest, isExampleManifest, location.pathname, reRoute]);
 
   /**
    * debounced version of the function that saves manifest to indexedDB
@@ -104,7 +103,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
   //save manifest to indexedDB whenever there is an update to manifestObj
   useEffect(() => {
     saveManifestToDB();
-  }, [manifestObj, isDBLoaded, id]);
+  }, [id, isDBLoaded, manifestObj, saveManifestToDB]);
 
   /**
    * updates manifest after user makes changes by input

@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IndexedDB } from "@/utils/indexdb";
 import Layout from "@/components/gallery/Layout";
 import GettingStartedSection from "@/components/gallery/GettingStartedSection";
 import ProjectsSection from "@/components/gallery/ProjectsSection";
 
+type SavedProject = {
+  id: string;
+  [key: string]: unknown;
+};
+
 export default function Gallery() {
-  const [projects, setProjects] = useState<object[] | null>(null);
-  const dbRef = useRef<IndexedDB>(new IndexedDB());
-  const db = dbRef.current;
+  const [projects, setProjects] = useState<SavedProject[] | null>(null);
+  const db = useMemo(() => new IndexedDB(), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,7 +25,7 @@ export default function Gallery() {
       if (cancelled) return false;
       const savedManifested = await db.getAllProjects();
       if (cancelled) return false;
-      setProjects(savedManifested);
+      setProjects(savedManifested as SavedProject[]);
       return true;
     }
 
@@ -31,7 +35,7 @@ export default function Gallery() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [db]);
 
   /**
    * Handle delete manifest
@@ -39,7 +43,7 @@ export default function Gallery() {
   async function handleDeleteProjectById(id: string) {
     try {
       await db.deleteProject(id);
-      setProjects((prev) => prev?.filter((proj: any) => proj.id.split('/').pop() !== id) ?? null);
+      setProjects((prev) => prev?.filter((proj) => proj.id.split('/').pop() !== id) ?? null);
     }
     catch (err) {
       console.error("Failed to delete manifest from IndexedDB:", err);

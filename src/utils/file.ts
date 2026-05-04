@@ -6,6 +6,30 @@ import Camera from "@/ManifestClasses/Camera";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 import type { IiifContainerType } from "@/types/iiif";
 
+type SerializedManifestBody = {
+  id?: string;
+  type?: string;
+  transforms?: unknown[];
+  source?: SerializedManifestBody[];
+  transform?: unknown[];
+};
+
+type SerializedManifestAnnotation = {
+  body?: SerializedManifestBody;
+};
+
+type SerializedManifestPage = {
+  items?: SerializedManifestAnnotation[];
+};
+
+type SerializedManifestContainer = {
+  items?: SerializedManifestPage[];
+};
+
+type SerializedManifest = {
+  items?: SerializedManifestContainer[];
+};
+
 export function downloadJsonFile(data: unknown, filename: string): void {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: "application/json",
@@ -20,7 +44,9 @@ export function downloadJsonFile(data: unknown, filename: string): void {
 }
 
 export function serializeManifestForExport(manifestObj: ManifestObject): object {
-  const exported = JSON.parse(JSON.stringify(manifestObj)) as any;
+  const exported = JSON.parse(
+    JSON.stringify(manifestObj),
+  ) as SerializedManifest;
 
   for (const container of exported.items ?? []) {
     for (const page of container.items ?? []) {
@@ -52,7 +78,7 @@ function hasNonEmptyId(value: unknown): boolean {
 }
 
 export function isVoyagerRenderableManifest(serializedManifest: object): boolean {
-  const manifest = serializedManifest as {
+  const manifest = serializedManifest as SerializedManifest & {
     items?: Array<{
       items?: Array<{
         items?: Array<{

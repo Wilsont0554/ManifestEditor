@@ -4,6 +4,16 @@ import ContentResource from "@/ManifestClasses/ContentResource";
 import Annotation from "@/ManifestClasses/Annotation";
 import { isVoyagerRenderableManifest, serializeManifestForExport } from "@/utils/file";
 
+type SerializedManifest = {
+  id?: string;
+  type?: string;
+  items?: Array<{
+    items?: Array<{
+      items?: Array<{ body?: { type?: string; source?: Array<{ type?: string }> } }>;
+    }>;
+  }>;
+};
+
 describe("serializeManifestForExport", () => {
   it("returns a plain serializable object", () => {
     const manifest = new ManifestObject("Scene");
@@ -19,7 +29,7 @@ describe("serializeManifestForExport", () => {
     const manifest = new ManifestObject("Scene");
     manifest.setId("https://example.org/iiif/manifest/test");
 
-    const result = serializeManifestForExport(manifest) as any;
+    const result = serializeManifestForExport(manifest) as SerializedManifest;
 
     expect(result.id).toBe("https://example.org/iiif/manifest/test");
     expect(result.type).toBe("Manifest");
@@ -40,13 +50,15 @@ describe("serializeManifestForExport", () => {
       .getAnnotationPage()
       .addAnnotation(annotation);
 
-    const result = serializeManifestForExport(manifest) as any;
+    const result = serializeManifestForExport(manifest) as SerializedManifest;
     const body =
-      result.items[0].items[0].items[result.items[0].items[0].items.length - 1].body;
+      result.items?.[0]?.items?.[0]?.items?.[
+        (result.items?.[0]?.items?.[0]?.items?.length ?? 1) - 1
+      ]?.body;
 
-    expect(body.type).toBe("SpecificResource");
-    expect(Array.isArray(body.source)).toBe(true);
-    expect(body.source[0].type).toBe("Model");
+    expect(body?.type).toBe("SpecificResource");
+    expect(Array.isArray(body?.source)).toBe(true);
+    expect(body?.source?.[0]?.type).toBe("Model");
   });
 
   it("does not wrap non-Model bodies in SpecificResource", () => {
@@ -64,11 +76,13 @@ describe("serializeManifestForExport", () => {
       .getAnnotationPage()
       .addAnnotation(annotation);
 
-    const result = serializeManifestForExport(manifest) as any;
+    const result = serializeManifestForExport(manifest) as SerializedManifest;
     const body =
-      result.items[0].items[0].items[result.items[0].items[0].items.length - 1].body;
+      result.items?.[0]?.items?.[0]?.items?.[
+        (result.items?.[0]?.items?.[0]?.items?.length ?? 1) - 1
+      ]?.body;
 
-    expect(body.type).toBe("Image");
+    expect(body?.type).toBe("Image");
   });
 
   it("treats manifests with empty image resource ids as not renderable in Voyager", () => {
