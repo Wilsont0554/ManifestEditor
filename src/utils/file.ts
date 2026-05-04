@@ -58,6 +58,11 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
           continue;
         }
         
+        /*
+        if (!body || body.type !== "Model") {
+          continue;
+        }*/
+
         const { transforms, ...source } = body;
 
         annotation.body = {
