@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import ContentResource from "@/ManifestClasses/ContentResource";
 import Annotation from "@/ManifestClasses/Annotation";
-import { serializeManifestForExport } from "@/utils/file";
+import { isVoyagerRenderableManifest, serializeManifestForExport } from "@/utils/file";
 
 describe("serializeManifestForExport", () => {
   it("returns a plain serializable object", () => {
@@ -69,5 +69,41 @@ describe("serializeManifestForExport", () => {
       result.items[0].items[0].items[result.items[0].items[0].items.length - 1].body;
 
     expect(body.type).toBe("Image");
+  });
+
+  it("treats manifests with empty image resource ids as not renderable in Voyager", () => {
+    const manifest = new ManifestObject("Scene");
+    const annotation = new Annotation(1);
+    const image = new ContentResource("", "Image", "image/jpeg");
+    annotation.setContentResource(image);
+
+    manifest
+      .getContainerObj()
+      .getAnnotationPage()
+      .addAnnotation(annotation);
+
+    const result = serializeManifestForExport(manifest);
+
+    expect(isVoyagerRenderableManifest(result)).toBe(false);
+  });
+
+  it("treats manifests with valid asset ids as renderable in Voyager", () => {
+    const manifest = new ManifestObject("Scene");
+    const annotation = new Annotation(1);
+    const image = new ContentResource(
+      "https://example.org/image.jpg",
+      "Image",
+      "image/jpeg",
+    );
+    annotation.setContentResource(image);
+
+    manifest
+      .getContainerObj()
+      .getAnnotationPage()
+      .addAnnotation(annotation);
+
+    const result = serializeManifestForExport(manifest);
+
+    expect(isVoyagerRenderableManifest(result)).toBe(true);
   });
 });

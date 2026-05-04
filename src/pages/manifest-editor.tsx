@@ -29,6 +29,7 @@ import {
 import {
   createManifestObjectFromUpload,
   downloadJsonFile,
+  isVoyagerRenderableManifest,
   serializeManifestForExport,
 } from "@/utils/file";
 
@@ -103,12 +104,16 @@ function ManifestEditorPage() {
       )}`,
     [serializedManifest],
   );
+  const canRenderInVoyager = useMemo(
+    () => isVoyagerRenderableManifest(serializedManifest),
+    [serializedManifest],
+  );
 
   useEffect(() => {
-    setVoyagerUrl(liveViewerManifestUrl);
-  }, [liveViewerManifestUrl]);
+    if (!canRenderInVoyager) {
+      return;
+    }
 
-  useEffect(() => {
     const intervalId = window.setInterval(() => {
       setVoyagerUrl((currentUrl) =>
         currentUrl === liveViewerManifestUrl ? currentUrl : liveViewerManifestUrl,
@@ -118,7 +123,7 @@ function ManifestEditorPage() {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [liveViewerManifestUrl]);
+  }, [canRenderInVoyager, liveViewerManifestUrl]);
 
   useEffect(() => {
     if (customElements.get("voyager-explorer")) {
