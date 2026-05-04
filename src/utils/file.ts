@@ -57,48 +57,67 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
   for (let i = 0; i < uploadedManifest.items[0].items[0].items.length; i++){
     try {
       const nextAnnotationIndex = newManifest.getContainerObj().getAnnotationPage().getAllAnnotations().length;
-      const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
-      let tempContentResource;
-      let specificResourceType = "none";
       
-      if (uploadedResource.type == "SpecificResource"){
-        specificResourceType = uploadedResource.source[0].type;
-      }
+      const uploadedResource = uploadedManifest.items[0].items[0].items[i].body;
+      
+      if (uploadedResource){
+        let tempContentResource;
+        let specificResourceType = "none";
+        
+        if (uploadedResource.type == "SpecificResource"){
+          specificResourceType = uploadedResource.source[0].type;
+        }
 
-      if (uploadedResource!.type == "Model" || specificResourceType == "Model"){
-        tempContentResource = new ContentResource("", "", "");
-        tempContentResource!.setAllValues(uploadedResource!);
-      }
-      else if(uploadedResource!.type.includes("Light") || specificResourceType.includes("Light")){
-          tempContentResource = new Light("", "");
-          tempContentResource!.setAllLightValues(uploadedResource! as Light)
-      }
-      else if (uploadedResource!.type.includes("Camera") || specificResourceType.includes("Camera")){
-          tempContentResource = new Camera("");
-          tempContentResource!.setAllCameraValues(uploadedResource! as Camera)
-      }
-      else if (uploadedResource!.type == "TextualBody" || specificResourceType == "TextualBody"){
-        tempContentResource = new TextAnnotation;
-        tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
-      }
-      else{
-        console.log(uploadedResource);
-        console.log('Format not recognized');
-      }
+        if (uploadedResource!.type == "Model" || specificResourceType == "Model"){
+          tempContentResource = new ContentResource("", "", "");
+          tempContentResource!.setAllValues(uploadedResource!);
+        }
+        else if(uploadedResource!.type.includes("Light") || specificResourceType.includes("Light")){
+            tempContentResource = new Light("", "");
+            tempContentResource!.setAllLightValues(uploadedResource! as Light)
+        }
+        else if (uploadedResource!.type.includes("Camera") || specificResourceType.includes("Camera")){
+            tempContentResource = new Camera("");
+            tempContentResource!.setAllCameraValues(uploadedResource! as Camera)
+        }
+        else if (uploadedResource!.type == "TextualBody" || specificResourceType == "TextualBody"){
+          tempContentResource = new TextAnnotation;
+          tempContentResource!.setAllTextAnnotationValues(uploadedResource! as TextAnnotation);
+        }
+        else{
+          console.log(uploadedResource);
+          console.log('Format not recognized');
+        }
 
-      const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
-      tempAnnotation.setContentResource(tempContentResource!);
+        const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
+        tempAnnotation.setContentResource(tempContentResource!);
 
-      newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
-      newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i]);
-      endIndex++;
+        newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
+        newManifest.getContainerObj().getAnnotationPage().getAnnotation(i).setAllValues(uploadedManifest.items[0].items[0].items[i]);
+        endIndex++;
+      }
+      else if (uploadedManifest.items[0].items[0].items[i].bodyValue){
+        try {
+          const test = uploadedManifest.items[0].items[0].items[i];
+          let tempContentResource;
+          tempContentResource = new TextAnnotation;
+          tempContentResource!.setAllTextAnnotationValuesTest(test! as TextAnnotation);
+          const tempAnnotation = new Annotation(nextAnnotationIndex + 1);
+          tempAnnotation.setContentResource(tempContentResource!);
+          
+          newManifest.getContainerObj().getAnnotationPage().addAnnotation(tempAnnotation);
+        }
+        catch(e){
+          console.log(e);
+        }
+        endIndex++;
+      }
     } catch(e){
       alert(e);
       return new ManifestObject("");
     }
   }
 
-  console.log("text annotations");
   //text annotation compatibility
   if (uploadedManifest.items[0].annotations){
     for (let i = 0; i < uploadedManifest.items[0].annotations[0].items.length; ++i){

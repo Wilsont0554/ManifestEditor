@@ -53,6 +53,9 @@ class Annotation {
             const tempTarget = new Target;
 
             if (newAnnotation.target.source != undefined){
+                console.log("target")
+                console.log(newAnnotation);
+                console.log(newAnnotation.target.selector);
                 tempTarget.setSource(newAnnotation.target.source[0].id, newAnnotation.target.source[0].type);
                 tempTarget.setSelectorType(newAnnotation.target.selector[0].type);
                 tempTarget.setX(newAnnotation.target.selector[0].x);
