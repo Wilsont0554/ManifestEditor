@@ -47,6 +47,58 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
   return exported;
 }
 
+function hasNonEmptyId(value: unknown): boolean {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+export function isVoyagerRenderableManifest(serializedManifest: object): boolean {
+  const manifest = serializedManifest as {
+    items?: Array<{
+      items?: Array<{
+        items?: Array<{
+          body?: {
+            id?: unknown;
+            type?: unknown;
+            source?: Array<{ id?: unknown }>;
+          };
+        }>;
+      }>;
+    }>;
+  };
+
+  for (const container of manifest.items ?? []) {
+    for (const page of container.items ?? []) {
+      for (const annotation of page.items ?? []) {
+        const body = annotation.body;
+
+        if (!body || typeof body.type !== "string") {
+          continue;
+        }
+
+        if (body.type === "Image" || body.type === "Model") {
+          if (!hasNonEmptyId(body.id)) {
+            return false;
+          }
+
+          continue;
+        }
+
+        if (body.type === "SpecificResource") {
+          if (!Array.isArray(body.source) || body.source.length === 0) {
+            return false;
+          }
+
+          if (!body.source.every((source) => hasNonEmptyId(source?.id))) {
+            return false;
+          }
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
 export function createManifestObjectFromUpload(uploadedManifest: ManifestObject): ManifestObject{
   const uploadedContainerType =
     uploadedManifest.items?.[0]?.type as IiifContainerType | undefined;
