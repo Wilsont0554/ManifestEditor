@@ -2,6 +2,10 @@ import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
 import Transform from './Transform.ts';
 
+type SpecificResourceBody = ContentResource & {
+    source?: ContentResource[];
+};
+
 class ContentResource {
     id: string;
     type: string;
@@ -76,9 +80,11 @@ class ContentResource {
                         this.transforms.push(tempTransform);
                     }
                 }
-                console.log(newContentResource)
-                newContentResource = newContentResource.source[0];
-                console.log(newContentResource);
+                const specificResource = newContentResource as SpecificResourceBody;
+
+                if (specificResource.source?.[0] != undefined) {
+                    newContentResource = specificResource.source[0];
+                }
             }
 
             this.id = newContentResource.id;

@@ -47,6 +47,24 @@ Verify types:
 npm run typecheck
 ```
 
+Run unit tests:
+
+```bash
+npm run test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+Generate coverage report:
+
+```bash
+npm run test:coverage
+```
+
 Build:
 
 ```bash

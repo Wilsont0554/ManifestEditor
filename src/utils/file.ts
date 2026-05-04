@@ -4,6 +4,31 @@ import ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import Camera from "@/ManifestClasses/Camera";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
+import type { IiifContainerType } from "@/types/iiif";
+
+type SerializedManifestBody = {
+  id?: string;
+  type?: string;
+  transforms?: unknown[];
+  source?: SerializedManifestBody[];
+  transform?: unknown[];
+};
+
+type SerializedManifestAnnotation = {
+  body?: SerializedManifestBody;
+};
+
+type SerializedManifestPage = {
+  items?: SerializedManifestAnnotation[];
+};
+
+type SerializedManifestContainer = {
+  items?: SerializedManifestPage[];
+};
+
+type SerializedManifest = {
+  items?: SerializedManifestContainer[];
+};
 
 export function downloadJsonFile(data: unknown, filename: string): void {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -19,7 +44,9 @@ export function downloadJsonFile(data: unknown, filename: string): void {
 }
 
 export function serializeManifestForExport(manifestObj: ManifestObject): object {
-  const exported = JSON.parse(JSON.stringify(manifestObj)) as any;
+  const exported = JSON.parse(
+    JSON.stringify(manifestObj),
+  ) as SerializedManifest;
 
   for (const container of exported.items ?? []) {
     for (const page of container.items ?? []) {
@@ -45,6 +72,58 @@ export function serializeManifestForExport(manifestObj: ManifestObject): object 
   }
 
   return exported;
+}
+
+function hasNonEmptyId(value: unknown): boolean {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+export function isVoyagerRenderableManifest(serializedManifest: object): boolean {
+  const manifest = serializedManifest as SerializedManifest & {
+    items?: Array<{
+      items?: Array<{
+        items?: Array<{
+          body?: {
+            id?: unknown;
+            type?: unknown;
+            source?: Array<{ id?: unknown }>;
+          };
+        }>;
+      }>;
+    }>;
+  };
+
+  for (const container of manifest.items ?? []) {
+    for (const page of container.items ?? []) {
+      for (const annotation of page.items ?? []) {
+        const body = annotation.body;
+
+        if (!body || typeof body.type !== "string") {
+          continue;
+        }
+
+        if (body.type === "Image" || body.type === "Model") {
+          if (!hasNonEmptyId(body.id)) {
+            return false;
+          }
+
+          continue;
+        }
+
+        if (body.type === "SpecificResource") {
+          if (!Array.isArray(body.source) || body.source.length === 0) {
+            return false;
+          }
+
+          if (!body.source.every((source) => hasNonEmptyId(source?.id))) {
+            return false;
+          }
+        }
+      }
+    }
+  }
+
+  return true;
 }
 
 export function createManifestObjectFromUpload(uploadedManifest: any): ManifestObject{
