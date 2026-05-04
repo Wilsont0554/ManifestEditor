@@ -6,8 +6,8 @@ import ManifestObject from "@/ManifestClasses/ManifestObject";
 import { useNavigate } from "react-router";
 
 function ImportExportHandler({
-    gistId, isAutoUpdateEnabled, setGistId, setIsAutoUpdateEnabled, 
-    createManifestObjectFromUpload, setManifestObj, serializedManifest, manifestObj, 
+    gistId, isAutoUpdateEnabled, setGistId, setIsAutoUpdateEnabled,
+    createManifestObjectFromUpload, setManifestObj, serializedManifest,
     importExportType, setImportExportType
 }) {
     const reRoute = useNavigate();
@@ -18,7 +18,7 @@ function ImportExportHandler({
     const [githubToken, setGithubToken] = useState<string>(
         localStorage.getItem("githubToken") || ""
     );
-    const [showTokenWarning, setShowTokenWarning] = useState(githubToken.length === 0);
+    const [, setShowTokenWarning] = useState(githubToken.length === 0);
     const [gistImportUrl, setGistImportUrl] = useState("");
     const [isImportingGist, setIsImportingGist] = useState(false);
     const gistFilename = `${gistBaseName}.json`;

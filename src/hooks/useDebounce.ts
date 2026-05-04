@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import debounce from "lodash.debounce";
 import type { DebouncedFunc } from "lodash.debounce";
 
@@ -7,23 +7,21 @@ import type { DebouncedFunc } from "lodash.debounce";
  * @param delay - the delay in ms
  * @returns debounced version of the function that fired after delay
  */
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
-  fn: T,
+export function useDebouncedCallback<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => TResult,
   delay: number,
-): DebouncedFunc<T> {
-  const fnRef = useRef(fn);
-  fnRef.current = fn;
+): DebouncedFunc<(...args: TArgs) => TResult> {
 
   /**
    * debounced version of the callback that fired after delay
    */
   const debounced = useMemo(
     () =>
-      debounce((...args: Parameters<T>) => {
-        return fnRef.current(...args);
+      debounce((...args: TArgs) => {
+        return fn(...args);
       }, delay),
-    [delay],
-  ) as DebouncedFunc<T>;
+    [delay, fn],
+  );
 
   //the last callback is executed on unmount
   useEffect(() => {

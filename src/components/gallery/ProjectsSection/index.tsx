@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SectionHeading from "@/components/gallery/SectionHeading";
 import TabButton from "./TabButton";
 import MyProjectsTab from "./MyProjectsTab";
@@ -18,18 +18,12 @@ type Props = {
  * @param projects user manifests from IndexedDB, or null while loading
  */
 export default function ProjectsSection({ projects, onDeleteProjectById }: Props) {
-  const [tab, setTab] = useState<Tab>("examples");
+  const [tab, setTab] = useState<Tab>("projects");
 
   const counts = {
     projects: projects?.length ?? 0,
     examples: 0,
   };
-
-  useEffect(() => {
-    if (projects && projects.length > 0) {
-      setTab("projects");
-    }
-  }, [projects]);
 
   return (
     <section>

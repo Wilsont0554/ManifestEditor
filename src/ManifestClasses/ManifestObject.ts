@@ -1,14 +1,11 @@
 import Container from './Container.ts';
 import Label from './Label.ts';
-import Camera from "./Camera.ts";
-import Light from "./Light.ts";
 import { v4 as uuidv4 } from "uuid";
 import {
     builtInManifestBehaviors,
     manifestAutoAdvanceBehaviors,
     manifestOrderingBehaviors,
     manifestRepeatBehaviors,
-    type IiifContainerType,
     type ManifestAutoAdvanceBehavior,
     type ManifestOrderingBehavior,
     type ManifestRepeatBehavior,

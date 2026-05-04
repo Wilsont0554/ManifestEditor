@@ -36,7 +36,9 @@ export default function ProjectCard(props: Props) {
 
   const handleDeleteProject = () => {
     console.log("Deleting project with id:", id);
-    onDelete && onDelete(id);
+    if (onDelete) {
+      onDelete(id);
+    }
   };
 
   const handleExportProject = () => {

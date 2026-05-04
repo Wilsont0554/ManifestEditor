@@ -20,7 +20,8 @@ export const cameraContentResourceTypes = {
   PerspectiveCamera : "Perspective Camera",
 } as const;
 
-export type LightContentResourceType = keyof typeof lightContentResourceTypes;
+export type LightContentResourceType =
+  keyof typeof lightContentResourceTypes;
 export type SupportedCameraContentResourceType =
   keyof typeof cameraContentResourceTypes;
 export type EditableContentResourceType =

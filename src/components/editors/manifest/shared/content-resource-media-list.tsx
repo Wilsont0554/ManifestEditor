@@ -108,7 +108,6 @@ function ContentResourceMediaList({
   return (
     <div className={`space-y-3 ${className}`}>
       {items.map((item) => {
-        const resourceType = item.resource.getType();
         const target = item.annotation.getTarget();
         const coordinateDetail = target
           ? `X ${target.getX()}  Y ${target.getY()}  Z ${target.getZ()}`

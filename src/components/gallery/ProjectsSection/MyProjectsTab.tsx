@@ -48,7 +48,7 @@ export default function MyProjectsTab({ projects, onDeleteProjectById }: Props) 
 
   return (
     <ProjectGrid>
-      {sortedProjects.map((p, i) => {
+      {sortedProjects.map((p) => {
         const id = p["id"].split("/").pop() ?? "invalid-id";
         return <ProjectCard key={id} id={id} manifest={p} onDelete={onDeleteProjectById}/>;
       })}

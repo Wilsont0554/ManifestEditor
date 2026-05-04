@@ -2,11 +2,9 @@ import {
   type MouseEvent as ReactMouseEvent,
   useEffect,
   useState,
-  useContext,
 } from "react";
 import {
   MANIFEST_TABS,
-  type ManifestTabId,
 } from "./manifest-component-constants";
 import DescriptiveTab from "./editor-tabs/descriptive-tab";
 import LinkingTab from "./editor-tabs/linking-tab";
@@ -15,9 +13,6 @@ import NavPlaceTab from "./editor-tabs/nav-place-tab";
 import OverviewTab from "./editor-tabs/overview-tab";
 import AssetsTab from "./editor-tabs/assets-tab";
 import EnvironmentTab from "./editor-tabs/environment-tab";
-import { manifestObjContext } from "@/context/manifest-context";
-import ManifestObject from "@/ManifestClasses/ManifestObject";
-
 
 function ManifestComponent({
   //props
@@ -33,7 +28,6 @@ function ManifestComponent({
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
-  const {setManifestObj} = useContext(manifestObjContext);
 
   let tabContent = <OverviewTab />;
 

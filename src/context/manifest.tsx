@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
 import { IndexedDB } from "@/utils/indexdb";
@@ -25,7 +25,6 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
   //load manifestObj on page load
   useEffect(() => {
-    setIsDBLoaded(false);
     let isInterrupted = false;
     let loadedManifest: ManifestObject | null = null;
 
@@ -35,12 +34,8 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
      */
     async function loadManifest() {
       if (!id) {
-        reRoute("/404", {
-          state: {
-            errorMsg:
-              "This manifest file does not have an ID provided, please import or create a new manifest with a valid ID to continue",
-          },
-        });
+        reRoute("/404");
+        return false;
       }
 
       if (importedManifest) {
@@ -49,12 +44,10 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
       // CASE 1: manifest is loaded as an example
       if (isExampleManifest) {
-        if (!loadManifest)
-          reRoute("/404", {
-            state: {
-              errorMsg: "Cannot find example manifest, maybe it was removed",
-            },
-          });
+        if (!loadedManifest) {
+          reRoute("/404");
+          return false;
+        }
         setManifestObj(loadedManifest!);
         return true;
       }
@@ -66,7 +59,8 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
       // CASE 2: manifest is imported by user or newly created
       if (loadedManifest) {
         setManifestObj(loadedManifest!);
-        await db.saveProject(importedManifest, id!);
+        const parsedManifest = serializeManifestForExport(loadedManifest);
+        await db.saveProject(parsedManifest, id!);
         reRoute(location.pathname, { replace: true, state: null });
         return true;
       }
@@ -74,15 +68,11 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
       // CASE 3: manifest that previously edited by user and is accessed by clicking project in homepage
       const manifestFromDB = await db.getProject(id!);
       if (isInterrupted) return false;
-      if (!manifestFromDB)
-        reRoute("/404", {
-          state: {
-            errorMsg: "Cannot find manifest. Please import or create a new one",
-          },
-        });
-      loadedManifest = createManifestObjectFromUpload(
-        manifestFromDB as ManifestObject,
-      );
+      if (!manifestFromDB) {
+        reRoute("/404");
+        return false;
+      }
+      loadedManifest = createManifestObjectFromUpload(manifestFromDB as ManifestObject);
       setManifestObj(loadedManifest);
       return true;
     }
@@ -95,7 +85,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
     return () => {
       isInterrupted = true;
     };
-  }, [id, isExampleManifest, importedManifest]);
+  }, [id, importedManifest, isExampleManifest, location.pathname, reRoute]);
 
   /**
    * debounced version of the function that saves manifest to indexedDB
@@ -113,7 +103,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
   //save manifest to indexedDB whenever there is an update to manifestObj
   useEffect(() => {
     saveManifestToDB();
-  }, [manifestObj, isDBLoaded, id]);
+  }, [id, isDBLoaded, manifestObj, saveManifestToDB]);
 
   /**
    * updates manifest after user makes changes by input

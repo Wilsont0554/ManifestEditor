@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent, useMemo } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { ReactNode } from "react";
 import MenuList from "./MenuList";
 import { twMerge } from "tailwind-merge";
