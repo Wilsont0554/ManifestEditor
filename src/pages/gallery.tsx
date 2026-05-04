@@ -4,8 +4,8 @@ import Layout from "@/components/gallery/Layout";
 import GettingStartedSection from "@/components/gallery/GettingStartedSection";
 import ProjectsSection from "@/components/gallery/ProjectsSection";
 import bluehelmet from "@/examples/bluehelmet.json";
-import { createManifestObjectFromUpload } from "@/utils/file";
-import ManifestObject from "@/ManifestClasses/ManifestObject";
+import { createManifestObjectFromUpload, serializeManifestForExport } from "@/utils/file";
+
 export default function Gallery() {
   const [projects, setProjects] = useState<object[] | null>(null);
   const [examples, setExamples] = useState<object[] | null>(null);
@@ -16,12 +16,12 @@ export default function Gallery() {
   useEffect(() => {
     let cancelled = false;
     async function loadExample() {
-      const exampleManifest = await createManifestObjectFromUpload(bluehelmet as ManifestObject);
+      const exampleManifest = serializeManifestForExport(
+        createManifestObjectFromUpload(bluehelmet as any)
+      );
       setExamples([exampleManifest]);
     }
-    loadExample().catch((err) => {
-      console.error("Failed to load example manifest:", err);
-    });
+    loadExample();
     return () => {
       cancelled = true;
     };

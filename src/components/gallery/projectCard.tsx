@@ -68,12 +68,18 @@ export default function ProjectCard(props: Props) {
   }, []);
 
   const label = manifest["label"]?.en?.[0] ?? "Untitled Manifest";
+  const routingState = {
+    isExample,
+    
+    // only pass manifest data through state for examples, for user projects we will load from IndexedDB in the editor
+    manifest: isExample ? manifest : null, 
+  }
 
   return (
     <Link
       to={"/editor/" + id}
       className="group relative flex flex-col overflow-hidden rounded-sm border border-slate-300/70 bg-white transition-all duration-300 hover:border-slate-900 hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.45)] hover:-translate-y-1"
-      state={{ isExample: isExample }}
+      state={routingState}
     >
       <div
         ref={cardRef}
