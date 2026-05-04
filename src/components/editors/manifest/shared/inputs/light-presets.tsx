@@ -75,7 +75,13 @@ function LightPresets({annotation, resource, onCommit, id}){
                 const allTransforms = [translateY, rotateY, rotateXZ]
 
                 resource.setTransforms(allTransforms);
-                console.log('test');
+            }
+            else if (event == "Spot Light"){
+                resource.setType("SpotLight");
+                resource.setAngle(225);
+                annotation.setX(0)
+                annotation.setY(size.y * 8);
+                annotation.setZ(size.z * 8);
             }
             else if (event == "Origin"){
                 console.log('reset to origin');

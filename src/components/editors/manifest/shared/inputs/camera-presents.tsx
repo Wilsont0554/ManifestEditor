@@ -92,8 +92,8 @@ function CameraPresets({annotation, resource, onCommit, id}){
                 const rotateY = new Transform;
                 rotateY.setY(-40);
                 const rotateXZ = new Transform;
-                rotateXZ.setX(Math.max(size.y, size.z, size.x) * -4);
-                rotateXZ.setZ(Math.max(size.y, size.z, size.x) * -4);
+                rotateXZ.setX(Math.max(size.y) * -4);
+                rotateXZ.setZ(Math.max(size.y) * -4);
 
                 const allTransforms = [translateY, rotateY, rotateXZ]
                 resource.setTransforms(allTransforms);
@@ -106,8 +106,8 @@ function CameraPresets({annotation, resource, onCommit, id}){
                 const rotateY = new Transform;
                 rotateY.setY(40);
                 const rotateXZ = new Transform;
-                rotateXZ.setX(Math.max(size.y, size.z, size.x) * -4);
-                rotateXZ.setZ(Math.max(size.y, size.z, size.x) * 4);
+                rotateXZ.setX(Math.max(size.y) * -4);
+                rotateXZ.setZ(Math.max(size.y) * 4);
 
                 const allTransforms = [translateY, rotateY, rotateXZ]
                 resource.setTransforms(allTransforms);

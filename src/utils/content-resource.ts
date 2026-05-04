@@ -4,7 +4,7 @@ import ManifestObject from "@/ManifestClasses/ManifestObject";
 import { Manifest } from "vite";
 
 export const cameraPresets = ["Origin", "Front Facing", "Top Right", "Top Left", "Back Facing", "Right Facing", "Left Facing"] as const
-export const lightPresets = ["Origin", "Top Light", "Right Light"] as const
+export const lightPresets = ["Origin", "Top Light", "Right Light", "Spot Light"] as const
 
 export const contentResourceTypeToFormat = {
   Image: "image/jpeg",
