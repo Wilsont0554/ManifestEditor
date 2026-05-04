@@ -232,6 +232,9 @@ function ManifestEditorPage() {
         new ContentResource("", "Model", "model/gltf-binary"),
       );
     }
+    else if (type == "Image"){
+      annotation.setContentResource(new ContentResource("", "Image", "jpeg"));
+    }
     else if (type === "Light") {
       annotation.setContentResource(
         new Light("", "AmbientLight"),
