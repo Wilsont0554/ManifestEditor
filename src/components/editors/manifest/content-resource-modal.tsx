@@ -180,6 +180,12 @@ const baseContentResourceOptions = [
     icon: <LightIcon />,
   },
   {
+    value: "Sunlight",
+    title: "Sunlight Preset",
+    description: "Creates two light to mimic sunlight",
+    icon: <LightIcon />,
+  },
+  {
     value: "Camera",
     title: "Camera",
     description: "Add a camera content resource.",
@@ -208,7 +214,7 @@ function ContentResourceModal({
   const selectedAnnotation = annotations[selectedAnnotationIndex];
   const selectedResource = selectedAnnotation?.getContentResource() ?? null;
   const contentResourceOptions = baseContentResourceOptions.filter((option) => {
-    const isSceneOnlyOption = option.value === "Light" || option.value === "Camera";
+    const isSceneOnlyOption = option.value === "Light" || option.value === "Camera" || option.value === "Sunlight";
 
     if (isSceneOnlyOption && !isSceneContainer) {
       return false;

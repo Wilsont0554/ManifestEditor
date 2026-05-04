@@ -46,43 +46,73 @@ function CameraPresets({annotation, resource, onCommit, id}){
             // Usage: Get size or center
             const size = new THREE.Vector3();
             box.getSize(size);
-            
-            if (event == "Zoom Out"){
-                resource.clearTransforms();
-                annotation.setX(0)
-                annotation.setY(Math.max(size.y, size.y, size.x) / 2);
-                annotation.setZ(Math.max(size.y, size.y, size.x) * 2);
+            resource.clearTransforms();
+            annotation.setX(0)
+            annotation.setY(0);
+            annotation.setZ(0);
+
+            if (event == "Front Facing"){
+                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
+                annotation.setZ(Math.max(size.y, size.z, size.x) * 2);
                 
             }
-            else if (event == "Top Right"){
-                resource.clearTransforms();
-                annotation.setX(0)
-                annotation.setY(0);
-                annotation.setZ(0);
-
+            else if (event == "Back Facing"){
+                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
+                annotation.setZ(Math.max(size.y, size.z, size.x) * 2);
+                const rotateYZ = new Transform;
+                rotateYZ.setType("RotateTransform")
+                rotateYZ.setY(180);
+                rotateYZ.setZ(180);
+                const allTransforms = [rotateYZ];
+                resource.setTransforms(allTransforms);
+            }
+            else if (event == "Right Facing"){
+                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
+                annotation.setX(Math.max(size.y, size.z, size.x) * 2);
+                const rotateYZ = new Transform;
+                rotateYZ.setType("RotateTransform")
+                rotateYZ.setY(90);
+                const allTransforms = [rotateYZ];
+                resource.setTransforms(allTransforms);
+            }
+            else if (event == "Left Facing"){
+                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
+                annotation.setX(Math.max(size.y, size.z, size.x) * -2);
+                const rotateYZ = new Transform;
+                rotateYZ.setType("RotateTransform")
+                rotateYZ.setY(-90);
+                const allTransforms = [rotateYZ];
+                resource.setTransforms(allTransforms);
+            }
+            else if (event == "Top Left"){
                 const translateY = new Transform;
                 translateY.setType("TranslateTransform")
-                translateY.setY(Math.max(size.y, size.y, size.x) / 2);
-                translateY.setZ(Math.max(size.y, size.y, size.x) * 2);
+                translateY.setY(Math.max(size.y, size.z, size.x) / 2);
+                translateY.setZ(Math.max(size.y, size.z, size.x) * 2);
+                const rotateY = new Transform;
+                rotateY.setY(-40);
+                const rotateXZ = new Transform;
+                rotateXZ.setX(Math.max(size.y, size.z, size.x) * -4);
+                rotateXZ.setZ(Math.max(size.y, size.z, size.x) * -4);
+
+                const allTransforms = [translateY, rotateY, rotateXZ]
+                resource.setTransforms(allTransforms);
+            }
+            else if (event == "Top Right"){
+                const translateY = new Transform;
+                translateY.setType("TranslateTransform")
+                translateY.setY(Math.max(size.y, size.z, size.x) / 2);
+                translateY.setZ(Math.max(size.y, size.z, size.x) * 2);
                 const rotateY = new Transform;
                 rotateY.setY(40);
                 const rotateXZ = new Transform;
-                rotateXZ.setX(Math.max(size.y, size.y, size.x) * -4);
-                rotateXZ.setZ(Math.max(size.y, size.y, size.x) * 4);
+                rotateXZ.setX(Math.max(size.y, size.z, size.x) * -4);
+                rotateXZ.setZ(Math.max(size.y, size.z, size.x) * 4);
 
                 const allTransforms = [translateY, rotateY, rotateXZ]
-
                 resource.setTransforms(allTransforms);
-                console.log('test');
             }
-            else if (event == "Origin"){
-                resource.clearTransforms();
-
-                annotation.setX(0)
-                annotation.setY(0)
-                annotation.setZ(0)
-            }         
-
+            
             console.log('Total Size:', size);
             onCommit();
         };

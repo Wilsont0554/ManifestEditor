@@ -396,7 +396,9 @@ function LightResourceTechnicalEditor({
             }}
           >
             {testIDs.map((annotationTest) =>
-              <option key={annotationTest.getID()} value={annotationTest.getID()}>{annotationTest.getContentResource()?.getLabel().getValue()}</option>
+              <option key={annotationTest.getID()} value={annotationTest.getID()}>
+                {annotationTest.getContentResource()?.getLabel().getValue() ? annotationTest.getContentResource()?.getLabel().getValue() : annotationTest.getContentResource()?.getID()}
+              </option>
             )}
           </select>
         </ManifestField>

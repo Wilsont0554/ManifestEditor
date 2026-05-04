@@ -41,7 +41,7 @@ interface ContentResourceModalSnapshot {
 }
 
 const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
-const TEMP_MODAL_TYPES: EditableContentResourceType[] = ["Light", "Camera"];
+const TEMP_MODAL_TYPES: EditableContentResourceType[] = ["Light", "Camera", "Sunlight"];
 
 function ManifestEditorPage() {
   const [isContentResourceModalOpen, setIsContentResourceModalOpen] =
@@ -227,6 +227,8 @@ function ManifestEditorPage() {
 
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1);
+    const annotation2 = new Annotation(nextAnnotationIndex + 2);
+    console.log(type);
     if (type == "Model"){
       annotation.setContentResource(
         new ContentResource("", "Model", "model/gltf-binary"),
@@ -239,6 +241,17 @@ function ManifestEditorPage() {
       annotation.setContentResource(
         new Light("", "AmbientLight"),
       );
+    }
+    else if (type === "Sunlight") {
+      const skyLight = new Light("", "AmbientLight");
+      skyLight.setColor("#75d6ff");
+      const sunLight = new Light("", "DirectionalLight");
+      sunLight.setColor("#ffbd52");
+      sunLight.setIntensity("Value", 1, "relative");
+      annotation.setContentResource(skyLight);
+      annotation2.setContentResource(sunLight);
+      annotationPage.addAnnotation(annotation2);
+      setIsContentResourceModalOpen(false);
     }
     else if (type === "Camera") {
       annotation.setContentResource(

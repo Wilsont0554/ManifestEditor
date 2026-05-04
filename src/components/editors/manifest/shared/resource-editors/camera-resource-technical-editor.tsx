@@ -133,6 +133,7 @@ function CameraResourceTechnicalEditor({
   }
   else {
     advancedOptions = <>
+          <div className="grid gap-4 sm:grid-cols-3">
             <NumericDraftInput
               id={`${idPrefix}-x`}
               label="X"
@@ -168,6 +169,7 @@ function CameraResourceTechnicalEditor({
                 onCommit();
               }}
             />
+            </div>
 
             <section className="space-y-4 rounded-xl border border-dashed border-pink-200 bg-white p-4">
           <div className="flex items-center justify-between gap-3">

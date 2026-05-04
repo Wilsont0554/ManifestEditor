@@ -3,7 +3,7 @@ import ContentResource from "@/ManifestClasses/ContentResource";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import { Manifest } from "vite";
 
-export const cameraPresets = ["Origin", "Zoom Out", "Top Right"] as const
+export const cameraPresets = ["Origin", "Front Facing", "Top Right", "Top Left", "Back Facing", "Right Facing", "Left Facing"] as const
 export const lightPresets = ["Origin", "Top Light", "Right Light"] as const
 
 export const contentResourceTypeToFormat = {
@@ -29,7 +29,8 @@ export type SupportedCameraContentResourceType =
 export type EditableContentResourceType =
   | keyof typeof contentResourceTypeToFormat
   | "Light"
-  | "Camera";
+  | "Camera"
+  | "Sunlight"
 
 export function getResourceTypeItems(manifestObj: ManifestObject, resourceType: object) {
   let resourceNumber = 0;
