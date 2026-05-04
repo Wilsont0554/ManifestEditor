@@ -2,6 +2,10 @@ import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
 import Transform from './Transform.ts';
 
+type SpecificResourceBody = ContentResource & {
+    source?: ContentResource[];
+};
+
 class ContentResource {
     id: string;
     type: string;
@@ -67,18 +71,20 @@ class ContentResource {
         try{
 
             if (newContentResource.type == "SpecificResource"){
-                if (newContentResource.transform != undefined){
-                    for (let i = 0; i < newContentResource.transform.length; i++){
-                        const tempTransform = new Transform(newContentResource.transform[i].type)
-                        tempTransform.setX(newContentResource.transform[i].x);
-                        tempTransform.setY(newContentResource.transform[i].y);
-                        tempTransform.setZ(newContentResource.transform[i].z);
+                if (newContentResource.transforms != undefined){
+                    for (let i = 0; i < newContentResource.transforms.length; i++){
+                        const tempTransform = new Transform(newContentResource.transforms[i].type)
+                        tempTransform.setX(newContentResource.transforms[i].x);
+                        tempTransform.setY(newContentResource.transforms[i].y);
+                        tempTransform.setZ(newContentResource.transforms[i].z);
                         this.transforms.push(tempTransform);
                     }
                 }
-                console.log(newContentResource)
-                newContentResource = newContentResource.source[0];
-                console.log(newContentResource);
+                const specificResource = newContentResource as SpecificResourceBody;
+
+                if (specificResource.source?.[0] != undefined) {
+                    newContentResource = specificResource.source[0];
+                }
             }
 
             this.id = newContentResource.id;

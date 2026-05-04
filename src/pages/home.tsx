@@ -1,26 +1,46 @@
-import { NavLink } from "react-router";
+import { useEffect } from "react";
+import Hero from "@/components/home/hero";
+import Features from "@/components/home/features";
+import Workflow from "@/components/home/workflow";
+import Introduction from "@/components/home/introduction";
+import Audience from "@/components/home/audience";
+import ManifestDefinition from "@/components/home/manifestDefinition";
+import CallToAction from "@/components/home/callToAction";
+import Mission from "@/components/home/mission";
 
-const EDITOR_ROUTE = "/ManifestEditor/manifest-editor/editor";
+const VOYAGER_SCRIPT_ID = "voyager-explorer-script";
+const VOYAGER_SCRIPT_SRC =
+  "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js";
+
+function ensureVoyagerScript(): void {
+  if (document.getElementById(VOYAGER_SCRIPT_ID)) {
+    return;
+  }
+
+  const scriptTag = document.createElement("script");
+  scriptTag.id = VOYAGER_SCRIPT_ID;
+  scriptTag.src = VOYAGER_SCRIPT_SRC;
+  document.body.appendChild(scriptTag);
+}
 
 function HomePage() {
-  return (
-    <div className="w-full overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
-          Manifest Editor
-        </h1>
-        <p className="mt-3 max-w-2xl text-slate-600">
-          Build IIIF 4.0 manifests, edit annotation details, and export the
-          result as a JSON file.
-        </p>
 
-        <NavLink
-          to={EDITOR_ROUTE}
-          className="mt-6 inline-flex rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
-        >
-          Open Manifest Editor
-        </NavLink>
-      </section>
+  useEffect(() => {
+    ensureVoyagerScript();
+  }, []);
+
+  return (
+    <div className="manifest-tabs-scroll h-full w-full overflow-y-auto bg-[radial-gradient(circle_at_top_left,#fce7f3_0,#f8fafc_28rem,#eaf2ff_100%)] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-6 pb-8">
+        <Hero />
+        <ManifestDefinition/>
+        <Introduction/>
+        <Workflow />
+        <Features />
+        <Audience />
+        <Mission />
+        <CallToAction />
+      </div>
     </div>
   );
 }
