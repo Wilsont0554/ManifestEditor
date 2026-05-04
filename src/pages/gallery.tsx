@@ -64,7 +64,7 @@ export default function Gallery() {
   async function handleDeleteProjectById(id: string) {
     try {
       await db.deleteProject(id);
-      setProjects((prev) => prev?.filter((proj) => proj.id.split('/').pop() !== id) ?? null);
+      setProjects((prev) => prev?.filter((proj) => proj["id"].split('/').pop() !== id) ?? null);
     }
     catch (err) {
       console.error("Failed to delete manifest from IndexedDB:", err);
