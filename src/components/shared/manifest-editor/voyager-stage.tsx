@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { JsonEditor } from "json-edit-react";
 import type { IiifContainerType } from "@/types/iiif";
 
@@ -30,11 +30,6 @@ function VoyagerStage({
   const toolbarButtonClassName =
     "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300";
 
-  useEffect(() => {
-    if (hasStageContent) {
-      setIsQuickStartDismissed(false);
-    }
-  }, [hasStageContent]);
 
   return (
     <section className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/90 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">

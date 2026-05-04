@@ -6,6 +6,11 @@ import ProjectsSection from "@/components/gallery/ProjectsSection";
 import bluehelmet from "@/examples/bluehelmet.json";
 import { createManifestObjectFromUpload, serializeManifestForExport } from "@/utils/file";
 
+type SavedProject = {
+  id: string;
+  [key: string]: unknown;
+};
+
 export default function Gallery() {
   const [projects, setProjects] = useState<object[] | null>(null);
   const [examples, setExamples] = useState<object[] | null>(null);
@@ -41,7 +46,7 @@ export default function Gallery() {
       if (cancelled) return false;
       const savedManifested = await db.getAllProjects();
       if (cancelled) return false;
-      setProjects(savedManifested);
+      setProjects(savedManifested as SavedProject[]);
       return true;
     }
 
@@ -51,7 +56,7 @@ export default function Gallery() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [db]);
 
   /**
    * Handle delete manifest
@@ -59,7 +64,7 @@ export default function Gallery() {
   async function handleDeleteProjectById(id: string) {
     try {
       await db.deleteProject(id);
-      setProjects((prev) => prev?.filter((proj: any) => proj.id.split('/').pop() !== id) ?? null);
+      setProjects((prev) => prev?.filter((proj) => proj.id.split('/').pop() !== id) ?? null);
     }
     catch (err) {
       console.error("Failed to delete manifest from IndexedDB:", err);
