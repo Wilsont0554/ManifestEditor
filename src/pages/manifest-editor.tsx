@@ -207,6 +207,7 @@ function ManifestEditorPage() {
     allowedTypes?: EditableContentResourceType[],
   ): void {
     captureContentResourceModalSnapshot();
+    setIsInspectorOpen(true);
     setContentResourceModalTypes(allowedTypes);
     setContentResourceModalView("picker");
     setIsContentResourceModalOpen(true);
@@ -279,6 +280,7 @@ function ManifestEditorPage() {
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);
     setContentResourceModalView("editor");
     setIsContentResourceModalOpen(true);
+    setIsInspectorOpen(true);
     updateManifestObj();
   }
 
@@ -322,6 +324,7 @@ function ManifestEditorPage() {
         view={contentResourceModalView}
         selectedAnnotationIndex={selectedMetadataAnnotationIndex}
         allowedTypes={contentResourceModalTypes}
+        width={inspectorWidth}
         onCancel={handleCancelContentResourceModal}
         onSave={handleSaveContentResourceModal}
         onSelectType={handleCreateContentResource}
