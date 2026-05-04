@@ -6,11 +6,6 @@ import ProjectsSection from "@/components/gallery/ProjectsSection";
 import bluehelmet from "@/examples/bluehelmet.json";
 import { createManifestObjectFromUpload, serializeManifestForExport } from "@/utils/file";
 
-type SavedProject = {
-  id: string;
-  [key: string]: unknown;
-};
-
 export default function Gallery() {
   const [projects, setProjects] = useState<object[] | null>(null);
   const [examples, setExamples] = useState<object[] | null>(null);
@@ -46,7 +41,7 @@ export default function Gallery() {
       if (cancelled) return false;
       const savedManifested = await db.getAllProjects();
       if (cancelled) return false;
-      setProjects(savedManifested as SavedProject[]);
+      setProjects(savedManifested);
       return true;
     }
 
