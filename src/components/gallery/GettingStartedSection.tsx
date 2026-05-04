@@ -10,8 +10,9 @@ import SectionHeading from "@/components/gallery/SectionHeading";
  */
 export default function GettingStartedSection() {
   return (
-    <section className="mb-10">
+    <section className="rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
       <SectionHeading
+        eyebrow="Start"
         title="Getting started"
         description="Three ways to spin up a manifest."
       />

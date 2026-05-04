@@ -52,8 +52,8 @@ export default function Gallery() {
   
   return (
     <Layout>
-      <GettingStartedSection />
       <ProjectsSection projects={projects} onDeleteProjectById={handleDeleteProjectById} />
+      <GettingStartedSection />
     </Layout>
   );
 }

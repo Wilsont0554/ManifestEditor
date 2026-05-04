@@ -74,7 +74,7 @@ export default function ProjectCard(props: Props) {
   return (
     <Link
       to={"/editor/" + id}
-      className="group relative flex flex-col overflow-hidden rounded-sm border border-slate-300/70 bg-white transition-all duration-300 hover:border-slate-900 hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.45)] hover:-translate-y-1"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition-all duration-300 hover:-translate-y-1 hover:border-slate-900 hover:bg-white hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.45)]"
       state={{ isExample: isExample }}
     >
       <div
@@ -111,7 +111,7 @@ export default function ProjectCard(props: Props) {
         </ThreeDotsMenu>
       </div>
 
-      <div className="flex flex-col gap-0.5 px-2.5 py-2">
+      <div className="flex flex-col gap-0.5 px-3 py-3">
         <p
           className="truncate text-sm font-semibold leading-tight text-slate-900"
           title={label}

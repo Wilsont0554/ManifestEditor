@@ -13,19 +13,19 @@ type Props = {
  */
 export default function SectionHeading({ eyebrow, title, description }: Props) {
   return (
-    <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-slate-200 pb-3">
+    <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-slate-200/80 pb-3">
       <div className="flex flex-col gap-1">
         {eyebrow && (
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
-          {eyebrow}
-          </p> 
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-pink-600">
+            {eyebrow}
+          </p>
         )}
         <h2 className="text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
           {title}
         </h2>
       </div>
       {description && (
-        <p className="max-w-xs text-sm leading-snug text-slate-500 self-end">
+        <p className="max-w-xs self-end text-sm leading-snug text-slate-600">
           {description}
         </p>
       )}

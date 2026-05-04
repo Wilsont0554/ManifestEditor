@@ -9,8 +9,8 @@ type Props = {
  */
 export default function Layout({ children }: Props) {
   return (
-    <div className="manifest-tabs-scroll relative h-full w-full overflow-y-auto bg-white">
-      <div className="relative mx-auto w-full max-w-[1500px] px-5 pt-5 pb-20 sm:px-8 lg:px-12">
+    <div className="manifest-tabs-scroll relative h-full w-full overflow-y-auto bg-[radial-gradient(circle_at_top_left,#fce7f3_0,#f8fafc_28rem,#eaf2ff_100%)]">
+      <div className="relative mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 pb-20 sm:px-6 lg:px-8">
         {children}
       </div>
     </div>
