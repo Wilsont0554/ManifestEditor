@@ -3,12 +3,32 @@ import { IndexedDB } from "@/utils/indexdb";
 import Layout from "@/components/gallery/Layout";
 import GettingStartedSection from "@/components/gallery/GettingStartedSection";
 import ProjectsSection from "@/components/gallery/ProjectsSection";
-
+import bluehelmet from "@/examples/bluehelmet.json";
+import { createManifestObjectFromUpload } from "@/utils/file";
+import ManifestObject from "@/ManifestClasses/ManifestObject";
 export default function Gallery() {
   const [projects, setProjects] = useState<object[] | null>(null);
+  const [examples, setExamples] = useState<object[] | null>(null);
   const dbRef = useRef<IndexedDB>(new IndexedDB());
   const db = dbRef.current;
 
+  //loadung example manifest
+  useEffect(() => {
+    let cancelled = false;
+    async function loadExample() {
+      const exampleManifest = await createManifestObjectFromUpload(bluehelmet as ManifestObject);
+      setExamples([exampleManifest]);
+    }
+    loadExample().catch((err) => {
+      console.error("Failed to load example manifest:", err);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+
+  //loadung manifests from IndexedDB on component mount
   useEffect(() => {
     let cancelled = false;
 
@@ -49,7 +69,8 @@ export default function Gallery() {
   return (
     <Layout>
       <GettingStartedSection />
-      <ProjectsSection projects={projects} onDeleteProjectById={handleDeleteProjectById} />
+      <ProjectsSection 
+      projects={projects} examples={examples} onDeleteProjectById={handleDeleteProjectById} />
     </Layout>
   );
 }

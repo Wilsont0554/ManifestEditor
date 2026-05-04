@@ -9,6 +9,7 @@ type Tab = "projects" | "examples";
 type Props = {
   /** User projects loaded from IndexedDB. `null` while loading. */
   projects: object[] | null;
+  examples: object[] | null;
   /** Function to handle project deletion. */
   onDeleteProjectById: (id: string) => void;
 };
@@ -17,12 +18,12 @@ type Props = {
  * Projects section of the Gallery page.
  * @param projects user manifests from IndexedDB, or null while loading
  */
-export default function ProjectsSection({ projects, onDeleteProjectById }: Props) {
+export default function ProjectsSection({ projects, examples, onDeleteProjectById }: Props) {
   const [tab, setTab] = useState<Tab>("examples");
 
   const counts = {
     projects: projects?.length ?? 0,
-    examples: 0,
+    examples: examples?.length ?? 0,
   };
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function ProjectsSection({ projects, onDeleteProjectById }: Props
           {tab === "projects" ? (
             <MyProjectsTab projects={projects} onDeleteProjectById={onDeleteProjectById} />
           ) : (
-            <ExamplesTab />
+            <ExamplesTab projects={examples??null}/>
           )}
         </div>
       </div>
