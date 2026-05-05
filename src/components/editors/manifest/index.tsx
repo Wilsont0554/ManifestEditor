@@ -53,16 +53,8 @@ function ManifestComponent({
     tabContent = <EnvironmentTab />;
   }
 
-  if (activeTab === "linking") {
-    tabContent = <LinkingTab />;
-  }
-
   if (activeTab === "structure") {
     tabContent = <AssetsTab />;
-  }
-
-  if (activeTab === "nav-place") {
-    tabContent = <NavPlaceTab />;
   }
 
   useEffect(() => {

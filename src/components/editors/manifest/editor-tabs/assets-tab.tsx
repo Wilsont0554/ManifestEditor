@@ -42,7 +42,7 @@ function AssetsTab() {
                   <CollapsibleResourceCard
                     badgeLabel={`Content Resource ${resourceNumber}`}
                     key={`structure-content-resource-${annotationIndex}`}
-                    description="temp"
+                    description=""
                     collapsible
                   >
                     <ContentResourceEditor
@@ -93,7 +93,7 @@ function AssetsTab() {
                   <CollapsibleResourceCard
                     badgeLabel={`Text Annotation ${resourceNumber}`}
                     key={`structure-content-resource-${annotationIndex}`}
-                    description="temp"
+                    description=""
                     collapsible
                   >
                     <div className="space-y-4">

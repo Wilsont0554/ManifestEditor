@@ -5,7 +5,7 @@
   useEffect,
   useRef,
 } from "react";
-import { manifestObjContext } from "@/context/manifest-context";
+import { isAdvancedViewContext, manifestObjContext } from "@/context/manifest-context";
 import Button from "@/components/shared/button";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
@@ -230,6 +230,9 @@ function ContentResourceModal({
     .getContainerObj()
     .getAnnotationPage()
     .getAllAnnotations();
+  const { advancedView, toggleAdvancedView } =
+      useContext(isAdvancedViewContext);
+
   const selectedAnnotation =
     view === "editor"
       ? annotations[selectedAnnotationIndex] ?? null
@@ -310,6 +313,7 @@ function ContentResourceModal({
       className="absolute inset-y-0 right-0 z-30 flex h-full border-l border-slate-300 bg-white shadow-[-18px_0_36px_rgba(15,23,42,0.08)]"
       style={{ width: `${width}px`, maxWidth: "calc(100vw - 24px)" }}
     >
+      
         <div
           ref={dialogRef}
           role="dialog"
@@ -340,6 +344,17 @@ function ContentResourceModal({
               </p>
             </div>
 
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={`rounded-md ${advancedView ? "bg-rose-600 text-white hover:bg-rose-700" : "border bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700"} px-2.5 py-1 text-s font-semibold  transition`}
+              onClick={() => {toggleAdvancedView()}}
+              title="Export manifest"
+            >
+              {advancedView ? (<>Simple View</>) : (<>Advanced View</>)}
+            </button>
+          </div>
+
             <button
               ref={closeButtonRef}
               type="button"
@@ -349,6 +364,8 @@ function ContentResourceModal({
             >
               &times;
             </button>
+
+            
           </div>
 
           <div className="manifest-tabs-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5">
