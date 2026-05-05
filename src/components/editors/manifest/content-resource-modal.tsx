@@ -27,6 +27,7 @@ interface ContentResourceModalProps {
   view: ContentResourceModalView;
   selectedAnnotationIndex: number;
   allowedTypes?: EditableContentResourceType[];
+  width: number;
   onCancel: () => void;
   onSave: () => void;
   onSelectType: (type: EditableContentResourceType) => void;
@@ -216,6 +217,7 @@ function ContentResourceModal({
   view,
   selectedAnnotationIndex,
   allowedTypes,
+  width,
   onCancel,
   onSave,
   onSelectType,
@@ -247,12 +249,9 @@ function ContentResourceModal({
     }
 
     const previouslyFocusedElement = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       previouslyFocusedElement?.focus();
     };
   }, [isOpen]);
@@ -307,14 +306,10 @@ function ContentResourceModal({
   );
 
   return (
-    <div className="absolute inset-0 z-30">
-      <div
-        className="absolute inset-0 h-full w-full bg-slate-900/35"
-        onClick={onCancel}
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 flex h-full items-start justify-center overflow-y-auto p-4 sm:p-6">
+    <div
+      className="absolute inset-y-0 right-0 z-30 flex h-full border-l border-slate-300 bg-white shadow-[-18px_0_36px_rgba(15,23,42,0.08)]"
+      style={{ width: `${width}px`, maxWidth: "calc(100vw - 24px)" }}
+    >
         <div
           ref={dialogRef}
           role="dialog"
@@ -322,15 +317,13 @@ function ContentResourceModal({
           aria-labelledby={dialogTitleId}
           aria-describedby={dialogDescriptionId}
           onKeyDown={handleDialogKeyDown}
-          className={`w-full rounded-3xl bg-white shadow-2xl ${
-            view === "picker" ? "max-w-3xl" : "max-w-2xl"
-          }`}
+          className="flex min-w-0 flex-1 flex-col bg-white"
         >
-          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5 sm:px-7">
+          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
             <div className="space-y-1">
               <h2
                 id={dialogTitleId}
-                className="text-2xl font-semibold tracking-tight text-slate-950"
+                className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500"
               >
                 {view === "picker"
                   ? "Add content"
@@ -350,7 +343,7 @@ function ContentResourceModal({
             <button
               ref={closeButtonRef}
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-4xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
               onClick={onCancel}
               aria-label="Close content resource modal"
             >
@@ -358,24 +351,24 @@ function ContentResourceModal({
             </button>
           </div>
 
-          <div className="px-6 py-6 sm:px-7 sm:py-7">
+          <div className="manifest-tabs-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5">
             {view === "picker" ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4">
                 {contentResourceOptions.map((option) => (
                   <button
                     key={option.value}
                     type="button"
-                    className="group flex h-full flex-col items-start rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-pink-300 hover:bg-rose-50/50"
+                    className="group flex h-full items-center gap-4 rounded-2xl border border-pink-200 bg-rose-50/40 p-4 text-left transition hover:border-pink-300 hover:bg-rose-50"
                     onClick={() => onSelectType(option.value)}
                   >
-                    <div className="flex w-full items-center justify-center rounded-xl bg-slate-200 py-6 transition group-hover:bg-white">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white transition group-hover:bg-pink-50">
                       {option.icon}
                     </div>
-                    <div className="pt-4">
-                      <p className="text-xl font-semibold text-slate-950">
+                    <div>
+                      <p className="text-lg font-semibold text-slate-950">
                         {option.title}
                       </p>
-                      <p className="mt-2 text-sm leading-6 text-slate-500">
+                      <p className="mt-1 text-sm leading-6 text-slate-500">
                         {option.description}
                       </p>
                     </div>
@@ -446,7 +439,7 @@ function ContentResourceModal({
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-5 sm:px-7">
+          <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
             <SoftActionButton
               type="button"
               className="justify-center"
@@ -467,7 +460,6 @@ function ContentResourceModal({
             ) : null}
           </div>
         </div>
-      </div>
     </div>
   );
 }

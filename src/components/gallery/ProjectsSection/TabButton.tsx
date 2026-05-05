@@ -19,8 +19,8 @@ export default function TabButton({ active, label, count, onClick }: Props) {
       onClick={onClick}
       className={`group relative -ml-px flex w-full items-center justify-between border-l-2 py-2 pl-4 pr-3 text-base transition-all ${
         active
-          ? "border-slate-900 font-semibold text-slate-950"
-          : "border-transparent font-medium text-slate-500 hover:border-slate-300 hover:text-slate-800"
+          ? "border-pink-600 font-semibold text-slate-950"
+          : "border-transparent font-medium text-slate-500 hover:border-pink-200 hover:text-slate-800"
       }`}
     >
       <span>{label}</span>
@@ -28,7 +28,7 @@ export default function TabButton({ active, label, count, onClick }: Props) {
         className={`rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors ${
           active
             ? "bg-slate-900 text-white"
-            : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
+            : "bg-slate-100 text-slate-500 group-hover:bg-pink-50"
         }`}
       >
         {String(count).padStart(2, "0")}
