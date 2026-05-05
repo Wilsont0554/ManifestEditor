@@ -9,7 +9,7 @@ import ContentResource from "@/ManifestClasses/ContentResource";
 
 function LightPresets({annotation, resource, onCommit, id}){
     const { manifestObj } = useContext(manifestObjContext);
-    const [selectedPreset, setSelectedPreset] = useState("Origin");
+    const [selectedPreset, setSelectedPreset] = useState(resource.getPreset());
 
     async function test(event){
         let allResources: string[] | undefined[]//manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations()
@@ -109,6 +109,7 @@ function LightPresets({annotation, resource, onCommit, id}){
                     className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 focus:border-pink-500 focus:outline-none"
                     onChange={(event) => {
                         setSelectedPreset(event.target.value)
+                        resource.setPreset(event.target.value)
                         test(event.target.value);
                     }}
                 >

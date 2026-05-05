@@ -13,6 +13,7 @@ class ContentResource {
     summary?: Label;
     metadata: Metadata;
     transforms: Transform[];
+    presetType?: string;
 
     constructor(id: string, type: string, format?: string) {
         this.id = id;
@@ -21,11 +22,20 @@ class ContentResource {
         this.label = this.createLabel("en");
         this.metadata = new Metadata();
         this.transforms = [];
+        this.presetType = "Origin"
     }
 
     /*---------------------------------------------------
                         SETTERS
     ---------------------------------------------------*/
+    setPreset(newPreset: string): void{
+        this.presetType = newPreset;
+    }
+
+    getPreset(): string{
+        return this.presetType!;
+    }
+
     setID(value: string): void {
         this.id = value;
     }
@@ -205,6 +215,7 @@ class ContentResource {
         target.summary = this.summary?.clone();
         target.metadata = this.metadata.clone();
         target.transforms = this.transforms.map((transform) => transform.clone());
+        target.presetType = this.presetType;
 
         return target;
     }
