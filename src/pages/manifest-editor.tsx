@@ -47,6 +47,7 @@ const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
 const ENVIRONMENT_MODAL_TYPES: EditableContentResourceType[] = [
   "Light",
   "Camera",
+  "Sunlight",
 ];
 
 type ImportExportType = "none" | "import" | "export";
@@ -79,7 +80,8 @@ function ManifestEditorPage() {
     useState<ContentResourceModalView>("picker");
   const [contentResourceModalTypes, setContentResourceModalTypes] =
     useState<EditableContentResourceType[] | undefined>(undefined);
-  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+
+    const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");

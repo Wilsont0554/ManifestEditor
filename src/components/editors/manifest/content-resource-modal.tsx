@@ -237,7 +237,7 @@ function ContentResourceModal({
     selectedResource instanceof TextAnnotation ? selectedResource : null;
   const contentResourceOptions = baseContentResourceOptions.filter(
     (option) =>
-      ((option.value !== "Light" && option.value !== "Camera" || option.value === "Sunlight") || isSceneContainer) &&
+      ((option.value !== "Light" && option.value !== "Camera") || isSceneContainer) &&
       (!allowedTypes || allowedTypes.includes(option.value)),
   );
 
