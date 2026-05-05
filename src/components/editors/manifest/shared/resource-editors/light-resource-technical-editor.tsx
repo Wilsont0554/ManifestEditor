@@ -74,34 +74,13 @@ function LightResourceTechnicalEditor({
       
       <SliderInput
           idPrefix={`${idPrefix}-intensity`}
-          value={(target?.getZ() ?? 0).toString()}
-          MIN = {LIGHT_CORDS_MIN}
-          MAX = {LIGHT_CORDS_MAX}
-          STEP = {LIGHT_CORDS_STEP}
-          DEFAULT = {DEFAULT_LIGHT_CORDS}
-          percent = {false}
-          label={"In-Out"}
-          onCommit={(newValue) => {
-            annotation.setZ(
-                clampNumber(
-                  newValue,
-                  LIGHT_CORDS_MIN,
-                  LIGHT_CORDS_MAX,
-                ),
-              );
-            onCommit();
-          }}
-        />
-
-      <SliderInput
-          idPrefix={`${idPrefix}-intensity`}
           value={(target?.getX() ?? 0).toString()}
           MIN = {LIGHT_CORDS_MIN}
           MAX = {LIGHT_CORDS_MAX}
           STEP = {LIGHT_CORDS_STEP}
           DEFAULT = {DEFAULT_LIGHT_CORDS}
           percent = {false}
-          label={"Left-Right"}
+          label={"Move: Left-Right"}
           onCommit={(newValue) => {
             annotation.setX(
                 clampNumber(
@@ -121,9 +100,30 @@ function LightResourceTechnicalEditor({
           STEP = {LIGHT_CORDS_STEP}
           DEFAULT = {DEFAULT_LIGHT_CORDS}
           percent = {false}
-          label={"Down-Up"}
+          label={"Move: Down-Up"}
           onCommit={(newValue) => {
             annotation.setY(
+                clampNumber(
+                  newValue,
+                  LIGHT_CORDS_MIN,
+                  LIGHT_CORDS_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
+
+        <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getZ() ?? 0).toString()}
+          MIN = {LIGHT_CORDS_MIN}
+          MAX = {LIGHT_CORDS_MAX}
+          STEP = {LIGHT_CORDS_STEP}
+          DEFAULT = {DEFAULT_LIGHT_CORDS}
+          percent = {false}
+          label={"Move: Backward-Forward"}
+          onCommit={(newValue) => {
+            annotation.setZ(
                 clampNumber(
                   newValue,
                   LIGHT_CORDS_MIN,

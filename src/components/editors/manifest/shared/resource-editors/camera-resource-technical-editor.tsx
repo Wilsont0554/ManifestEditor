@@ -67,26 +67,7 @@ function CameraResourceTechnicalEditor({
       <section className="space-y-4">
       <p className="text-base font-semibold text-slate-950">Position</p>
       
-      <SliderInput
-          idPrefix={`${idPrefix}-intensity`}
-          value={(target?.getZ() ?? 0).toString()}
-          MIN = {COORD_MIN}
-          MAX = {COORD_MAX}
-          STEP = {COORD_STEP}
-          DEFAULT = {0}
-          percent = {false}
-          label={"Zoom: In-Out"}
-          onCommit={(newValue) => {
-            annotation.setZ(
-                clampNumber(
-                  newValue,
-                  COORD_MIN,
-                  COORD_MAX,
-                ),
-              );
-            onCommit();
-          }}
-        />
+      
 
       <SliderInput
           idPrefix={`${idPrefix}-intensity`}
@@ -119,6 +100,26 @@ function CameraResourceTechnicalEditor({
           label={"Pan: Down-Up"}
           onCommit={(newValue) => {
             annotation.setY(
+                clampNumber(
+                  newValue,
+                  COORD_MIN,
+                  COORD_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
+        <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getZ() ?? 0).toString()}
+          MIN = {COORD_MIN}
+          MAX = {COORD_MAX}
+          STEP = {COORD_STEP}
+          DEFAULT = {0}
+          percent = {false}
+          label={"Zoom: In-Out"}
+          onCommit={(newValue) => {
+            annotation.setZ(
                 clampNumber(
                   newValue,
                   COORD_MIN,
