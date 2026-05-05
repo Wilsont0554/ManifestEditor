@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useState } from "react";
 import ManifestField from "./manifest-field";
 import { clampNumber } from "@/utils/content-resource";
 
@@ -13,6 +13,7 @@ export function NumericDraftInput({
   max = 1000,
   step,
   clampDraftToRange = false,
+  replaceZeroOnNegativeStart = false,
 }) {
     const [draftValue, setDraftValue] = useState(value);
 
@@ -20,6 +21,21 @@ export function NumericDraftInput({
     useEffect(() => {
         setDraftValue(value);
     }, [value]);
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        const isNegativeKey = event.key === "-" || event.key === "Subtract";
+
+        if (!replaceZeroOnNegativeStart || min >= 0 || !isNegativeKey) {
+            return;
+        }
+
+        if (event.currentTarget.value !== "0") {
+            return;
+        }
+
+        event.preventDefault();
+        setDraftValue("-");
+    };
 
     return (
         <ManifestField label={label} htmlFor={id} className="space-y-2">
@@ -33,6 +49,7 @@ export function NumericDraftInput({
             step={step}
             placeholder={placeholder}
             className="w-full border border-slate-400 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-pink-500 focus:outline-none"
+            onKeyDown={handleKeyDown}
             onChange={(event) => {
             const nextValue = event.target.value;
 

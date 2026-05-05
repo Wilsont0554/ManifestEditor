@@ -52,13 +52,12 @@ function CameraPresets({annotation, resource, onCommit, id}){
             annotation.setZ(0);
 
             if (event == "Front Facing"){
-                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
+                annotation.setY(Math.round(Math.max(size.y, size.z, size.x) / 2));
                 annotation.setZ(Math.max(size.y, size.z, size.x) * 2);
-                
             }
             else if (event == "Back Facing"){
-                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
-                annotation.setZ(Math.max(size.y, size.z, size.x) * 2);
+                annotation.setY(Math.round(Math.max(size.y, size.z, size.x) / 2));
+                annotation.setZ(Math.round(Math.max(size.y, size.z, size.x) * 2));
                 const rotateYZ = new Transform;
                 rotateYZ.setType("RotateTransform")
                 rotateYZ.setY(180);
@@ -67,8 +66,8 @@ function CameraPresets({annotation, resource, onCommit, id}){
                 resource.setTransforms(allTransforms);
             }
             else if (event == "Right Facing"){
-                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
-                annotation.setX(Math.max(size.y, size.z, size.x) * 2);
+                annotation.setY(Math.round(Math.max(size.y, size.z, size.x) / 2));
+                annotation.setX(Math.round(Math.max(size.y, size.z, size.x) * 2));
                 const rotateYZ = new Transform;
                 rotateYZ.setType("RotateTransform")
                 rotateYZ.setY(90);
@@ -76,7 +75,7 @@ function CameraPresets({annotation, resource, onCommit, id}){
                 resource.setTransforms(allTransforms);
             }
             else if (event == "Left Facing"){
-                annotation.setY(Math.max(size.y, size.z, size.x) / 2);
+                annotation.setY(Math.round(Math.max(size.y, size.z, size.x) / 2));
                 annotation.setX(Math.max(size.y, size.z, size.x) * -2);
                 const rotateYZ = new Transform;
                 rotateYZ.setType("RotateTransform")
@@ -87,8 +86,8 @@ function CameraPresets({annotation, resource, onCommit, id}){
             else if (event == "Top Left"){
                 const translateY = new Transform;
                 translateY.setType("TranslateTransform")
-                translateY.setY(Math.max(size.y, size.z, size.x) / 2);
-                translateY.setZ(Math.max(size.y, size.z, size.x) * 2);
+                translateY.setY(Math.round(Math.max(size.y, size.z, size.x) / 2));
+                translateY.setZ(Math.round(Math.max(size.y, size.z, size.x) * 2));
                 const rotateY = new Transform;
                 rotateY.setY(-40);
                 const rotateXZ = new Transform;
@@ -101,13 +100,13 @@ function CameraPresets({annotation, resource, onCommit, id}){
             else if (event == "Top Right"){
                 const translateY = new Transform;
                 translateY.setType("TranslateTransform")
-                translateY.setY(Math.max(size.y, size.z, size.x) / 2);
-                translateY.setZ(Math.max(size.y, size.z, size.x) * 2);
+                translateY.setY(Math.round(Math.max(size.y, size.z, size.x) / 2));
+                translateY.setZ(Math.round(Math.max(size.y, size.z, size.x) * 2));
                 const rotateY = new Transform;
                 rotateY.setY(40);
                 const rotateXZ = new Transform;
-                rotateXZ.setX(Math.max(size.y) * -4);
-                rotateXZ.setZ(Math.max(size.y) * 4);
+                rotateXZ.setX(Math.round(Math.max(size.y) * -4));
+                rotateXZ.setZ(Math.round(Math.max(size.y) * 4));
 
                 const allTransforms = [translateY, rotateY, rotateXZ]
                 resource.setTransforms(allTransforms);

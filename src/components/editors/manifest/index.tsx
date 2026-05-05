@@ -7,12 +7,11 @@ import {
 } from "react";
 import {
   MANIFEST_TABS,
-  type ManifestTabId,
 } from "./manifest-component-constants";
 import DescriptiveTab from "./editor-tabs/descriptive-tab";
-import JsonPreviewTab from "./editor-tabs/json-preview-tab";
 import LinkingTab from "./editor-tabs/linking-tab";
 import MetadataTab from "./editor-tabs/metadata-tab";
+import NavPlaceTab from "./editor-tabs/nav-place-tab";
 import OverviewTab from "./editor-tabs/overview-tab";
 import AssetsTab from "./editor-tabs/assets-tab";
 import EnvironmentTab from "./editor-tabs/environment-tab";
@@ -25,8 +24,6 @@ function ManifestComponent({
   onActiveTabChange,
   selectedMetadataAnnotationIndex,
   onSelectedMetadataAnnotationIndexChange,
-  onImportClick,
-  onExportClick,
   onClose,
   onReset,
   onResizeStart,
@@ -56,16 +53,16 @@ function ManifestComponent({
     tabContent = <EnvironmentTab />;
   }
 
-  if (activeTab === "json-preview") {
-    tabContent = <JsonPreviewTab />;
-  }
-
   if (activeTab === "linking") {
     tabContent = <LinkingTab />;
   }
 
   if (activeTab === "structure") {
     tabContent = <AssetsTab />;
+  }
+
+  if (activeTab === "nav-place") {
+    tabContent = <NavPlaceTab />;
   }
 
   useEffect(() => {
@@ -154,22 +151,6 @@ function ManifestComponent({
             Manifest
           </p>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-s font-semibold text-rose-700 transition hover:bg-rose-100"
-              onClick={onImportClick}
-              title="Import manifest from file or GitHub Gist"
-            >
-              Import
-            </button>
-            <button
-              type="button"
-              className="rounded-md bg-rose-600 px-2.5 py-1 text-s font-semibold text-white transition hover:bg-rose-700"
-              onClick={onExportClick}
-              title="Export manifest"
-            >
-              Export
-            </button>
             <button
               type="button"
               className={`rounded-md ${advancedView ? "bg-rose-600 text-white hover:bg-rose-700" : "border bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700"} px-2.5 py-1 text-s font-semibold  transition`}

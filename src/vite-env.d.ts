@@ -11,6 +11,8 @@ declare module "react" {
       > & {
         document?: string;
         prompt?: string | boolean;
+        uimode?: string;
+        controls?: string | boolean;
       };
     }
   }

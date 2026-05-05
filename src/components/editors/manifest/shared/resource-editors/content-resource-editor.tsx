@@ -252,6 +252,7 @@ function ContentResourceEditor({
                   value={(transform.getX() ?? 0).toString()}
                   step={0.1}
                   placeholder="0"
+                  replaceZeroOnNegativeStart
                   onCommit={(newValue) => {
                     transform.setX(newValue);
                     onCommit();
@@ -264,6 +265,7 @@ function ContentResourceEditor({
                   value={(transform.getY() ?? 0).toString()}
                   step={0.1}
                   placeholder="0"
+                  replaceZeroOnNegativeStart
                   onCommit={(newValue) => {
                     transform.setY(newValue);
                     onCommit();
@@ -276,6 +278,7 @@ function ContentResourceEditor({
                   value={(transform.getZ() ?? 0).toString()}
                   step={0.1}
                   placeholder="0"
+                  replaceZeroOnNegativeStart
                   onCommit={(newValue) => {
                     transform.setZ(newValue);
                     onCommit();
