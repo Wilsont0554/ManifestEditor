@@ -10,7 +10,8 @@ function TextAnnotationEditor({
   className = "",
 }) {
   const target = annotationParent.getTarget();
-
+  console.log('language');
+  console.log(annotation);
   return (
     <section className={`space-y-6 ${className}`}>
       <InputWithLanguage
