@@ -52,6 +52,14 @@ class Camera extends ContentResource {
      setAllCameraValues(newCamera: Camera): void{
         try{
             this.setAllValues(newCamera);
+
+            if (newCamera.type == "SpecificResource"){
+                const specificResource = newCamera as SpecificResourceBody;
+                if (newCamera.source?.[0] != undefined) {
+                    newCamera = specificResource.source[0];
+                }
+            }
+
             this.near = newCamera.near;
             this.far = newCamera.far;
             this.fieldOfView = newCamera.fieldOfView;

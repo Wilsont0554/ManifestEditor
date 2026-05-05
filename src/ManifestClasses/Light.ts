@@ -20,8 +20,18 @@ class Light extends ContentResource {
     setAllLightValues(newLight: Light): void{
         try{
             this.setAllValues(newLight as ContentResource);
+            
+            if (newLight.type == "SpecificResource"){
+                const specificResource = newLight as SpecificResourceBody;
+                if (newLight.source?.[0] != undefined) {
+                    newLight = specificResource.source[0];
+                }
+            }
             this.color = newLight.color;
             this.angle = newLight.angle;
+
+            console.log('lights');
+            console.log(newLight);
 
             this.setIntensity(newLight.intensity?.type as string, Number(newLight.intensity?.value), newLight.intensity?.unit as string);
             if (newLight.lookAt?.id != undefined){
