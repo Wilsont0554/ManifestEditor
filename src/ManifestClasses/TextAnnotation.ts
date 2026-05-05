@@ -24,6 +24,27 @@ class TextAnnotation extends ContentResource {
         }
     }
 
+    setAllTextAnnotationValuesTest(newTextAnnotation: TextAnnotation): void{
+        try{
+            if (newTextAnnotation.body){
+                this.value = newTextAnnotation.body.value;
+            }
+            else if(newTextAnnotation.bodyValue){
+                this.value = newTextAnnotation.bodyValue;
+            }
+            else {
+                this.value = "format not recognized"
+            }
+            
+            if (newTextAnnotation.language){
+                this.language = newTextAnnotation.language; 
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+
     setBodyValue(value: string): void {
         this.value = value;
     }

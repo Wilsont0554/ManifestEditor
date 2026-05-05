@@ -21,8 +21,8 @@ class Camera extends ContentResource {
     viewHeight?: number;
     fieldOfView?: number;
 
-    constructor(id: string, type: CameraContentResourceType = "OrthographicCamera") {
-        super(id, normalizeCameraType(type), undefined);
+    constructor(id: string = "https://example.org/iiif/3d/cameras/1", type: CameraContentResourceType = "OrthographicCamera") {
+        super("https://example.org/iiif/3d/cameras/1", normalizeCameraType(type), undefined);
         this.setType(type);
     }
 
