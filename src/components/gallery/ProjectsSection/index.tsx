@@ -26,7 +26,7 @@ export default function ProjectsSection({ projects, onDeleteProjectById }: Props
   };
 
   return (
-    <section className="rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
+    <section className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
       <SectionHeading
         eyebrow="Library"
         title={tab === "projects" ? "Projects" : "Example manifests"}
@@ -52,7 +52,7 @@ export default function ProjectsSection({ projects, onDeleteProjectById }: Props
             />
           </nav>
         </aside>
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1 overflow-hidden">
           {tab === "projects" ? (
             <MyProjectsTab projects={projects} onDeleteProjectById={onDeleteProjectById} />
           ) : (

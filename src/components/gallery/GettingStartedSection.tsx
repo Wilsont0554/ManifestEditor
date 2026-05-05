@@ -10,7 +10,7 @@ import SectionHeading from "@/components/gallery/SectionHeading";
  */
 export default function GettingStartedSection() {
   return (
-    <section className="rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
+    <section className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
       <SectionHeading
         eyebrow="Start"
         title="Getting started"
