@@ -1,8 +1,10 @@
+import { useContext, useEffect, useState } from "react";
 import InputWithLanguage from "@/components/shared/inputWithLanguage";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
 import { transformTypes } from "@/ManifestClasses/Transform";
 import {
+  clampNumber,
   contentResourceTypeToFormat,
 } from "@/utils/content-resource";
 import ManifestField from "../inputs/manifest-field";
@@ -11,6 +13,8 @@ import SoftActionButton from "../inputs/soft-action-button";
 import SpatialCoordinatePreview from "../cards/spatial-coordinate-preview";
 import TechnicalOptionGroup from "../technical-option-group";
 import NumericDraftInput from "../inputs/numeric-draft-input";
+import SliderInput from "../inputs/slider-input";
+import { isAdvancedViewContext } from "@/context/manifest-context";
 
 const contentResourceTypeOptions = Object.keys(contentResourceTypeToFormat).map(
   (value) => ({
@@ -39,6 +43,7 @@ function ContentResourceEditor({
   const shouldShowTypeSelector =
     showTypeSelector && !isLightResource && !isCameraResource;
   const target = annotation.getTarget();
+  const { advancedView } = useContext(isAdvancedViewContext);
 
   function getResourceLabel(): string {
     return resource.getLabel().getValue();
@@ -78,115 +83,122 @@ function ContentResourceEditor({
     resource.changeLabel(0, currentValue, newLanguageCode);
     onCommit();
   }
+  let advancedOptions = <></>;
+  const COORD_MIN = -15;
+  const COORD_MAX = 15;
+  const COORD_STEP = 0.1;
 
-  return (
-    <section className={`space-y-6 ${className}`}>
-      {shouldShowTypeSelector ? (
-        <section className="space-y-3">
-          <p className="text-base font-semibold text-slate-950">Type</p>
-          <TechnicalOptionGroup
-            options={contentResourceTypeOptions}
-            value={resource.getType()}
-            onChange={handleContentResourceTypeChange}
-            orientation="horizontal"
-            selectedVariant="pink"
-          />
-        </section>
-      ) : null}
-
-      {isLightResource || isCameraResource ? (
-        <ManifestInput
-          label={isLightResource ? "Light Identifier" : "Camera Identifier"}
-          id={`${idPrefix}-${isLightResource ? "light" : "camera"}-identifier`}
-          type="text"
-          value={resource.id}
-          onChange={() => {}}
-          appearance="outline"
-          readOnly
-          inputClassName="bg-slate-50 text-slate-500"
-        />
-      ) : (
-        <ManifestInput
-          label="Resource URL"
-          id={`${idPrefix}-resource-url`}
-          type="text"
-          value={resource.id}
-          onChange={(newValue) => {
-            resource.setID(newValue);
+  if (!advancedView){
+    advancedOptions =
+    <>
+      <section className="space-y-4">
+      <p className="text-base font-semibold text-slate-950">Position</p>
+      
+      <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getX() ?? 0).toString()}
+          MIN = {-COORD_MAX}
+          MAX = {COORD_MAX}
+          STEP = {COORD_STEP}
+          DEFAULT = {0}
+          percent = {false}
+          label={"Move: Left-Right"}
+          onCommit={(newValue) => {
+            annotation.setX(
+                clampNumber(
+                  newValue,
+                  -COORD_MAX,
+                  COORD_MAX,
+                ),
+              );
             onCommit();
           }}
         />
-      )}
+        <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getY() ?? 0).toString()}
+          MIN = {-COORD_MAX}
+          MAX = {COORD_MAX}
+          STEP = {COORD_STEP}
+          DEFAULT = {0}
+          percent = {false}
+          label={"Move: Down-Up"}
+          onCommit={(newValue) => {
+            annotation.setY(
+                clampNumber(
+                  newValue,
+                  COORD_MIN,
+                  COORD_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
 
-{/**<InputWithLanguage
-        label="Annotation Label"
-        languageCode={getAnnotationLabelLanguage()}
-        value={getAnnotationLabel()}
-        onChange={handleAnnotationLabelChange}
-        onLanguageChange={handleAnnotationLabelLanguageChange}
-      />
- */}
-      
-      <InputWithLanguage
-        label="Content Resource Label"
-        languageCode={getResourceLabelLanguage()}
-        value={getResourceLabel()}
-        onChange={handleResourceLabelChange}
-        onLanguageChange={handleResourceLabelLanguageChange}
-      />
-
-      {!isLightResource && !isCameraResource ? (
-        <section className="space-y-4">
-          <p className="text-base font-semibold text-slate-950">Position</p>
-
+        <SliderInput
+          idPrefix={`${idPrefix}-intensity`}
+          value={(target?.getZ() ?? 0).toString()}
+          MIN = {COORD_MIN}
+          MAX = {COORD_MAX}
+          STEP = {COORD_STEP}
+          DEFAULT = {0}
+          percent = {false}
+          label={"Move: Backward-Forward"}
+          onCommit={(newValue) => {
+            annotation.setZ(
+                clampNumber(
+                  newValue,
+                  COORD_MIN,
+                  COORD_MAX,
+                ),
+              );
+            onCommit();
+          }}
+        />
+      </section>
+    </>
+  }
+  else {
+    advancedOptions = <>
           <div className="grid gap-4 sm:grid-cols-3">
             <NumericDraftInput
-              id={`${idPrefix}-position-x`}
+              id={`${idPrefix}-x`}
               label="X"
               value={(target?.getX() ?? 0).toString()}
-              step={0.1}
+              step={COORD_STEP}
               placeholder="0"
               onCommit={(newValue) => {
-                annotation.setX(newValue);
+                annotation.setX(newValue ?? 0);
                 onCommit();
               }}
             />
 
             <NumericDraftInput
-              id={`${idPrefix}-position-y`}
+              id={`${idPrefix}-y`}
               label="Y"
               value={(target?.getY() ?? 0).toString()}
-              step={0.1}
+              step={COORD_STEP}
               placeholder="0"
               onCommit={(newValue) => {
-                annotation.setY(newValue);
+                annotation.setY(newValue ?? 0);
                 onCommit();
               }}
             />
 
             <NumericDraftInput
-              id={`${idPrefix}-position-z`}
+              id={`${idPrefix}-z`}
               label="Z"
               value={(target?.getZ() ?? 0).toString()}
-              step={0.1}
+              step={COORD_STEP}
               placeholder="0"
               onCommit={(newValue) => {
-                annotation.setZ(newValue);
+                annotation.setZ(newValue ?? 0);
                 onCommit();
               }}
             />
-          </div>
+            </div>
 
-          <SpatialCoordinatePreview
-            x={target?.getX() ?? 0}
-            y={target?.getY() ?? 0}
-            z={target?.getZ() ?? 0}
-          />
-        </section>
-      ) : null}
-
-      {isModelResource ? (
-        <section className="space-y-4 rounded-xl border border-dashed border-pink-200 bg-white p-4">
+            <section className="space-y-4 rounded-xl border border-dashed border-pink-200 bg-white p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="space-y-1">
               <p className="text-base font-semibold text-slate-950">Transforms</p>
@@ -289,7 +301,71 @@ function ContentResourceEditor({
             </section>
           ))}
         </section>
+
+      <SpatialCoordinatePreview
+        x={target?.getX() ?? 0}
+        y={target?.getY() ?? 0}
+        z={target?.getZ() ?? 0}
+    /></>
+  }
+
+  return (
+    <section className={`space-y-6 ${className}`}>
+      {shouldShowTypeSelector ? (
+        <section className="space-y-3">
+          <p className="text-base font-semibold text-slate-950">Type</p>
+          <TechnicalOptionGroup
+            options={contentResourceTypeOptions}
+            value={resource.getType()}
+            onChange={handleContentResourceTypeChange}
+            orientation="horizontal"
+            selectedVariant="pink"
+          />
+        </section>
       ) : null}
+
+      {isLightResource || isCameraResource ? (
+        <ManifestInput
+          label={isLightResource ? "Light Identifier" : "Camera Identifier"}
+          id={`${idPrefix}-${isLightResource ? "light" : "camera"}-identifier`}
+          type="text"
+          value={resource.id}
+          onChange={() => {}}
+          appearance="outline"
+          readOnly
+          inputClassName="bg-slate-50 text-slate-500"
+        />
+      ) : (
+        <ManifestInput
+          label="Resource URL"
+          id={`${idPrefix}-resource-url`}
+          type="text"
+          value={resource.id}
+          onChange={(newValue) => {
+            resource.setID(newValue);
+            onCommit();
+          }}
+        />
+      )}
+
+{/**<InputWithLanguage
+        label="Annotation Label"
+        languageCode={getAnnotationLabelLanguage()}
+        value={getAnnotationLabel()}
+        onChange={handleAnnotationLabelChange}
+        onLanguageChange={handleAnnotationLabelLanguageChange}
+      />
+ */}
+      
+      <InputWithLanguage
+        label="Content Resource Label"
+        languageCode={getResourceLabelLanguage()}
+        value={getResourceLabel()}
+        onChange={handleResourceLabelChange}
+        onLanguageChange={handleResourceLabelLanguageChange}
+      />
+
+      {advancedOptions}
     </section>
   );
 }

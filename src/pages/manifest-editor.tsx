@@ -11,7 +11,7 @@ import ContentResourceModal, {
 } from "@components/editors/manifest/content-resource-modal";
 import ManifestComponent from "@/components/editors/manifest";
 import type { ManifestTabId } from "@components/editors/manifest/manifest-component-constants";
-import { ManifestObjProvider } from "@/context/manifest";
+import { ManifestObjProvider, AdvancedViewProvider } from "@/context/manifest";
 import { useParams } from "react-router";
 
 import CreateBar from "@/components/shared/createBar/CreateBar";
@@ -32,6 +32,9 @@ import {
   isVoyagerRenderableManifest,
   serializeManifestForExport,
 } from "@/utils/file";
+import ContentResource from "@/ManifestClasses/ContentResource";
+import Light from "@/ManifestClasses/Light";
+import Camera from "@/ManifestClasses/Camera";
 
 const DEFAULT_INSPECTOR_WIDTH = 560;
 const MIN_INSPECTOR_WIDTH = 320;
@@ -44,6 +47,7 @@ const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
 const ENVIRONMENT_MODAL_TYPES: EditableContentResourceType[] = [
   "Light",
   "Camera",
+  "Sunlight",
 ];
 
 type ImportExportType = "none" | "import" | "export";
@@ -62,7 +66,9 @@ function HydratedManifestEditorPage() {
   const { id } = useParams();
   return (
     <ManifestObjProvider id={id}>
-      <ManifestEditorPage />
+      <AdvancedViewProvider>
+        <ManifestEditorPage />
+      </AdvancedViewProvider>
     </ManifestObjProvider>
   );
 }
@@ -74,7 +80,8 @@ function ManifestEditorPage() {
     useState<ContentResourceModalView>("picker");
   const [contentResourceModalTypes, setContentResourceModalTypes] =
     useState<EditableContentResourceType[] | undefined>(undefined);
-  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+
+    const [isInspectorOpen, setIsInspectorOpen] = useState(true);
   const [inspectorWidth, setInspectorWidth] = useState(DEFAULT_INSPECTOR_WIDTH);
   const [activeManifestTab, setActiveManifestTab] =
     useState<ManifestTabId>("overview");
@@ -256,10 +263,39 @@ function ManifestEditorPage() {
     const annotationPage = manifestObj.getContainerObj().getAnnotationPage();
     const nextAnnotationIndex = annotationPage.getAllAnnotations().length;
     const annotation = new Annotation(nextAnnotationIndex + 1);
+    const annotation2 = new Annotation(nextAnnotationIndex + 2);
+    console.log(type);
+    if (type == "Model"){
+      annotation.setContentResource(
+        new ContentResource("", "Model", "model/gltf-binary"),
+      );
+    }
+    else if (type == "Image"){
+      annotation.setContentResource(new ContentResource("", "Image", "jpeg"));
+    }
+    else if (type === "Light") {
+      annotation.setContentResource(
+        new Light("", "AmbientLight"),
+      );
+    }
+    else if (type === "Sunlight") {
+      const skyLight = new Light("", "AmbientLight");
+      skyLight.setColor("#75d6ff");
+      const sunLight = new Light("", "DirectionalLight");
+      sunLight.setColor("#ffbd52");
+      sunLight.setIntensity("Value", 1, "relative");
+      annotation.setContentResource(skyLight);
+      annotation2.setContentResource(sunLight);
+      annotationPage.addAnnotation(annotation2);
+      setIsContentResourceModalOpen(false);
+    }
+    else if (type === "Camera") {
+      annotation.setContentResource(
+        new Camera("", "OrthographicCamera"),
+      );
+      annotation.setZ(1);
+    }
 
-    annotation.setContentResource(
-      createDefaultContentResource(type, nextAnnotationIndex),
-    );
     annotationPage.addAnnotation(annotation);
 
     setSelectedMetadataAnnotationIndex(nextAnnotationIndex);

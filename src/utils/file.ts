@@ -148,6 +148,7 @@ export function createManifestObjectFromUpload(uploadedManifest: any): ManifestO
         let tempContentResource;
         let specificResourceType = "none";
         
+
         if (uploadedResource.type == "SpecificResource"){
           specificResourceType = uploadedResource.source[0].type;
         }
