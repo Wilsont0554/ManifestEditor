@@ -1,5 +1,7 @@
 import {
   type MouseEvent as ReactMouseEvent,
+  use,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -13,6 +15,7 @@ import NavPlaceTab from "./editor-tabs/nav-place-tab";
 import OverviewTab from "./editor-tabs/overview-tab";
 import AssetsTab from "./editor-tabs/assets-tab";
 import EnvironmentTab from "./editor-tabs/environment-tab";
+import { isAdvancedViewContext } from "@/context/manifest-context";
 
 function ManifestComponent({
   //props
@@ -25,10 +28,12 @@ function ManifestComponent({
   onReset,
   onResizeStart,
 }) {
+  const { advancedView, toggleAdvancedView } =
+      useContext(isAdvancedViewContext);
   const [isDividerHovered, setIsDividerHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dividerY, setDividerY] = useState(220);
-
+    
   let tabContent = <OverviewTab />;
 
   if (activeTab === "descriptive") {
@@ -145,14 +150,24 @@ function ManifestComponent({
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
             Manifest
           </p>
-          <button
-            type="button"
-            className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
-            onClick={onClose}
-            aria-label="Close inspector"
-          >
-            &times;
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={`rounded-md ${advancedView ? "bg-rose-600 text-white hover:bg-rose-700" : "border bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700"} px-2.5 py-1 text-s font-semibold  transition`}
+              onClick={() => {toggleAdvancedView()}}
+              title="Export manifest"
+            >
+              {advancedView ? (<>Simple View</>) : (<>Advanced View</>)}
+            </button>
+            <button
+              type="button"
+              className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
+              onClick={onClose}
+              aria-label="Close inspector"
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
         <div className="border-b border-slate-200 px-4 py-3">

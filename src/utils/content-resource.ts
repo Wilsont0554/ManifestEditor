@@ -1,7 +1,12 @@
+import Annotation from "@/ManifestClasses/Annotation";
 import Camera from "@/ManifestClasses/Camera";
 import ContentResource from "@/ManifestClasses/ContentResource";
 import Light from "@/ManifestClasses/Light";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
+import { Manifest } from "vite";
+
+export const cameraPresets = ["Origin", "Front Facing", "Top Right", "Top Left", "Back Facing", "Right Facing", "Left Facing"] as const
+export const lightPresets = ["Origin", "Top Light", "Right Light", "Spot Light"] as const
 
 export const contentResourceTypeToFormat = {
   Image: "image/jpeg",
@@ -27,7 +32,8 @@ export type SupportedCameraContentResourceType =
 export type EditableContentResourceType =
   | keyof typeof contentResourceTypeToFormat
   | "Light"
-  | "Camera";
+  | "Camera"
+  | "Sunlight"
 
 export function createDefaultContentResource(
   type: EditableContentResourceType = "Model",
@@ -84,4 +90,18 @@ export function clampNumber(value: number, min?: number, max?: number): number {
   }
 
   return nextValue;
+}
+
+export function getAllContentResourceIDs(manifestObj: ManifestObject){
+  const annotations = manifestObj.getContainerObj().getAnnotationPage().getAllAnnotations();
+  const idArray: Annotation[] = [];
+
+  annotations.map((annotation) => {
+    if (annotation!.getContentResource()!.constructor == ContentResource){
+      idArray.push(annotation);
+    }
+  })
+
+  return idArray;
+
 }

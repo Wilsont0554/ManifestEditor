@@ -199,6 +199,12 @@ const baseContentResourceOptions: ContentResourceOption[] = [
     icon: <LightIcon />,
   },
   {
+    value: "Sunlight",
+    title: "Sunlight Preset",
+    description: "Creates two light to mimic sunlight",
+    icon: <LightIcon />,
+  },
+  {
     value: "Camera",
     title: "Camera",
     description: "Add a camera content resource.",

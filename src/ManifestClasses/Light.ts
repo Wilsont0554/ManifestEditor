@@ -13,8 +13,8 @@ class Light extends ContentResource {
     lookAt?: IiifResourceReference;
     angle?: number;
 
-    constructor(id: string, type: string) {
-        super(id, type, undefined);
+    constructor(id: string = "https://example.org/iiif/3d/lights/1", type: string) {
+        super("https://example.org/iiif/3d/cameras/1", type, undefined);
     }
 
     setAllLightValues(newLight: Light): void{
