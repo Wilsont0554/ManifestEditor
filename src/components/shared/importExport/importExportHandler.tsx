@@ -173,13 +173,12 @@ function ImportExportHandler({
 
       const nextManifest = JSON.parse(manifestText);
       const parsedManifest = createManifestObjectFromUpload(nextManifest) as ManifestObject;
-      const manifestId = parsedManifest.getUniqueIdCode();
-      applyUploadedManifest(parsedManifest);
+      const manifestId = nextManifest["id"].split("/").pop() ?? parsedManifest.getUniqueIdCode();
       setGistId(gistData.id ?? gistIdentifier);
       setGistUrl(gistData.html_url ?? null);
       setGistRawUrl(manifestFile.raw_url ?? null);
       setGistImportUrl("");
-      setImportExportType("none");
+      setImportExportType("none"); 
       reRoute('/editor/' + manifestId, { replace: true, state: {
           manifest: nextManifest
       } });
@@ -210,8 +209,7 @@ function ImportExportHandler({
       const stringManifest = await uploadedManifest.text();
       const nextManifest = JSON.parse(stringManifest);
       const parsedManifest = createManifestObjectFromUpload(nextManifest) as ManifestObject;
-      const manifestId = parsedManifest.getUniqueIdCode();
-      applyUploadedManifest(parsedManifest);
+      const manifestId = nextManifest["id"].split("/").pop() ?? parsedManifest.getUniqueIdCode();
       setImportExportType("none");
       reRoute('/editor/' + manifestId, { replace: true, state: {
           manifest: nextManifest
