@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import Icon from "@/components/icon";
 import { importManifestFromFile } from "@/utils/import";
+import { IndexedDB } from "@/utils/indexdb";
 
 /**
  * Card component for importing a manifest from a local file
@@ -22,21 +23,10 @@ export default function ImportFileCard() {
     setisProcessing(true);
     setErrorMsg(null);
     try {
-      const { manifestId, manifestData } = await importManifestFromFile(file);
-      reRoute(`/editor/${manifestId}`, {
-        replace: true,
-        state: { manifest: manifestData },
-      });
-    } catch (err) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Failed to upload manifest. Please upload a valid JSON file.";
-      console.error("Failed to upload manifest:", err);
-      setErrorMsg(msg);
-    } finally {
-      setisProcessing(false);
-      if (inputRef.current) inputRef.current.value = "";
+      const { manifestId} = await importManifestFromFile(file);
+      reRoute(`/editor/${manifestId}`);
+    } catch (error) {
+      reRoute("/404", { state: { message: "Failed to create new manifest." } });
     }
   }
 
@@ -111,9 +101,7 @@ export default function ImportFileCard() {
         )}
       </span>
 
-      {errorMsg && (
-        <p className="text-xs text-rose-600">{errorMsg}</p>
-      )}
+      {errorMsg && <p className="text-xs text-rose-600">{errorMsg}</p>}
     </div>
   );
 }

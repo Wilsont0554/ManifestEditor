@@ -28,13 +28,10 @@ export default function ImportGistCard() {
     setisProcessing(true);
     setErrorMsg(null);
     try {
-      const { manifestId, manifestData } = await importManifestFromGist(
+      const { manifestId } = await importManifestFromGist(
         gistInput,
       );
-      reRoute(`/editor/${manifestId}`, {
-        replace: true,
-        state: { manifest: manifestData },
-      });
+      reRoute(`/editor/${manifestId}`);
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Failed to import gist.";
