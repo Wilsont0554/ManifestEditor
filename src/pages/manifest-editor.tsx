@@ -312,7 +312,7 @@ function ManifestEditorPage() {
   const annotationPage = container.getAnnotationPage();
   const manifestLabel = manifestObj.getLabelValue().trim();
   const manifestTitle =
-    manifestLabel.length > 0 ? manifestLabel : "Untitled Manifest";
+    manifestLabel.length > 0 ? manifestLabel : "Blank Manifest";
   const hasStageContent = annotationPage.getAllAnnotations().length > 0;
   const inspectorDockPadding = isInspectorOpen
     ? `clamp(0px, calc(100vw - 360px), calc(${inspectorWidth}px + ${INSPECTOR_DOCK_GUTTER}px))`
