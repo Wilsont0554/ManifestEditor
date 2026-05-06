@@ -1,11 +1,17 @@
+import { useEffect } from "react";
 import Navbar from "./components/navbar";
 import { Route, Routes } from "react-router";
 import HomePage from "@/pages/home";
 import ManifestEditorPage from "@/pages/manifest-editor";
 import NotFound from "@/pages/404";
 import GalleryPage from "@/pages/gallery";
+import { setupVoyagerScript } from "@/utils/voyager";
 
 export default function App() {
+  useEffect(() => {
+    setupVoyagerScript();
+  }, []);
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-slate-100 text-slate-900">
       <Navbar />

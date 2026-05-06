@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionHeading from "@/components/gallery/SectionHeading";
 import TabButton from "./TabButton";
 import MyProjectsTab from "./MyProjectsTab";
@@ -25,6 +25,12 @@ export default function ProjectsSection({ projects, examples, onDeleteProjectByI
     projects: projects?.length ?? 0,
     examples: examples?.length ?? 0,
   };
+
+  useEffect(() => {
+    if (counts.projects > 0 && tab === "examples") {
+      setTab("projects");
+    } 
+  }, []);
 
   return (
     <section className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
