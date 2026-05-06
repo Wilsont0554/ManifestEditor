@@ -2,13 +2,12 @@ import { downloadJsonFile } from "@/utils/file";
 import { useState, useEffect, ChangeEvent } from "react";
 import ImportMenu from "./import";
 import ExportMenu from "./export";
-import ManifestObject from "@/ManifestClasses/ManifestObject";
 import { useNavigate } from "react-router";
+import { importManifestFromGist, importManifestFromFile } from "@/utils/import";
 
 function ImportExportHandler({
     gistId, isAutoUpdateEnabled, setGistId, setIsAutoUpdateEnabled,
-    createManifestObjectFromUpload, setManifestObj, serializedManifest,
-    importExportType, setImportExportType
+    serializedManifest, importExportType, setImportExportType
 }) {
     const reRoute = useNavigate();
     const [isCreatingGist, setIsCreatingGist] = useState(false);
@@ -120,68 +119,17 @@ function ImportExportHandler({
 
   /**
    * Handle when user upload a manifest using a github gist url
-   * @returns 
    */
   async function handleUploadManifestFromGist(): Promise<void> {
-    const gistIdentifier = extractGistId(gistImportUrl);
-
-    if (!gistIdentifier) {
-      alert("Enter a valid GitHub gist URL, raw gist URL, or gist ID.");
-      return;
-    }
-
     setIsImportingGist(true);
 
     try {
-      const gistResponse = await fetch(`https://api.github.com/gists/${gistIdentifier}`);
-
-      if (!gistResponse.ok) {
-        throw new Error(`GitHub API error: ${gistResponse.status}`);
-      }
-
-      const gistData = await gistResponse.json();
-      const fileEntries = Object.values(gistData.files ?? {}) as Array<{
-        filename?: string;
-        raw_url?: string;
-        content?: string;
-      }>;
-
-      if (!fileEntries.length) {
-        throw new Error("This gist has no files.");
-      }
-
-      const manifestFile =
-        fileEntries.find((entry) =>
-          (entry.filename ?? "").toLowerCase().endsWith(".json")
-        ) ?? fileEntries[0];
-
-      let manifestText = manifestFile.content;
-
-      if (!manifestText && manifestFile.raw_url) {
-        const rawResponse = await fetch(manifestFile.raw_url);
-
-        if (!rawResponse.ok) {
-          throw new Error(`Unable to fetch gist file content (${rawResponse.status}).`);
-        }
-
-        manifestText = await rawResponse.text();
-      }
-
-      if (!manifestText) {
-        throw new Error("Unable to load gist file content.");
-      }
-
-      const nextManifest = JSON.parse(manifestText);
-      const parsedManifest = createManifestObjectFromUpload(nextManifest) as ManifestObject;
-      const manifestId = nextManifest["id"].split("/").pop() ?? parsedManifest.getUniqueIdCode();
-      setGistId(gistData.id ?? gistIdentifier);
-      setGistUrl(gistData.html_url ?? null);
-      setGistRawUrl(manifestFile.raw_url ?? null);
+      const { manifestId, gistId: importedGistId } = await importManifestFromGist(gistImportUrl);
+      setGistId(importedGistId ?? null);
+      setGistUrl(null);
+      setGistRawUrl(null);
       setGistImportUrl("");
-      setImportExportType("none"); 
-      reRoute('/editor/' + manifestId, { replace: true, state: {
-          manifest: nextManifest
-      } });
+      reRoute('/editor/' + manifestId, { replace: true });
     } catch (error) {
       console.error("Failed to import gist:", error);
       alert(
@@ -190,14 +138,14 @@ function ImportExportHandler({
           : "Failed to import gist. Check the link and try again."
       );
     } finally {
+      setIsImportingGist(false);
       setImportExportType("none");
     }
   }
 
   /**
-   * Handle when user upload a manifest file from their local machine. 
+   * Handle when user upload a manifest file from their local machine.
    * @param event - button click event when user select a file to upload
-   * @returns 
    */
   async function handleUploadManifest(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     const uploadedManifest = event.target.files?.[0] ?? null;
@@ -206,14 +154,9 @@ function ImportExportHandler({
     }
 
     try {
-      const stringManifest = await uploadedManifest.text();
-      const nextManifest = JSON.parse(stringManifest);
-      const parsedManifest = createManifestObjectFromUpload(nextManifest) as ManifestObject;
-      const manifestId = nextManifest["id"].split("/").pop() ?? parsedManifest.getUniqueIdCode();
+      const { manifestId } = await importManifestFromFile(uploadedManifest);
       setImportExportType("none");
-      reRoute('/editor/' + manifestId, { replace: true, state: {
-          manifest: nextManifest
-      }});
+      reRoute('/editor/' + manifestId, { replace: true });
     } catch (error) {
       console.error("Failed to upload manifest:", error);
       alert("Failed to upload manifest. Please upload a valid JSON file.");
@@ -271,46 +214,6 @@ function ImportExportHandler({
     } finally {
       setIsCreatingGist(false);
     }
-  }
-
-  function applyUploadedManifest(parsedManifest: ManifestObject): void {
-    if (parsedManifest.getLabelValue().trim() === "Blank Manifest") {
-      parsedManifest.setLabel("");
-    }
-
-    setManifestObj(parsedManifest);
-  }
-
-  function extractGistId(inputValue: string): string | null {
-    const value = inputValue.trim();
-
-    if (!value) {
-      return null;
-    }
-
-    if (/^[a-f0-9]{20,}$/i.test(value)) {
-      return value;
-    }
-
-    try {
-      const parsed = new URL(value);
-      const pathParts = parsed.pathname.split("/").filter(Boolean);
-
-      if (parsed.hostname === "gist.github.com" && pathParts.length >= 2) {
-        return pathParts[1];
-      }
-
-      if (
-        parsed.hostname === "gist.githubusercontent.com" &&
-        pathParts.length >= 2
-      ) {
-        return pathParts[1];
-      }
-    } catch {
-      return null;
-    }
-
-    return null;
   }
 
   if (importExportType == "import"){

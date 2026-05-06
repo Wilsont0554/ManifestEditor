@@ -320,7 +320,6 @@ function ManifestEditorPage() {
   const importExportMenu =
     importExportType === "none" ? null : (
       <ImportExportHandler
-        createManifestObjectFromUpload={createManifestObjectFromUpload}
         gistId={gistId}
         importExportType={importExportType}
         isAutoUpdateEnabled={isAutoUpdateEnabled}
@@ -328,7 +327,6 @@ function ManifestEditorPage() {
         setGistId={setGistId}
         setImportExportType={setImportExportType}
         setIsAutoUpdateEnabled={setIsAutoUpdateEnabled}
-        setManifestObj={setManifestObj}
       />
     );
 

@@ -1,5 +1,6 @@
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import { createManifestObjectFromUpload } from "@/utils/file";
+import { IndexedDB } from "@/utils/indexdb";
 
 export type ImportResult = {
   manifestId: string;
@@ -95,7 +96,10 @@ export async function importManifestFromGist(rawInput: string): Promise<ImportRe
   const manifestData = JSON.parse(manifestText);
   const parsed = createManifestObjectFromUpload(manifestData) as ManifestObject;
   const manifestId = parsed.getUniqueIdCode();
-
+  const db = new IndexedDB();
+  await db.open();
+  await db.saveProject(manifestData, manifestId);
+  
   return {
     manifestId,
     manifestData,
@@ -115,5 +119,8 @@ export async function importManifestFromFile(file: File): Promise<ImportResult> 
   const manifestData = JSON.parse(text);
   const parsed = createManifestObjectFromUpload(manifestData) as ManifestObject;
   const manifestId = parsed.getUniqueIdCode();
+  const db = new IndexedDB();
+  await db.open();
+  await db.saveProject(manifestData, manifestId);
   return { manifestId, manifestData };
 }

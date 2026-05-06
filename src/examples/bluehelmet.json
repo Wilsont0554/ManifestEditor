@@ -59,7 +59,7 @@
                 "painting"
               ],
               "body": {
-                "id": "",
+                "id": "https://example.org/iiif/manifest/1/scene/1/light/1",
                 "type": "DirectionalLight",
                 "label": {
                   "en": [
