@@ -26,7 +26,8 @@
                     "label": {
                       "en": []
                     },
-                    "metadata": []
+                    "metadata": [],
+                    "presetType": "Origin"
                   }
                 ]
               },
@@ -120,7 +121,8 @@
                 },
                 "metadata": [],
                 "transforms": [],
-                "value": "Blue spotlight",
+                "presetType": "Origin",
+                "value": "Blue Directional Light",
                 "language": "en",
                 "purpose": "commenting"
               },
@@ -139,6 +141,54 @@
                     "x": 0.1,
                     "y": 0.1,
                     "z": 0
+                  }
+                ]
+              },
+              "label": {
+                "en": []
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/3",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/3d/cameras/1",
+                    "type": "DirectionalLight",
+                    "label": {
+                      "en": []
+                    },
+                    "metadata": [],
+                    "presetType": "Spot Light",
+                    "color": "#5034ef",
+                    "intensity": {
+                      "type": "Value",
+                      "value": 1,
+                      "unit": "relative"
+                    }
+                  }
+                ]
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/1/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0,
+                    "y": 20,
+                    "z": 16.000005040299968
                   }
                 ]
               },
