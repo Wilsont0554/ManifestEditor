@@ -17,6 +17,7 @@ class ContentResource {
     summary?: Label;
     metadata: Metadata;
     transforms: Transform[];
+    presetType?: string;
 
     constructor(id: string, type: string, format?: string) {
         this.id = id;
@@ -25,11 +26,20 @@ class ContentResource {
         this.label = this.createLabel("en");
         this.metadata = new Metadata();
         this.transforms = [];
+        this.presetType = "Origin"
     }
 
     /*---------------------------------------------------
                         SETTERS
     ---------------------------------------------------*/
+    setPreset(newPreset: string): void{
+        this.presetType = newPreset;
+    }
+
+    getPreset(): string{
+        return this.presetType!;
+    }
+
     setID(value: string): void {
         this.id = value;
     }
@@ -69,14 +79,14 @@ class ContentResource {
 
     setAllValues(newContentResource: ContentResource): void{
         try{
-
             if (newContentResource.type == "SpecificResource"){
-                if (newContentResource.transforms != undefined){
-                    for (let i = 0; i < newContentResource.transforms.length; i++){
-                        const tempTransform = new Transform(newContentResource.transforms[i].type)
-                        tempTransform.setX(newContentResource.transforms[i].x);
-                        tempTransform.setY(newContentResource.transforms[i].y);
-                        tempTransform.setZ(newContentResource.transforms[i].z);
+                if (newContentResource.transform != undefined){
+                    for (let i = 0; i < newContentResource.transform.length; i++){
+                        const tempTransform = new Transform(newContentResource.transform[i].type)
+                        tempTransform.setType(newContentResource.transform[i].type);
+                        tempTransform.setX(newContentResource.transform[i].x);
+                        tempTransform.setY(newContentResource.transform[i].y);
+                        tempTransform.setZ(newContentResource.transform[i].z);
                         this.transforms.push(tempTransform);
                     }
                 }
@@ -174,6 +184,10 @@ class ContentResource {
         return this.transforms;
     }
 
+    setTransforms(newTransform: Transform[]): void{
+        this.transforms = newTransform;
+    }
+
     getTransfroms(): Transform[] {
         return this.getTransforms();
     }
@@ -207,6 +221,7 @@ class ContentResource {
         target.summary = this.summary?.clone();
         target.metadata = this.metadata.clone();
         target.transforms = this.transforms.map((transform) => transform.clone());
+        target.presetType = this.presetType;
 
         return target;
     }

@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import ManifestObject from "@ManifestClasses/ManifestObject";
 import { manifestObjContext } from "./manifest-context";
+import { isAdvancedViewContext } from "./manifest-context";
 import { IndexedDB } from "@/utils/indexdb";
 import { createManifestObjectFromUpload } from "@/utils/file";
 import { useLocation, useNavigate } from "react-router";
@@ -124,3 +125,20 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
     </manifestObjContext.Provider>
   );
 };
+
+export const AdvancedViewProvider = ({ children }: { children: React.ReactNode }) => {
+  const [advancedView, setAdvancedView] = useState(false);
+
+  const toggleAdvancedView = () => {
+    setAdvancedView(!advancedView);
+  };
+
+  return (
+    <isAdvancedViewContext.Provider
+      value={{ advancedView, toggleAdvancedView }}
+    >
+      {children}
+    </isAdvancedViewContext.Provider>
+  );
+};
+

@@ -69,7 +69,7 @@ export default function ImportFileCard() {
           handleClickArea();
         }
       }}
-      className="group relative flex h-full cursor-pointer flex-col gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white p-6 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-900 hover:shadow-[0_24px_60px_-30px_rgba(15,23,42,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+      className="group relative flex h-full cursor-pointer flex-col gap-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-6 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-900 hover:bg-white hover:shadow-[0_24px_60px_-30px_rgba(15,23,42,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
     >
       <input
         ref={inputRef}
@@ -105,7 +105,7 @@ export default function ImportFileCard() {
           <>
             Choose file
             <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">
-              →
+              -&gt;
             </span>
           </>
         )}

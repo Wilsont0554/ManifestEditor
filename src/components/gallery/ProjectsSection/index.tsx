@@ -27,14 +27,15 @@ export default function ProjectsSection({ projects, examples, onDeleteProjectByI
   };
 
   return (
-    <section>
+    <section className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
       <SectionHeading
-        title={tab === "projects" ? "Your projects" : "Examples Manifests"}
+        eyebrow="Library"
+        title={tab === "projects" ? "Projects" : "Example manifests"}
         description="Browse what you've made and what's available."
       />
       <div className="flex flex-col gap-8 md:flex-row md:gap-10">
         <aside className="md:w-52 md:shrink-0">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-pink-600">
             Browse
           </p>
           <nav className="flex flex-col border-l border-slate-200">
@@ -52,7 +53,7 @@ export default function ProjectsSection({ projects, examples, onDeleteProjectByI
             />
           </nav>
         </aside>
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1 overflow-hidden">
           {tab === "projects" ? (
             <MyProjectsTab projects={projects} onDeleteProjectById={onDeleteProjectById} />
           ) : (

@@ -19,7 +19,7 @@ function AssetsTab() {
   }
 
   for (let i = 0; i < resourceItems.length; i++){
-    console.log(resourceItems[i]);
+    //console.log(resourceItems[i]);
   }
 
   return (
@@ -42,7 +42,7 @@ function AssetsTab() {
                   <CollapsibleResourceCard
                     badgeLabel={`Content Resource ${resourceNumber}`}
                     key={`structure-content-resource-${annotationIndex}`}
-                    description="temp"
+                    description=""
                     collapsible
                   >
                     <ContentResourceEditor
@@ -93,7 +93,7 @@ function AssetsTab() {
                   <CollapsibleResourceCard
                     badgeLabel={`Text Annotation ${resourceNumber}`}
                     key={`structure-content-resource-${annotationIndex}`}
-                    description="temp"
+                    description=""
                     collapsible
                   >
                     <div className="space-y-4">

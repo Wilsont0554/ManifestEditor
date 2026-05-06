@@ -3,23 +3,22 @@ import { IndexedDB } from "@/utils/indexdb";
 import Layout from "@/components/gallery/Layout";
 import GettingStartedSection from "@/components/gallery/GettingStartedSection";
 import ProjectsSection from "@/components/gallery/ProjectsSection";
-import bluehelmet from "@/examples/bluehelmet.json";
+import samples from "@/examples";
 import { createManifestObjectFromUpload, serializeManifestForExport } from "@/utils/file";
 
 export default function Gallery() {
   const [projects, setProjects] = useState<object[] | null>(null);
-  const [examples, setExamples] = useState<object[] | null>(null);
+  const [examples, setExamples] = useState<object[] | null>([]);
   const dbRef = useRef<IndexedDB>(new IndexedDB());
   const db = dbRef.current;
 
   //loadung example manifest
   useEffect(() => {
     let cancelled = false;
+    console.log(samples);
     async function loadExample() {
-      const exampleManifest = serializeManifestForExport(
-        createManifestObjectFromUpload(bluehelmet as any)
-      );
-      setExamples([exampleManifest]);
+      if (cancelled) return;
+      setExamples(samples);
     }
     loadExample();
     return () => {
@@ -68,9 +67,8 @@ export default function Gallery() {
   
   return (
     <Layout>
+      <ProjectsSection projects={projects} examples={examples} onDeleteProjectById={handleDeleteProjectById} />
       <GettingStartedSection />
-      <ProjectsSection 
-      projects={projects} examples={examples} onDeleteProjectById={handleDeleteProjectById} />
     </Layout>
   );
 }

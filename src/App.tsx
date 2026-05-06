@@ -17,9 +17,6 @@ export default function App() {
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </main>
-      <footer className="shrink-0 border-t border-slate-300 bg-slate-50 py-3 text-center text-sm text-slate-600">
-        {"\u00A9"} manifest editor
-      </footer>
     </div>
   );
 }

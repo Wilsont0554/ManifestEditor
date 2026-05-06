@@ -3,10 +3,8 @@ import Hero from "@/components/home/hero";
 import Features from "@/components/home/features";
 import Workflow from "@/components/home/workflow";
 import Introduction from "@/components/home/introduction";
-import Audience from "@/components/home/audience";
 import ManifestDefinition from "@/components/home/manifestDefinition";
 import CallToAction from "@/components/home/callToAction";
-import Mission from "@/components/home/mission";
 
 const VOYAGER_SCRIPT_ID = "voyager-explorer-script";
 const VOYAGER_SCRIPT_SRC =
@@ -37,8 +35,6 @@ function HomePage() {
         <Introduction/>
         <Workflow />
         <Features />
-        <Audience />
-        <Mission />
         <CallToAction />
       </div>
     </div>

@@ -8,8 +8,6 @@ export const MANIFEST_TABS = [
   { id: "structure", label: "Asset" },
   { id: "technical", label: "Environment" },
   { id: "metadata", label: "Metadata" },
-  { id: "linking", label: "Linking" },
-  { id: "nav-place", label: "Nav place" },
 ];
 
 export type ManifestTabId = (typeof MANIFEST_TABS)[number]["id"];

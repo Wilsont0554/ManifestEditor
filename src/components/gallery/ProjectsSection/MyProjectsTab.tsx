@@ -8,11 +8,11 @@ type Props = {
 };
 
 /**
- * Body of the "Your projects" tab. Renders one of three states based on
+ * Body of the "Projects" tab. Renders one of three states based on
  * `projects`:
- *  - `null`         → loading skeletons in the grid
- *  - empty array    → empty-state callout prompting the user to create or import
- *  - non-empty list → grid of ProjectCard tiles, one per saved manifest
+ *  - `null` loads skeletons in the grid
+ *  - empty array shows an empty-state callout prompting the user to create or import
+ *  - non-empty list renders ProjectCard tiles, one per saved manifest
  * @param projects user manifests from IndexedDB, or null while loading
  */
 export default function MyProjectsTab({ projects, onDeleteProjectById }: Props) {
@@ -35,7 +35,7 @@ export default function MyProjectsTab({ projects, onDeleteProjectById }: Props) 
 
   if (sortedProjects.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50/40 p-10 text-center">
+      <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
         <p className="w-full text-base font-semibold text-slate-700">
           No projects yet.
         </p>
@@ -48,9 +48,9 @@ export default function MyProjectsTab({ projects, onDeleteProjectById }: Props) 
 
   return (
     <ProjectGrid>
-      {sortedProjects.map((p) => {
+      {sortedProjects.map((p, index) => {
         const id = p["id"].split("/").pop() ?? "invalid-id";
-        return <ProjectCard key={id} id={id} manifest={p} onDelete={onDeleteProjectById}/>;
+        return <ProjectCard key={index} id={id} manifest={p} onDelete={onDeleteProjectById}/>;
       })}
     </ProjectGrid>
   );

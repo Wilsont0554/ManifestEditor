@@ -7,7 +7,7 @@ import { HashRouter } from "react-router";
 const root: HTMLElement = document.getElementById("root") as HTMLElement;
 
 createRoot(root).render(
-  <HashRouter basename={import.meta.env.PROD ? "/ManifestEditor" : "/"}>
+  <HashRouter basename="/">
     <App />
   </HashRouter>
 );
