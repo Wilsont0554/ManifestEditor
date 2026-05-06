@@ -1,0 +1,277 @@
+{
+  "@context": "http://iiif.io/api/presentation/4/context.json",
+  "id": "https://example.org/iiif/manifest/1",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Blank Manifest"
+    ]
+  },
+  "items": [
+    {
+      "id": "https://example.org/iiif/manifest/1/scene/1",
+      "type": "Scene",
+      "items": [
+        {
+          "id": "https://example.org/iiif/manifest/1/scene/1/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/1",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_cranium.glb",
+                "type": "Model",
+                "format": "model/gltf-binary",
+                "metadata": [
+                  {
+                    "label": {
+                      "en": [
+                        "Whale Skeleton Part"
+                      ]
+                    },
+                    "value": {
+                      "en": [
+                        "Cranium"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/1/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0,
+                    "y": 0.1,
+                    "z": 0
+                  }
+                ]
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/2",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb",
+                "type": "Model",
+                "format": "model/gltf-binary",
+                "metadata": [
+                  {
+                    "label": {
+                      "en": [
+                        "Whale Skeleton Part"
+                      ]
+                    },
+                    "value": {
+                      "en": [
+                        "Mandible"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1",
+                "type": "Scene"
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/3",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/lights/1",
+                "type": "AmbientLight",
+                "color": "#1445c7",
+                "intensity": {
+                  "type": "Value",
+                  "value": 0.5,
+                  "unit": "relative"
+                }
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/3/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  }
+                ]
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/4",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/lights/2",
+                "type": "SpotLight",
+                "color": "#fefbe2",
+                "intensity": {
+                  "type": "Value",
+                  "value": 0.8,
+                  "unit": "relative"
+                },
+                "angle": 45
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/4/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": -0.2,
+                    "y": 3,
+                    "z": 1
+                  }
+                ]
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/5",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/cameras/1",
+                "type": "PerspectiveCamera",
+                "near": 0.1,
+                "far": 100,
+                "fieldOfView": 55
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/5/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": -0.5,
+                    "y": 0.5,
+                    "z": 2
+                  }
+                ]
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/6",
+              "type": "Annotation",
+              "motivation": [
+                "commenting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/6/body",
+                "type": "TextualBody",
+                "value": "Cranium",
+                "format": "text/plain",
+                "language": "en",
+                "purpose": "commenting"
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/6/position",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0,
+                    "y": 0.1,
+                    "z": 0
+                  }
+                ]
+              },
+              "label": {
+                "en": [
+                  "Cranium"
+                ]
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/7",
+              "type": "Annotation",
+              "motivation": [
+                "commenting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/7/body",
+                "type": "TextualBody",
+                "value": "Mandible",
+                "format": "text/plain",
+                "language": "en",
+                "purpose": "commenting"
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/7/position",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  }
+                ]
+              },
+              "label": {
+                "en": [
+                  "Mandible"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
