@@ -11,6 +11,7 @@ import EmptyStateCard from "../shared/empty-state-card";
 import ManifestTabBody from "../shared/manifest-tab-body";
 import SoftActionButton from "../shared/soft-action-button";
 import TextAnnotationEditor from "../shared/text-annotation-editor";
+import TextAnnotation from "@/ManifestClasses/TextAnnotation";
 
 function StructureTab() {
   const { manifestObj, updateManifestObj } = useContext(manifestObjContext);
@@ -38,7 +39,7 @@ function StructureTab() {
             {resourceItems.map(
               ({ annotation, resource, annotationIndex, resourceNumber }) => (
                 <div> 
-                  {resource.getType() != "TextualBody" ? (
+                  {!(resource instanceof TextAnnotation) ? (
                   <div>
                   <CollapsibleResourceCard
                   badgeLabel="Content Resource"

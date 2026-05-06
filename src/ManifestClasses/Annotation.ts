@@ -3,12 +3,27 @@ import ContentResource from './ContentResource.ts';
 import Target from "./Target.ts";
 import type {
     IiifContainerType,
+    IiifAnnotation,
+    IiifLanguageMap,
     IiifResourceReference,
     IiifSpecificResource
 } from "@/types/iiif";
 import TextAnnotation from './TextAnnotation.ts';
 
-type AnnotationTargetReference = IiifResourceReference;
+type AnnotationTargetReference = IiifResourceReference | IiifSpecificResource;
+
+function isSpecificResourceTarget(
+    target: AnnotationTargetReference | Target,
+): target is IiifSpecificResource {
+    return !(target instanceof Target) && target.type === "SpecificResource";
+}
+
+function getFirstLanguageValue(label: IiifLanguageMap): [string, string] | null {
+    const [languageCode] = Object.keys(label);
+    const value = languageCode ? label[languageCode]?.[0] : undefined;
+
+    return languageCode && value !== undefined ? [languageCode, value] : null;
+}
 
 class Annotation {
     id: string;
@@ -54,7 +69,7 @@ class Annotation {
         this.target = { id, type };
     }
 
-    setAllValues(newAnnotation: Annotation): void{
+    setAllValues(newAnnotation: Annotation | IiifAnnotation): void{
         try{
 
             this.id = newAnnotation.id;
@@ -63,22 +78,33 @@ class Annotation {
             
             const tempTarget = new Target;
 
-            if (newAnnotation.target.source != undefined){
-                tempTarget.setSource(newAnnotation.target.source[0].id, newAnnotation.target.source[0].type);
-                tempTarget.setSelectorType(newAnnotation.target.selector[0].type);
-                tempTarget.setX(newAnnotation.target.selector[0].x);
-                tempTarget.setY(newAnnotation.target.selector[0].y);
-                tempTarget.setZ(newAnnotation.target.selector[0].z);
+            if (isSpecificResourceTarget(newAnnotation.target) && newAnnotation.target.source[0] != undefined){
+                const source = newAnnotation.target.source[0];
+                const selector = newAnnotation.target.selector?.[0];
+
+                tempTarget.setSource(source.id, source.type as IiifContainerType);
+
+                if (selector != undefined) {
+                    tempTarget.setSelectorType(selector.type);
+                    tempTarget.setX(selector.x ?? 0);
+                    tempTarget.setY(selector.y ?? 0);
+                    tempTarget.setZ(selector.z ?? 0);
+                }
 
                 this.setTarget(tempTarget);
             }
 
-            if (newAnnotation.label != undefined){
-                const labelCodeArray = Object.keys(newAnnotation.label!);
-                const labelCode = labelCodeArray[0] as keyof Label;
+            if (newAnnotation.label instanceof Label) {
+                this.setLabel(0, newAnnotation.label.getValue());
+                this.label!.setLanguage(newAnnotation.label.getLanguage() ?? "en");
+            } else if (newAnnotation.label != undefined) {
+                const firstLabelValue = getFirstLanguageValue(newAnnotation.label);
 
-                this.setLabel(0, (newAnnotation.label[labelCode][0] as unknown as string));
-                this.label!.setLanguage(labelCode);
+                if (firstLabelValue) {
+                    const [labelCode, labelValue] = firstLabelValue;
+                    this.setLabel(0, labelValue);
+                    this.label!.setLanguage(labelCode);
+                }
             }
         }catch(e){
             console.log(e);
