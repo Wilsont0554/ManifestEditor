@@ -27,10 +27,10 @@ export default function ProjectsSection({ projects, examples, onDeleteProjectByI
   };
 
   useEffect(() => {
-    if (counts.projects > 0 && tab === "examples") {
+    if (projects && counts.projects > 0) {
       setTab("projects");
     } 
-  }, []);
+  }, [projects]);
 
   return (
     <section className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
