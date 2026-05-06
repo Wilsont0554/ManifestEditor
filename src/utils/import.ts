@@ -115,6 +115,5 @@ export async function importManifestFromFile(file: File): Promise<ImportResult> 
   const manifestData = JSON.parse(text);
   const parsed = createManifestObjectFromUpload(manifestData) as ManifestObject;
   const manifestId = parsed.getUniqueIdCode();
-
   return { manifestId, manifestData };
 }

@@ -1,0 +1,114 @@
+{
+  "@context": "http://iiif.io/api/presentation/4/context.json",
+  "id": "https://example.org/iiif/manifest/1",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Dinosaur Skeleton"
+    ]
+  },
+  "items": [
+    {
+      "id": "https://example.org/iiif/manifest/1/scene/1",
+      "type": "Scene",
+      "items": [
+        {
+          "id": "https://example.org/iiif/manifest/1/scene/1/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/1",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://3d-api.si.edu/content/document/3d_package:d8c62d28-4ebc-11ea-b77f-2e728ce88125/t-rex-p4-75k-2048-web-medium.glb",
+                "type": "Model",
+                "format": "model/gltf-binary"
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1",
+                "type": "Scene"
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/2",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/lights/1",
+                "type": "PointLight",
+                "color": "#4540ff",
+                "intensity": {
+                  "type": "Value",
+                  "value": 1,
+                  "unit": "relative"
+                }
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/2/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 10,
+                    "y": 10,
+                    "z": 10
+                  }
+                ]
+              }
+            },
+            {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/3",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/lights/2",
+                "type": "DirectionalLight",
+                "color": "#fcfbc2",
+                "intensity": {
+                  "type": "Value",
+                  "value": 1,
+                  "unit": "relative"
+                },
+                "lookAt": {
+                  "id": "https://3d-api.si.edu/content/document/3d_package:d8c62d28-4ebc-11ea-b77f-2e728ce88125/t-rex-p4-75k-2048-web-medium.glb",
+                  "type": "Annotation"
+                }
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/3/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

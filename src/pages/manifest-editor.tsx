@@ -40,8 +40,6 @@ const DEFAULT_INSPECTOR_WIDTH = 560;
 const MIN_INSPECTOR_WIDTH = 320;
 const MAX_INSPECTOR_WIDTH = 860;
 const INSPECTOR_DOCK_GUTTER = 40;
-const VOYAGER_SCRIPT_SRC =
-  "https://smithsonian.github.io/voyager-dev/iiif/voyager-explorer-iiif.min.js";
 
 const ASSET_MODAL_TYPES: EditableContentResourceType[] = ["Image", "Model"];
 const ENVIRONMENT_MODAL_TYPES: EditableContentResourceType[] = [
@@ -131,25 +129,6 @@ function ManifestEditorPage() {
       window.clearInterval(intervalId);
     };
   }, [canRenderInVoyager, liveViewerManifestUrl]);
-
-  useEffect(() => {
-    if (customElements.get("voyager-explorer")) {
-      return;
-    }
-
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      'script[data-voyager-explorer="true"]',
-    );
-
-    if (existingScript) {
-      return;
-    }
-
-    const scriptTag = document.createElement("script");
-    scriptTag.src = VOYAGER_SCRIPT_SRC;
-    scriptTag.dataset.voyagerExplorer = "true";
-    document.body.appendChild(scriptTag);
-  }, []);
 
   useEffect(() => {
     function handlePointerMove(event: MouseEvent): void {

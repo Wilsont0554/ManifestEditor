@@ -1,0 +1,50 @@
+{
+  "id": "https://example.org/iiif/3d/model_origin.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Spot Light"
+    ]
+  },
+  "items": [
+    {
+      "id": "https://example.org/iiif/scene1",
+      "type": "Scene",
+      "items": [
+        {
+          "id": "https://example.org/iiif/scene1/page/p1/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.org/iiif/3d/anno1",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "target": "https://example.org/iiif/scene1",
+              "body": {
+                "id": "https://raw.githubusercontent.com/IIIF/3d/main/assets/whale/whale_mandible.glb",
+                "type": "Model",
+                "format": "model/gltf-binary"
+              }
+            },
+            {
+              "id": "https://example.org/iiif/3d/anno2",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "target": "https://example.org/iiif/scene1",
+              "body": {
+                "id": "https://example.org/iiif/light/1",
+                "type": "SpotLight",
+                "color": "#80ff00",
+                "angle": 45
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

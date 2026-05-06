@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionHeading from "@/components/gallery/SectionHeading";
 import TabButton from "./TabButton";
 import MyProjectsTab from "./MyProjectsTab";
@@ -9,6 +9,7 @@ type Tab = "projects" | "examples";
 type Props = {
   /** User projects loaded from IndexedDB. `null` while loading. */
   projects: object[] | null;
+  examples: object[] | null;
   /** Function to handle project deletion. */
   onDeleteProjectById: (id: string) => void;
 };
@@ -17,13 +18,19 @@ type Props = {
  * Projects section of the Gallery page.
  * @param projects user manifests from IndexedDB, or null while loading
  */
-export default function ProjectsSection({ projects, onDeleteProjectById }: Props) {
-  const [tab, setTab] = useState<Tab>("projects");
+export default function ProjectsSection({ projects, examples, onDeleteProjectById }: Props) {
+  const [tab, setTab] = useState<Tab>("examples");
 
   const counts = {
     projects: projects?.length ?? 0,
-    examples: 0,
+    examples: examples?.length ?? 0,
   };
+
+  useEffect(() => {
+    if (projects && counts.projects > 0) {
+      setTab("projects");
+    } 
+  }, [projects]);
 
   return (
     <section className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white/95 p-6 shadow-sm backdrop-blur sm:p-8">
@@ -56,7 +63,7 @@ export default function ProjectsSection({ projects, onDeleteProjectById }: Props
           {tab === "projects" ? (
             <MyProjectsTab projects={projects} onDeleteProjectById={onDeleteProjectById} />
           ) : (
-            <ExamplesTab />
+            <ExamplesTab projects={examples??null}/>
           )}
         </div>
       </div>

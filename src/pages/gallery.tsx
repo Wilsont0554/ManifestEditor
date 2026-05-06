@@ -1,18 +1,33 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IndexedDB } from "@/utils/indexdb";
 import Layout from "@/components/gallery/Layout";
 import GettingStartedSection from "@/components/gallery/GettingStartedSection";
 import ProjectsSection from "@/components/gallery/ProjectsSection";
-
-type SavedProject = {
-  id: string;
-  [key: string]: unknown;
-};
+import samples from "@/examples";
+import { createManifestObjectFromUpload, serializeManifestForExport } from "@/utils/file";
 
 export default function Gallery() {
-  const [projects, setProjects] = useState<SavedProject[] | null>(null);
-  const db = useMemo(() => new IndexedDB(), []);
+  const [projects, setProjects] = useState<object[] | null>(null);
+  const [examples, setExamples] = useState<object[] | null>([]);
+  const dbRef = useRef<IndexedDB>(new IndexedDB());
+  const db = dbRef.current;
 
+  //loadung example manifest
+  useEffect(() => {
+    let cancelled = false;
+    console.log(samples);
+    async function loadExample() {
+      if (cancelled) return;
+      setExamples(samples);
+    }
+    loadExample();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+
+  //loadung manifests from IndexedDB on component mount
   useEffect(() => {
     let cancelled = false;
 
@@ -25,7 +40,7 @@ export default function Gallery() {
       if (cancelled) return false;
       const savedManifested = await db.getAllProjects();
       if (cancelled) return false;
-      setProjects(savedManifested as SavedProject[]);
+      setProjects(savedManifested);
       return true;
     }
 
@@ -43,7 +58,7 @@ export default function Gallery() {
   async function handleDeleteProjectById(id: string) {
     try {
       await db.deleteProject(id);
-      setProjects((prev) => prev?.filter((proj) => proj.id.split('/').pop() !== id) ?? null);
+      setProjects((prev) => prev?.filter((proj) => proj["id"].split('/').pop() !== id) ?? null);
     }
     catch (err) {
       console.error("Failed to delete manifest from IndexedDB:", err);
@@ -52,7 +67,7 @@ export default function Gallery() {
   
   return (
     <Layout>
-      <ProjectsSection projects={projects} onDeleteProjectById={handleDeleteProjectById} />
+      <ProjectsSection projects={projects} examples={examples} onDeleteProjectById={handleDeleteProjectById} />
       <GettingStartedSection />
     </Layout>
   );
