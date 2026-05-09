@@ -5,6 +5,7 @@ import HomePage from "@/pages/home";
 import ManifestEditorPage from "@/pages/manifest-editor";
 import NotFound from "@/pages/404";
 import GalleryPage from "@/pages/gallery";
+import DevelopersPage from "@/pages/developers";
 import { setupVoyagerScript } from "@/utils/voyager";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={ <HomePage /> } />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/developers" element={<DevelopersPage />} />
           <Route path="editor/:id" element={<ManifestEditorPage/>} />
           <Route path="*" element={<NotFound/>} />
         </Routes>
