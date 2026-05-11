@@ -72,9 +72,7 @@ export default function ProjectCard(props: Props) {
   const label = manifest["label"]?.en?.[0] ?? "Untitled Manifest";
   const routingState = {
     isExample,
-
-    // only pass manifest data through state for examples, for user projects we will load from IndexedDB in the editor
-    manifest: isExample ? manifest : null,
+    exampleIdx: isExample ? id : undefined,
   };
 
   return (

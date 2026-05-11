@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
-
+import { IndexedDB } from "@/utils/indexdb";
 type Props = {
     linkActiveStyle?: string;
     linkInactiveStyle?: string;
@@ -12,12 +12,17 @@ export default function CreateNewManifestLink(props: Props) {
   const reRoute = useNavigate();
   const location = useLocation();
 
-  function handleCreateNewManifest() {
+  async function handleCreateNewManifest() {
     const newManifest = new ManifestObject("scene");
     const newId = newManifest.getUniqueIdCode();
-    reRoute(`/editor/${newId}`, {
-      state: { isExample: false, manifest: newManifest },
-    });
+    try {
+          const db = new IndexedDB();
+          await db.open();
+          await db.saveProject(newManifest, newId);
+          reRoute(`/editor/${newId}`);
+    } catch (error) {
+      reRoute("/error", { state: { message: "Failed to create new manifest." } });
+    }
   }
 
   const isActive = location.pathname.startsWith("/editor/");

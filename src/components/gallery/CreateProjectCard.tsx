@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import ManifestObject from "@/ManifestClasses/ManifestObject";
 import Icon from "@/components/icon";
+import { IndexedDB } from "@/utils/indexdb";
 
 /**
  * Card component for creating a new manifest project. Routes the user to the editor with a blank manifest
@@ -15,13 +16,20 @@ export default function CreateProjectCard() {
    * can persist it on first load.
    * @param e button click event
    */
-  function handleCreateNewManifest(e: React.MouseEvent<HTMLButtonElement>) {
+  async function handleCreateNewManifest(
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) {
     e.preventDefault();
     const newManifest = new ManifestObject("scene");
     const newId = newManifest.getUniqueIdCode();
-    reRoute(`/editor/${newId}`, {
-      state: { isExample: false, manifest: newManifest },
-    });
+    try {
+      const db = new IndexedDB();
+      await db.open();
+      await db.saveProject(newManifest, newId);
+      reRoute(`/editor/${newId}`);
+    } catch (error) {
+      reRoute("/404", { state: { message: "Failed to create new manifest." } });
+    }
   }
 
   return (

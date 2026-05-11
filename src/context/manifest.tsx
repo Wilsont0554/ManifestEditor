@@ -7,6 +7,7 @@ import { createManifestObjectFromUpload } from "@/utils/file";
 import { useLocation, useNavigate } from "react-router";
 import { serializeManifestForExport } from "../utils/file";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
+import samples from "@/examples";
 
 type Props = {
   id: string | undefined; //unique id code of the manifest
@@ -22,13 +23,12 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
 
   const location = useLocation();
   const isExampleManifest = location.state?.isExample;
-  const importedManifest = location.state?.manifest;
+  const exampleIdx = location.state?.exampleIdx;
 
   //load manifestObj on page load
   useEffect(() => {
     let isInterrupted = false;
-    let loadedManifest: ManifestObject | null = null;
-
+    let loadedManifest = new ManifestObject("scene");
     /**
      * handle different cases of loading a manifest
      * @returns true if manifest is loaded successfully, false otherwise
@@ -39,17 +39,14 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
         return false;
       }
 
-      if (importedManifest) {
-        loadedManifest = createManifestObjectFromUpload(importedManifest);
-      }
-
       // CASE 1: manifest is loaded as an example
       if (isExampleManifest) {
-        if (!loadedManifest) {
+        if (!exampleIdx) {
           reRoute("/404");
           return false;
         }
-        setManifestObj(loadedManifest!);
+        loadedManifest = createManifestObjectFromUpload(samples[exampleIdx]);
+        setManifestObj(loadedManifest);
         return true;
       }
 
@@ -57,16 +54,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
       await db.open();
       if (isInterrupted) return false;
 
-      // CASE 2: manifest is imported by user or newly created
-      if (loadedManifest) {
-        setManifestObj(loadedManifest!);
-        const parsedManifest = serializeManifestForExport(loadedManifest);
-        await db.saveProject(parsedManifest, id!);
-        reRoute(location.pathname, { replace: true, state: null });
-        return true;
-      }
-
-      // CASE 3: manifest that previously edited by user and is accessed by clicking project in homepage
+      // CASE 2: manifest that is created or imported by user (all will be saved in indexedDB)
       const manifestFromDB = await db.getProject(id!);
       if (isInterrupted) return false;
       if (!manifestFromDB) {
@@ -86,7 +74,7 @@ export const ManifestObjProvider = ({ id, children }: Props) => {
     return () => {
       isInterrupted = true;
     };
-  }, [id, importedManifest, isExampleManifest, location.pathname, reRoute]);
+  }, [id, isExampleManifest, exampleIdx, location.pathname, reRoute]);
 
   /**
    * debounced version of the function that saves manifest to indexedDB

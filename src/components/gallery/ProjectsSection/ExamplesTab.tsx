@@ -29,13 +29,12 @@ export default function ExamplesTab({projects}:{projects: object[] | null}
         </div>
       );
     }
-  
+
     return (
       <ProjectGrid>
         {projects.map((p, idx) => {
-          const id = p["id"].split("/").pop() ?? "invalid-id";
-          return <ProjectCard 
-            key={idx} id={id} manifest={p} isExample={true}
+          return <ProjectCard
+            key={idx} id={idx + ""} manifest={p} isExample={true}
             />;
         })}
       </ProjectGrid>

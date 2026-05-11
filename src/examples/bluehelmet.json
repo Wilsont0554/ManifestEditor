@@ -54,6 +54,59 @@
               }
             },
             {
+              "id": "https://example.org/iiif/manifest/1/scene/1/anno/2",
+              "type": "Annotation",
+              "motivation": [
+                "painting"
+              ],
+              "body": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/light/1",
+                "type": "DirectionalLight",
+                "label": {
+                  "en": [
+                    "Spotlight - Blue"
+                  ]
+                },
+                "metadata": [
+                  {
+                    "label": {
+                      "en": [
+                        "Directional Spotlight"
+                      ]
+                    },
+                    "value": {
+                      "en": [
+                        "Blue spotlight coming from X=.1 Y=.1"
+                      ]
+                    }
+                  }
+                ],
+                "transforms": [],
+                "color": "#0b1bf9"
+              },
+              "target": {
+                "id": "https://example.org/iiif/manifest/1/scene/1/anno/1/target",
+                "type": "SpecificResource",
+                "source": [
+                  {
+                    "id": "https://example.org/iiif/manifest/1/scene/1",
+                    "type": "Scene"
+                  }
+                ],
+                "selector": [
+                  {
+                    "type": "PointSelector",
+                    "x": 0.1,
+                    "y": 0.1,
+                    "z": -0.1
+                  }
+                ]
+              },
+              "label": {
+                "en": []
+              }
+            },
+            {
               "id": "https://example.org/iiif/manifest/1/scene/1/anno/3",
               "type": "Annotation",
               "motivation": [
