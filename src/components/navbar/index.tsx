@@ -40,6 +40,14 @@ function Navbar() {
           >
             Gallery
           </NavLink>
+          <NavLink
+            to='/developers'
+            className={({ isActive }) =>
+              `rounded-md px-3 py-1 text-sm font-medium transition ${isActive ? linkActiveStyle : linkInactiveStyle}`
+            }
+          >
+            Developers
+          </NavLink>
           <CreateNewManifestLink linkActiveStyle={linkActiveStyle} linkInactiveStyle={linkInactiveStyle}/>
           <a href="https://github.com/Wilsont0554/ManifestEditor" target="_blank" rel="noreferrer" className={linkInactiveStyle}>
             Github
