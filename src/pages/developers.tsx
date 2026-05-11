@@ -19,7 +19,7 @@ const developers: Developer[] = [
     name: "Jacob Way",
     username: "jacobbbway",
     email: "jacobbbway1997@gmail.com",
-    avatarSrc: "https://github.com/jacobbbway.png",
+    avatarSrc: "https://avatars.githubusercontent.com/u/183834087?v=4",
     links: [
       {
         label: "github.com/jacobbbway",
