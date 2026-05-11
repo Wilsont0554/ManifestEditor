@@ -23,7 +23,7 @@ const developers: Developer[] = [
     links: [
       {
         label: "github.com/jacobbbway",
-        href: "https://github.com/jacobbbway",
+        href: "https://github.com/jacobbway",
         icon: "github",
       },
     ],
