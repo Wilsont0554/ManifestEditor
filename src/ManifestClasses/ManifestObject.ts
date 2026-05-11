@@ -1,13 +1,11 @@
 import Container from './Container.ts';
 import Label from './Label.ts';
-import Camera from "./Camera.ts";
-import Light from "./Light.ts";
+import { v4 as uuidv4 } from "uuid";
 import {
     builtInManifestBehaviors,
     manifestAutoAdvanceBehaviors,
     manifestOrderingBehaviors,
     manifestRepeatBehaviors,
-    type IiifContainerType,
     type ManifestAutoAdvanceBehavior,
     type ManifestOrderingBehavior,
     type ManifestRepeatBehavior,
@@ -18,7 +16,7 @@ const manifestOrderingBehaviorSet = new Set<string>(manifestOrderingBehaviors);
 const manifestRepeatBehaviorSet = new Set<string>(manifestRepeatBehaviors);
 const manifestAutoAdvanceBehaviorSet = new Set<string>(manifestAutoAdvanceBehaviors);
 const builtInManifestBehaviorSet = new Set<string>(builtInManifestBehaviors);
-const defaultManifestId = "https://example.org/iiif/manifest/1";
+const defaultManifestId = 'https://example.org/iiif/manifest/1';
 const defaultManifestLabel = "Blank Manifest";
 
 function trimTrailingSlash(value: string): string {
@@ -34,6 +32,11 @@ function getManifestBaseId(value: string): string {
     return trimTrailingSlash(getEffectiveManifestId(value).replace(/\.json$/i, ''));
 }
 
+function getUniqueIdCode(baseId: string): string {
+    const uniqueId = baseId.split('/').pop() as string;
+    return uniqueId;
+}
+
 class ManifestObject {
     id: string;
     type: string;
@@ -46,19 +49,16 @@ class ManifestObject {
     behavior?: string[];
 
     constructor(containerType: string) {
-        this.id = defaultManifestId;
+        this.id = `https://example.org/iiif/manifest/${uuidv4()}`;
         this.type = "Manifest";
         this.items = [];
         this.label = new Label(defaultManifestLabel, "en");
         this.addContainer(new Container(undefined, containerType));
-        this.synchronizeStructure();
     }
 
     clone(): ManifestObject {
-        this.synchronizeStructure();
-
         const nextManifestObj = new ManifestObject(this.getContainerObj().getType());
-
+        
         nextManifestObj.id = this.id;
         nextManifestObj.type = this.type;
         nextManifestObj.items = this.items.map((item) => item.clone());
@@ -74,7 +74,6 @@ class ManifestObject {
     
     addContainer(container: Container): void {
         this.items.push(container);
-        this.synchronizeStructure();
     }
 
     getContainerObj(index?: number): Container {
@@ -142,16 +141,30 @@ class ManifestObject {
             this.type = newManifest.type;
             this.rights = newManifest.rights;
             this.navDate = newManifest.navDate;
-            this.behavior = newManifest.behavior ? [...newManifest.behavior] : undefined;
+            this.behavior = newManifest.behavior;
 
             if (newManifest.label != undefined){
-                this.setLabel(newManifest.label.getValue());
-                this.setLabelLanguage(newManifest.label.getLanguage() ?? 'en');
+                const labelCodeArray = Object.keys(newManifest.label);
+                const labelCode = labelCodeArray[0] as keyof Label;
+                const labelValues = newManifest.label[labelCode];
+                const labelValue = labelValues?.[0] as unknown as string | undefined;
+
+                if (labelValue != undefined) {
+                    this.setLabel(labelValue);
+                    this.label!.setLanguage(labelCode);
+                }
             }
 
             if (newManifest.summary != undefined){
-                this.setSummary(newManifest.summary.getValue());
-                this.setSummaryLanguage(newManifest.summary.getLanguage() ?? 'en');
+                const summaryCodeArray = Object.keys(newManifest.summary);
+                const summaryCode = summaryCodeArray[0] as keyof Label;
+                const summaryValues = newManifest.summary[summaryCode];
+                const summaryValue = summaryValues?.[0] as unknown as string | undefined;
+
+                if (summaryValue != undefined) {
+                    this.setSummary(summaryValue);
+                    this.summary!.setLanguage(summaryCode);
+                }
             }
         }catch(e){
             console.log(e);
@@ -251,6 +264,10 @@ class ManifestObject {
         this.updateBehaviorList(nextBehaviors);
     }
 
+    getUniqueIdCode(): string {
+        return getUniqueIdCode(getManifestBaseId(this.id));
+    }
+
     private updateBehaviorList(nextBehaviors: string[]): void {
         if (nextBehaviors.length === 0) {
             delete this.behavior;
@@ -287,67 +304,6 @@ class ManifestObject {
         }
 
         return new Label(defaultManifestLabel, "en");
-    }
-
-    private synchronizeStructure(): void {
-        const manifestBaseId = getManifestBaseId(this.id);
-
-        this.items.forEach((container, containerIndex) => {
-            const containerId = `${manifestBaseId}/${container.getType().toLowerCase()}/${containerIndex + 1}`;
-            container.setID(containerId);
-
-            container.getItems().forEach((annotationPage, annotationPageIndex) => {
-                annotationPage.setID(`${containerId}/page/${annotationPageIndex + 1}`);
-
-                let lightIndex = 0;
-                let cameraIndex = 0;
-
-                annotationPage.getAllAnnotations().forEach((annotation, annotationIndex) => {
-                    const annotationId = `${containerId}/anno/${annotationIndex + 1}`;
-                    annotation.changeID(annotationId);
-
-                    const resource = annotation.getContentResource();
-                    const targetId = `${annotationId}/target`;
-
-                    if (resource instanceof Light) {
-                        lightIndex += 1;
-                        resource.setID(`${containerId}/lights/${lightIndex}`);
-                        resource.synchronizeDerivedIds();
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    if (resource instanceof Camera) {
-                        cameraIndex += 1;
-                        resource.setID(`${containerId}/cameras/${cameraIndex}`);
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    if (annotation.getTarget()) {
-                        annotation.ensureSpatialTarget(
-                            targetId,
-                            containerId,
-                            container.getType(),
-                        );
-                        return;
-                    }
-
-                    annotation.setTargetReference(
-                        containerId,
-                        container.getType() as IiifContainerType,
-                    );
-                });
-            });
-        });
     }
 }
 

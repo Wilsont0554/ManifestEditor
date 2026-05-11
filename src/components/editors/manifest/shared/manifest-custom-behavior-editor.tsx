@@ -1,19 +1,12 @@
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from "react";
-import SoftActionButton from "./soft-action-button";
-
-interface ManifestCustomBehaviorEditorProps {
-  behaviors: string[];
-  reservedBehaviors: readonly string[];
-  onAddBehavior: (value: string) => boolean;
-  onRemoveBehavior: (value: string) => void;
-}
+import SoftActionButton from "./inputs/soft-action-button";
 
 function ManifestCustomBehaviorEditor({
   behaviors,
   reservedBehaviors,
   onAddBehavior,
   onRemoveBehavior,
-}: ManifestCustomBehaviorEditorProps) {
+}) {
   const reservedBehaviorSet = new Set<string>(reservedBehaviors);
   const [isFormVisible, setFormVisible] = useState(false);
   const [draft, setDraft] = useState("");

@@ -1,25 +1,21 @@
-import {
+﻿import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   useContext,
   useEffect,
   useRef,
 } from "react";
-import { manifestObjContext } from "@/context/manifest-context";
+import { isAdvancedViewContext, manifestObjContext } from "@/context/manifest-context";
 import Button from "@/components/shared/button";
 import Camera from "@/ManifestClasses/Camera";
 import Light from "@/ManifestClasses/Light";
 import TextAnnotation from "@/ManifestClasses/TextAnnotation";
-import {
-  getContentResourceItems,
-  getTextAnnotationItems,
-  type EditableContentResourceType,
-} from "@/utils/content-resource";
-import CameraResourceTechnicalEditor from "./shared/camera-resource-technical-editor";
-import ContentResourceEditor from "./shared/content-resource-editor";
-import LightResourceTechnicalEditor from "./shared/light-resource-technical-editor";
-import SoftActionButton from "./shared/soft-action-button";
-import TextAnnotationEditor from "./shared/text-annotation-editor";
+import { type EditableContentResourceType } from "@/utils/content-resource";
+import CameraResourceTechnicalEditor from "./shared/resource-editors/camera-resource-technical-editor";
+import ContentResourceEditor from "./shared/resource-editors/content-resource-editor";
+import LightResourceTechnicalEditor from "./shared/resource-editors/light-resource-technical-editor";
+import SoftActionButton from "./shared/inputs/soft-action-button";
+import TextAnnotationEditor from "./shared/resource-editors/text-annotation-editor";
 
 export type ContentResourceModalView = "picker" | "editor";
 
@@ -30,6 +26,8 @@ interface ContentResourceModalProps {
   isOpen: boolean;
   view: ContentResourceModalView;
   selectedAnnotationIndex: number;
+  allowedTypes?: EditableContentResourceType[];
+  width: number;
   onCancel: () => void;
   onSave: () => void;
   onSelectType: (type: EditableContentResourceType) => void;
@@ -201,6 +199,12 @@ const baseContentResourceOptions: ContentResourceOption[] = [
     icon: <LightIcon />,
   },
   {
+    value: "Sunlight",
+    title: "Sunlight Preset",
+    description: "Creates two light to mimic sunlight",
+    icon: <LightIcon />,
+  },
+  {
     value: "Camera",
     title: "Camera",
     description: "Add a camera content resource.",
@@ -212,6 +216,8 @@ function ContentResourceModal({
   isOpen,
   view,
   selectedAnnotationIndex,
+  allowedTypes,
+  width,
   onCancel,
   onSave,
   onSelectType,
@@ -224,29 +230,20 @@ function ContentResourceModal({
     .getContainerObj()
     .getAnnotationPage()
     .getAllAnnotations();
-  const contentResourceItems = getContentResourceItems(manifestObj);
-  const textAnnotationItems = getTextAnnotationItems(manifestObj);
+  const { advancedView, toggleAdvancedView } =
+      useContext(isAdvancedViewContext);
+
   const selectedAnnotation =
     view === "editor"
       ? annotations[selectedAnnotationIndex] ?? null
       : null;
   const selectedResource = selectedAnnotation?.getContentResource() ?? null;
   const selectedTextAnnotation =
-    selectedAnnotation instanceof TextAnnotation ? selectedAnnotation : null;
-  const selectedResourceItem =
-    selectedAnnotation && selectedResource
-      ? contentResourceItems.find(
-          (item) => item.annotationIndex === selectedAnnotationIndex,
-        ) ?? null
-      : null;
-  const selectedTextAnnotationItem = selectedTextAnnotation
-    ? textAnnotationItems.find(
-        (item) => item.annotationIndex === selectedAnnotationIndex,
-      ) ?? null
-    : null;
+    selectedResource instanceof TextAnnotation ? selectedResource : null;
   const contentResourceOptions = baseContentResourceOptions.filter(
     (option) =>
-      (option.value !== "Light" && option.value !== "Camera") || isSceneContainer,
+      ((option.value !== "Light" && option.value !== "Camera") || isSceneContainer) &&
+      (!allowedTypes || allowedTypes.includes(option.value)),
   );
 
   useEffect(() => {
@@ -255,12 +252,9 @@ function ContentResourceModal({
     }
 
     const previouslyFocusedElement = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       previouslyFocusedElement?.focus();
     };
   }, [isOpen]);
@@ -311,18 +305,15 @@ function ContentResourceModal({
   }
 
   const canSave = Boolean(
-    selectedTextAnnotation || (selectedAnnotation && selectedResource),
+    selectedResource,
   );
 
   return (
-    <div className="absolute inset-0 z-30">
-      <div
-        className="absolute inset-0 h-full w-full bg-slate-900/35"
-        onClick={onCancel}
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 flex h-full items-start justify-center overflow-y-auto p-4 sm:p-6">
+    <div
+      className="absolute inset-y-0 right-0 z-30 flex h-full border-l border-slate-300 bg-white shadow-[-18px_0_36px_rgba(15,23,42,0.08)]"
+      style={{ width: `${width}px`, maxWidth: "calc(100vw - 24px)" }}
+    >
+      
         <div
           ref={dialogRef}
           role="dialog"
@@ -330,15 +321,13 @@ function ContentResourceModal({
           aria-labelledby={dialogTitleId}
           aria-describedby={dialogDescriptionId}
           onKeyDown={handleDialogKeyDown}
-          className={`w-full rounded-3xl bg-white shadow-2xl ${
-            view === "picker" ? "max-w-3xl" : "max-w-2xl"
-          }`}
+          className="flex min-w-0 flex-1 flex-col bg-white"
         >
-          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5 sm:px-7">
+          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
             <div className="space-y-1">
               <h2
                 id={dialogTitleId}
-                className="text-2xl font-semibold tracking-tight text-slate-950"
+                className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500"
               >
                 {view === "picker"
                   ? "Add content"
@@ -355,48 +344,61 @@ function ContentResourceModal({
               </p>
             </div>
 
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={`rounded-md ${advancedView ? "bg-rose-600 text-white hover:bg-rose-700" : "border bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700"} px-2.5 py-1 text-s font-semibold  transition`}
+              onClick={() => {toggleAdvancedView()}}
+              title="Export manifest"
+            >
+              {advancedView ? (<>Simple View</>) : (<>Advanced View</>)}
+            </button>
+          </div>
+
             <button
               ref={closeButtonRef}
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full text-4xl leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="text-3xl leading-none text-slate-500 transition hover:text-slate-900"
               onClick={onCancel}
               aria-label="Close content resource modal"
             >
               &times;
             </button>
+
+            
           </div>
 
-          <div className="px-6 py-6 sm:px-7 sm:py-7">
+          <div className="manifest-tabs-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5">
             {view === "picker" ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4">
                 {contentResourceOptions.map((option) => (
                   <button
                     key={option.value}
                     type="button"
-                    className="group flex h-full flex-col items-start rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-pink-300 hover:bg-rose-50/50"
+                    className="group flex h-full items-center gap-4 rounded-2xl border border-pink-200 bg-rose-50/40 p-4 text-left transition hover:border-pink-300 hover:bg-rose-50"
                     onClick={() => onSelectType(option.value)}
                   >
-                    <div className="flex w-full items-center justify-center rounded-xl bg-slate-200 py-6 transition group-hover:bg-white">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white transition group-hover:bg-pink-50">
                       {option.icon}
                     </div>
-                    <div className="pt-4">
-                      <p className="text-xl font-semibold text-slate-950">
+                    <div>
+                      <p className="text-lg font-semibold text-slate-950">
                         {option.title}
                       </p>
-                      <p className="mt-2 text-sm leading-6 text-slate-500">
+                      <p className="mt-1 text-sm leading-6 text-slate-500">
                         {option.description}
                       </p>
                     </div>
                   </button>
                 ))}
               </div>
-            ) : selectedAnnotation && selectedTextAnnotation ? (
+            ) : selectedTextAnnotation ? (
               <section className="rounded-2xl border border-pink-200 bg-slate-100 p-5">
                 <button
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Text Annotation {selectedResourceItem?.resourceNumber ?? 1}
+                  Text Annotation
                 </button>
 
                 <TextAnnotationEditor
@@ -413,7 +415,7 @@ function ContentResourceModal({
                   type="button"
                   className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 ring-1 ring-pink-200"
                 >
-                  Content Resource {selectedResourceItem?.resourceNumber ?? 1}
+                  Content Resource
                 </button>
 
                 <ContentResourceEditor
@@ -423,7 +425,6 @@ function ContentResourceModal({
                   onCommit={commitManifestChange}
                   className="pt-5"
                   showTypeSelector={false}
-                  showMetadataAction={false}
                 />
 
                 {selectedResource instanceof Camera ? (
@@ -455,7 +456,7 @@ function ContentResourceModal({
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-5 sm:px-7">
+          <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
             <SoftActionButton
               type="button"
               className="justify-center"
@@ -476,7 +477,6 @@ function ContentResourceModal({
             ) : null}
           </div>
         </div>
-      </div>
     </div>
   );
 }

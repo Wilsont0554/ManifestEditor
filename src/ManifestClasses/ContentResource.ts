@@ -1,10 +1,10 @@
 import Label from './Label.ts';
 import Metadata from "./Metadata.ts";
 import Transform from './Transform.ts';
-import type { 
-    IiifContentResource,
-    IiifSpecificResource
- } from "@/types/iiif";
+
+type SpecificResourceBody = ContentResource & {
+    source?: ContentResource[];
+};
 
 class ContentResource {
     id: string;
@@ -17,6 +17,7 @@ class ContentResource {
     summary?: Label;
     metadata: Metadata;
     transforms: Transform[];
+    presetType?: string;
 
     constructor(id: string, type: string, format?: string) {
         this.id = id;
@@ -25,11 +26,20 @@ class ContentResource {
         this.label = this.createLabel("en");
         this.metadata = new Metadata();
         this.transforms = [];
+        this.presetType = "Origin"
     }
 
     /*---------------------------------------------------
                         SETTERS
     ---------------------------------------------------*/
+    setPreset(newPreset: string): void{
+        this.presetType = newPreset;
+    }
+
+    getPreset(): string{
+        return this.presetType!;
+    }
+
     setID(value: string): void {
         this.id = value;
     }
@@ -69,22 +79,45 @@ class ContentResource {
 
     setAllValues(newContentResource: ContentResource): void{
         try{
+            if (newContentResource.type == "SpecificResource"){
+                if (newContentResource.transform != undefined){
+                    for (let i = 0; i < newContentResource.transform.length; i++){
+                        const tempTransform = new Transform(newContentResource.transform[i].type)
+                        tempTransform.setType(newContentResource.transform[i].type);
+                        tempTransform.setX(newContentResource.transform[i].x);
+                        tempTransform.setY(newContentResource.transform[i].y);
+                        tempTransform.setZ(newContentResource.transform[i].z);
+                        this.transforms.push(tempTransform);
+                    }
+                }
+                const specificResource = newContentResource as SpecificResourceBody;
+
+                if (specificResource.source?.[0] != undefined) {
+                    newContentResource = specificResource.source[0];
+                }
+            }
+
             this.id = newContentResource.id;
             this.type = newContentResource.type;
             this.format = newContentResource.format;
             this.height = newContentResource.height;
             this.width = newContentResource.width;
             this.duration = newContentResource.duration;
-            this.summary = newContentResource.summary?.clone();
             
-
             if (newContentResource.label != undefined){
-                this.setLabel(0, newContentResource.label.getValue());
-                this.label.setLanguage(newContentResource.label.getLanguage() ?? 'en');
+                const labelCodeArray = Object.keys(newContentResource.label);
+                const labelCode = labelCodeArray[0] as keyof Label;
+
+                this.setLabel(0, (newContentResource.label[labelCode]![0] as keyof Label));
+                this.label.setLanguage(labelCode);
             }
 
             if (newContentResource.metadata != undefined){
-                this.metadata = newContentResource.metadata.clone();
+                for (let i = 0 ; i < newContentResource.metadata.length; i++){
+                    const metadataCodeArray = Object.keys(newContentResource.metadata[i].label);
+                    const metadataCode = metadataCodeArray[0] as keyof Label;
+                    this.metadata.addEntry(newContentResource.metadata[i].label[metadataCode], newContentResource.metadata[i].value[metadataCode],  metadataCode)
+                }
             }
         }catch(e){
             console.log(e);
@@ -99,6 +132,10 @@ class ContentResource {
     //returns as 0:height, 1:width
     getDimensions(): [number | undefined, number | undefined] {
         return [this.height, this.width];
+    }
+
+    getID(): string{
+        return this.id;
     }
 
     changeLabel(index: number, value: string, languageCode?: string): void {
@@ -147,6 +184,10 @@ class ContentResource {
         return this.transforms;
     }
 
+    setTransforms(newTransform: Transform[]): void{
+        this.transforms = newTransform;
+    }
+
     getTransfroms(): Transform[] {
         return this.getTransforms();
     }
@@ -180,6 +221,7 @@ class ContentResource {
         target.summary = this.summary?.clone();
         target.metadata = this.metadata.clone();
         target.transforms = this.transforms.map((transform) => transform.clone());
+        target.presetType = this.presetType;
 
         return target;
     }

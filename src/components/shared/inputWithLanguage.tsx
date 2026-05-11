@@ -1,18 +1,6 @@
 import { useState } from "react";
 import { supportedLanguageCodes } from "@/types/iiif";
-import ManifestField from "@/components/editors/manifest/shared/manifest-field";
-
-interface InputWithLanguageProps {
-  label: string;
-  languageCode: string;
-  value: string;
-  onChange: (newValue: string) => void;
-  onLanguageChange: (newLanguageCode: string) => void;
-  placeholder?: string;
-  rows?: number;
-  appearance?: "underline" | "outline";
-  textareaClassName?: string;
-}
+import ManifestField from "@components/editors/manifest/shared/inputs/manifest-field";
 
 export default function InputWithLanguage({
   languageCode,
@@ -24,7 +12,7 @@ export default function InputWithLanguage({
   rows = 1,
   appearance = "underline",
   textareaClassName = "",
-}: InputWithLanguageProps) {
+}) {
   const [isLanguageSelecting, setLanguageSelecting] = useState(false);
   const languageLabels: Record<string, string> = {
     en: "English",

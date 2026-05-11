@@ -46,7 +46,6 @@ export const builtInManifestBehaviors = [
   ...manifestAutoAdvanceBehaviors,
 ] as const;
 
-export type SupportedLanguageCode = (typeof supportedLanguageCodes)[number];
 export type IiifContainerType = (typeof iiifContainerTypes)[number];
 export type ManifestViewingDirection =
   (typeof manifestViewingDirections)[number];
@@ -65,22 +64,9 @@ export interface IiifMetadataItem {
   value: IiifLanguageMap;
 }
 
-export interface IiifLinkedResource {
-  id: string;
-  type: string;
-  format?: string;
-  label?: IiifLanguageMap;
-}
-
 export interface IiifResourceReference {
   id: string;
   type: string;
-}
-
-export interface IiifQuantity {
-  type: "Value";
-  unit: string;
-  value: number;
 }
 
 export interface IiifPointSelector {
@@ -89,96 +75,4 @@ export interface IiifPointSelector {
   x?: number;
   y?: number;
   z?: number;
-  instant?: number;
-}
-
-export interface IiifTransform {
-  id?: string;
-  type: "RotateTransform" | "ScaleTransform" | "TranslateTransform";
-  x?: number;
-  y?: number;
-  z?: number;
-}
-
-export type IiifTransForm = IiifTransform;
-
-export type IiifSelector = IiifPointSelector | IiifTransform;
-
-export interface IiifSpecificResource {
-  id?: string;
-  type: "SpecificResource";
-  source: Array<IiifResourceReference | IiifContentResource>;
-  selector?: IiifPointSelector[];
-  transform?: IiifTransform[];
-}
-
-export interface IiifTextualBody {
-  id?: string;
-  type: "TextualBody";
-  value: string;
-  format?: string;
-  language?: string;
-  purpose?: string;
-}
-
-export interface IiifContentResource {
-  id: string;
-  type: string;
-  format?: string;
-  label?: IiifLanguageMap;
-  metadata?: IiifMetadataItem[];
-  height?: number;
-  width?: number;
-  duration?: number;
-  summary?: IiifLanguageMap;
-  color?: string;
-  angle?: number;
-  intensity?: IiifQuantity;
-  lookAt?: IiifResourceReference;
-  near?: number;
-  far?: number;
-  viewHeight?: number;
-  fieldOfView?: number;
-}
-
-export interface IiifAnnotation {
-  id: string;
-  type: string;
-  motivation: string[];
-  body: IiifContentResource | IiifTextualBody | IiifSpecificResource;
-  target: IiifResourceReference | IiifSpecificResource;
-  label?: IiifLanguageMap;
-}
-
-export interface IiifAnnotationPage {
-  id: string;
-  type: string;
-  items: IiifAnnotation[];
-}
-
-export interface IiifCanvasLike {
-  id: string;
-  type: IiifContainerType;
-  items: IiifAnnotationPage[];
-  duration?: number;
-  height?: number;
-  width?: number;
-}
-
-export interface IiifManifest {
-  "@context"?: string | string[];
-  id: string;
-  type: string;
-  label: IiifLanguageMap;
-  summary?: IiifLanguageMap;
-  metadata?: IiifMetadataItem[];
-  homepage?: IiifLinkedResource[];
-  seeAlso?: IiifLinkedResource[];
-  navPlace?: string;
-  rights?: string;
-  navDate?: string;
-  viewingDirection?: ManifestViewingDirection;
-  behavior?: string[];
-  items: IiifCanvasLike[];
-  annotations?: IiifAnnotationPage[];
 }
